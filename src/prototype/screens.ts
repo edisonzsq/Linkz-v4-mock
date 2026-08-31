@@ -4,6 +4,7 @@ export const screens = [
   { id: 'otp-phone', label: 'OTP — Phone', group: 'Sign up' },
   { id: 'basic-info', label: 'Basic Info', group: 'Sign up' },
   { id: 'account-created', label: 'Account Created', group: 'Sign up' },
+  { id: 'benefit', label: 'Benefit / KYC intro', group: 'Sign up' },
   { id: 'login', label: 'Login', group: 'Log in' },
   { id: 'google-auth', label: 'Google Auth', group: 'Log in' },
   { id: 'get-started', label: 'Get Started', group: 'App' },

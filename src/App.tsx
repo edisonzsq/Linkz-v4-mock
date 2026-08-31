@@ -5,6 +5,7 @@ import { BasicInfo } from './screens/auth/BasicInfo'
 import { CreateAccount } from './screens/auth/CreateAccount'
 import { GoogleAuth } from './screens/auth/GoogleAuth'
 import { Login } from './screens/auth/Login'
+import { Benefit } from './screens/auth/Benefit'
 import { Otp } from './screens/auth/Otp'
 import { GetStarted } from './screens/app/GetStarted'
 import { KycBankAccount, KycBusinessOverview, KycSubmitted, KycTwoFactor } from './screens/app/Kyc'
@@ -22,6 +23,8 @@ function CurrentScreen() {
       return <BasicInfo />
     case 'account-created':
       return <BasicInfo showCreated />
+    case 'benefit':
+      return <Benefit />
     case 'login':
       return <Login />
     case 'google-auth':

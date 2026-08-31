@@ -36,6 +36,9 @@
   --color-text-primary: #101828;
   --color-text-secondary: #475467;
 
+  /* background-color/container */
+  --color-container: #f5f9f7;
+
   /* semantic */
   --color-danger: #c31d1d;
   --color-danger-bg: #fef3f2;
@@ -57,6 +60,8 @@
   --text-xs3--line-height: 16px;
   --text-xs2: 14px;
   --text-xs2--line-height: 20px;
+  --text-xs: 16px;
+  --text-xs--line-height: 24px;
   --text-xs1: 16px;
   --text-xs1--line-height: 24px;
   --text-lg: 24px;

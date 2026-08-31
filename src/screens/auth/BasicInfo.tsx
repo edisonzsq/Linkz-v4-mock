@@ -185,7 +185,7 @@ export function BasicInfo({ showCreated = false }: { showCreated?: boolean }) {
               {state.email || 'sanders@linkzasia.com'}
             </span>
           </p>
-          <Button className="mt-2 w-[220px]" onClick={() => go('get-started')}>
+          <Button className="mt-2 w-[220px]" onClick={() => go('benefit')}>
             {accountCreated.cta}
           </Button>
         </div>

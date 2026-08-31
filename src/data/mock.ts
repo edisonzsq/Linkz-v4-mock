@@ -86,6 +86,41 @@ export const learnOptions = [
 ]
 
 /* ---------- inferred copy, matching the design's voice ---------- */
+export const benefit = {
+  title: 'Do more with LINKZ',
+  subtitle:
+    'Complete your KYC to accept payments, receive payouts, and access financing, all in one place.',
+  cards: [
+    {
+      icon: 'card',
+      title: 'Accept payments',
+      description: 'Get paid by customers directly through LINKZ.',
+    },
+    {
+      icon: 'bank',
+      title: 'Get payouts',
+      description: 'Withdraw your earnings straight to your bank.',
+    },
+    {
+      icon: 'coins',
+      title: 'Access financing',
+      description: 'Get working capital once your business is verified.',
+    },
+  ],
+  checklistTitle: 'What you’ll need — have these ready before you start',
+  checklist: [
+    { label: 'Business overview', note: '· NPWP, NIB' },
+    { label: 'Authorized representative details' },
+    { label: 'Bank account details' },
+    { label: '2-Factor Authentication' },
+  ],
+  duration: 'About 5-10 minutes',
+  saveNote:
+    'Set aside a few minutes and have your documents ready. Your progress isn’t saved, so you’ll need to complete KYC in one go.',
+  primaryCta: 'Continue to KYC',
+  secondaryCta: 'Skip for now',
+}
+
 export const accountCreated = {
   title: 'Account created',
   subtitle:
