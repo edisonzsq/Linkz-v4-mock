@@ -8,31 +8,35 @@ import {
   basicInfo as copy,
   countries,
   createAccount,
-  employeeCounts,
-  industries,
+  learnOptions,
+  states,
 } from '../../data/mock'
 import { useFlow } from '../../prototype/flowContext'
 
-/** Figma: "Phone Email Onboarding 3 - Basic Info" (node 4001:76532), its
- *  confirmation variant (4001:76576) and "4 - Account Created" (4001:76718),
- *  which is this same form behind a modal. */
+/**
+ * Figma: "Phone Email Onboarding 3 - Basic Info" (4001:76532) and
+ * "4 - Account Created" (4001:76718), which is this form behind a modal.
+ *
+ * Layout: 521px column, 45px gaps; fields stacked at 16px; State/Province and
+ * Postal Code share a row with a 32px gap; footer row is bottom-aligned with
+ * "Start Over" (142px outline) left and "Continue" (254px fill) right.
+ */
 export function BasicInfo({ showCreated = false }: { showCreated?: boolean }) {
   const { go, state } = useFlow()
   const [modal, setModal] = useState(showCreated)
   const [form, setForm] = useState({
     fullName: '',
-    company: '',
-    role: '',
-    about: '',
-    city: '',
-    country: 'id',
-    industry: '',
-    employees: '',
+    country: '',
+    address: '',
+    state: '',
+    postal: '',
+    referral: '',
+    learn: '',
   })
   const [touched, setTouched] = useState(false)
 
-  const required = ['fullName', 'company', 'city', 'industry'] as const
-  const missing = (k: (typeof required)[number]) =>
+  const required = ['fullName', 'country', 'address', 'state', 'postal', 'learn'] as const
+  const err = (k: (typeof required)[number]) =>
     touched && !form[k].trim() ? 'This field is required' : ''
   const canSubmit = required.every((k) => form[k].trim())
 
@@ -41,6 +45,7 @@ export function BasicInfo({ showCreated = false }: { showCreated?: boolean }) {
 
   return (
     <AuthLayout
+      nudge={{ x: -15, y: 18.5 }}
       header={
         <>
           <LanguagePicker />
@@ -53,7 +58,7 @@ export function BasicInfo({ showCreated = false }: { showCreated?: boolean }) {
         </>
       }
     >
-      <div className="flex w-full max-w-[521px] flex-col gap-s400">
+      <div className="flex w-full max-w-[521px] flex-col gap-[45px]">
         <div className="flex flex-col gap-s200">
           <h1 className="text-xl font-bold text-text-primary">{copy.title}</h1>
           <p className="text-xs2 text-text-primary">{copy.subtitle}</p>
@@ -62,89 +67,93 @@ export function BasicInfo({ showCreated = false }: { showCreated?: boolean }) {
         <div className="flex flex-col gap-s300">
           <TextField
             name="fullName"
-            label="Full name"
+            label={copy.fullName.label}
             required
-            placeholder="As shown on your ID"
+            placeholder={copy.fullName.placeholder}
             value={form.fullName}
-            error={missing('fullName')}
+            error={err('fullName')}
             onChange={upd('fullName')}
           />
-          <TextField
-            name="company"
-            label="Business name"
+
+          <SelectField
+            name="country"
+            label={copy.country.label}
             required
-            placeholder="e.g. Sinar Jaya Trading"
-            value={form.company}
-            error={missing('company')}
-            onChange={upd('company')}
-          />
-          <TextField
-            name="role"
-            label="Your role"
-            placeholder="e.g. Owner, Purchasing Manager"
-            value={form.role}
-            onChange={upd('role')}
-          />
-          <TextAreaField
-            name="about"
-            label="What does your business do?"
-            placeholder="A sentence is enough — what you buy or sell, and to whom."
-            value={form.about}
-            onChange={upd('about')}
+            placeholder={copy.country.placeholder}
+            options={countries.map((c) => ({ value: c.value, label: c.label }))}
+            value={form.country}
+            error={err('country')}
+            onChange={upd('country')}
           />
 
-          <div className="flex flex-col gap-s300 sm:flex-row">
-            <TextField
-              name="city"
-              label="City"
+          <TextAreaField
+            name="address"
+            label={copy.address.label}
+            required
+            placeholder={copy.address.placeholder}
+            value={form.address}
+            error={err('address')}
+            onChange={upd('address')}
+          />
+
+          <div className="flex flex-col gap-[32px] sm:flex-row">
+            <SelectField
+              name="state"
+              label={copy.state.label}
               required
-              placeholder="Jakarta"
-              value={form.city}
-              error={missing('city')}
-              onChange={upd('city')}
+              placeholder={copy.state.placeholder}
+              options={states}
+              value={form.state}
+              error={err('state')}
+              onChange={upd('state')}
               containerClassName="flex-1"
             />
-            <SelectField
-              name="country"
-              label="Country"
+            <TextField
+              name="postal"
+              label={copy.postal.label}
               required
-              options={countries.map((c) => ({ value: c.value, label: c.label }))}
-              value={form.country}
-              onChange={upd('country')}
+              inputMode="numeric"
+              placeholder={copy.postal.placeholder}
+              value={form.postal}
+              error={err('postal')}
+              onChange={(e) => setForm((f) => ({ ...f, postal: e.target.value.replace(/\D/g, '') }))}
               containerClassName="flex-1"
             />
           </div>
 
-          <SelectField
-            name="industry"
-            label="Industry"
-            required
-            placeholder="Select an industry"
-            options={industries}
-            value={form.industry}
-            error={missing('industry')}
-            onChange={upd('industry')}
+          <TextField
+            name="referral"
+            label={copy.referral.label}
+            placeholder={copy.referral.placeholder}
+            value={form.referral}
+            onChange={upd('referral')}
           />
+
           <SelectField
-            name="employees"
-            label="Team size"
-            placeholder="Select a range"
-            options={employeeCounts}
-            value={form.employees}
-            onChange={upd('employees')}
+            name="learn"
+            label={copy.learn.label}
+            required
+            placeholder={copy.learn.placeholder}
+            options={learnOptions}
+            value={form.learn}
+            error={err('learn')}
+            onChange={upd('learn')}
           />
         </div>
 
         <div className="flex flex-col items-start justify-between gap-s300 sm:flex-row sm:items-end">
-          <div className="flex flex-col gap-s100">
-            <span className="text-xs4 text-neutral-500">{copy.wrongDetails}</span>
-            <Button variant="ghost" onClick={() => go('create-account')}>
+          <div className="flex flex-col justify-center gap-s200">
+            <p className="w-[200px] text-xs4 text-text-secondary">{copy.wrongDetails}</p>
+            <Button
+              variant="outline"
+              className="w-[142px]"
+              onClick={() => go('create-account')}
+            >
               {copy.startOver}
             </Button>
           </div>
           <Button
             className="w-full sm:w-[254px]"
-            disabled={!canSubmit}
             onClick={() => {
               setTouched(true)
               if (canSubmit) setModal(true)
@@ -171,7 +180,10 @@ export function BasicInfo({ showCreated = false }: { showCreated?: boolean }) {
           <h2 className="text-xl font-bold text-text-primary">{accountCreated.title}</h2>
           <p className="text-xs2 text-text-secondary">{accountCreated.subtitle}</p>
           <p className="text-xs3 text-neutral-500">
-            Signed up as <span className="font-bold text-text-primary">{state.email || 'you@company.com'}</span>
+            Signed up as{' '}
+            <span className="font-bold text-text-primary">
+              {state.email || 'sanders@linkzasia.com'}
+            </span>
           </p>
           <Button className="mt-2 w-[220px]" onClick={() => go('get-started')}>
             {accountCreated.cta}

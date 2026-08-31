@@ -149,9 +149,6 @@ export function Login() {
             </p>
             <OtpInput value={code} onChange={setCode} invalid={!!error} />
             {error && <p className="text-xs3 text-danger">{error}</p>}
-            <p className="rounded-s200 bg-neutral-100 px-s200 py-1.5 text-xs4 text-text-secondary">
-              Prototype: enter <span className="font-bold">123456</span> to log in.
-            </p>
             <Button className="w-full" onClick={verify} disabled={attempts <= 0}>
               {copy.submit}
             </Button>

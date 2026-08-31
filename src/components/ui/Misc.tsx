@@ -77,44 +77,59 @@ export function Alert({
   )
 }
 
-/** 6-digit verification group from the Figma "Verification group" component. */
+/**
+ * Verification group (Figma I4001:76480;4013:3707): six 64 × 64 cells,
+ * 8px gap, 8px radius, 1px #d0d5dd border, 424px total width.
+ */
 export function OtpInput({
   value,
   onChange,
   length = 6,
   invalid,
+  autoFocus,
 }: {
   value: string
   onChange: (v: string) => void
   length?: number
   invalid?: boolean
+  autoFocus?: boolean
 }) {
   const refs = useRef<(HTMLInputElement | null)[]>([])
 
   function setDigit(i: number, d: string) {
     const digits = value.padEnd(length, ' ').split('')
     digits[i] = d || ' '
-    onChange(digits.join('').replace(/ /g, ' ').trimEnd())
+    onChange(digits.join('').slice(0, length))
     if (d && i < length - 1) refs.current[i + 1]?.focus()
   }
 
+  function paste(e: React.ClipboardEvent) {
+    const text = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, length)
+    if (!text) return
+    e.preventDefault()
+    onChange(text.padEnd(length, ' ').slice(0, length))
+    refs.current[Math.min(text.length, length - 1)]?.focus()
+  }
+
   return (
-    <div className="flex gap-s200">
+    <div className="flex w-full max-w-[424px] gap-s200">
       {Array.from({ length }).map((_, i) => (
         <input
           key={i}
           ref={(el) => {
             refs.current[i] = el
           }}
+          autoFocus={autoFocus && i === 0}
           inputMode="numeric"
           maxLength={1}
           aria-label={`Digit ${i + 1}`}
           value={(value[i] ?? '').trim()}
+          onPaste={paste}
           onChange={(e) => setDigit(i, e.target.value.replace(/\D/g, ''))}
           onKeyDown={(e) => {
             if (e.key === 'Backspace' && !value[i]?.trim() && i > 0) refs.current[i - 1]?.focus()
           }}
-          className={`h-16 flex-1 rounded-s200 border bg-white text-center text-lg font-bold text-text-primary outline-none transition-colors focus:border-primary-400 ${
+          className={`aspect-square min-w-0 flex-1 rounded-s200 border bg-white px-4 py-1 text-center text-lg font-bold text-text-primary outline-none transition-colors focus:border-primary-400 ${
             invalid ? 'border-danger' : 'border-neutral-300'
           }`}
         />

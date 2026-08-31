@@ -11,10 +11,17 @@ import { support, tagline } from '../data/mock'
 export function AuthLayout({
   children,
   header,
+  nudge,
 }: {
   children: ReactNode
   /** Contents of the card's top-right corner (language picker + login/signup CTA). */
   header?: ReactNode
+  /**
+   * Per-screen offset of the form column from the card centre, in px.
+   * Several Figma frames nudge the column (e.g. OTP sits at `calc(50% - 15px)`),
+   * so each screen passes its own value to stay pixel-true.
+   */
+  nudge?: { x?: number; y?: number }
 }) {
   return (
     <div className="relative min-h-screen bg-neutral-100">
@@ -48,7 +55,15 @@ export function AuthLayout({
           <div className="px-6 pt-4 lg:hidden">
             <Logo />
           </div>
-          <div className="flex flex-1 items-center justify-center px-6 py-8 lg:px-0">
+          <div
+            className="flex flex-1 items-center justify-center px-6 py-8 lg:px-0"
+            style={{
+              transform:
+                nudge && (nudge.x || nudge.y)
+                  ? `translate(${nudge.x ?? 0}px, ${nudge.y ?? 0}px)`
+                  : undefined,
+            }}
+          >
             {children}
           </div>
         </div>

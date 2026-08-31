@@ -1,48 +1,43 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '../../components/ui/Button'
+import { Captcha } from '../../components/ui/Captcha'
 import { LanguagePicker, OtpInput } from '../../components/ui/Misc'
 import { AuthLayout } from '../../layouts/AuthLayout'
 import { createAccount, otpScreen as copy } from '../../data/mock'
 import { useFlow } from '../../prototype/flowContext'
 
-/** Figma: "Phone Email Onboarding 2 - OTP Email / OTP Phone"
- *  (nodes 4001:76466, 4001:77314) plus the error-empty variants. */
+/**
+ * Figma: "Phone Email Onboarding 2 - OTP Email" (4001:76466) and
+ * "- OTP Phone" (4001:77314).
+ *
+ * The design has no submit button — the form advances once six digits are entered.
+ * Layout: 424px column, 45px gaps between title block / digits / captcha / code info.
+ */
 export function Otp({ channel }: { channel: 'email' | 'phone' }) {
   const { go, state } = useFlow()
   const [code, setCode] = useState('')
-  const [attempts, setAttempts] = useState(3)
+  const [resendsLeft, setResendsLeft] = useState(5)
   const [error, setError] = useState('')
-  const [cooldown, setCooldown] = useState(0)
 
-  const target = channel === 'email' ? state.email || 'you@company.com' : state.phone || '+62 811 1509 265'
+  const target =
+    channel === 'email'
+      ? state.email || copy.sampleEmail
+      : state.phone || copy.samplePhone
 
-  useEffect(() => {
-    if (cooldown <= 0) return
-    const t = setTimeout(() => setCooldown((c) => c - 1), 1000)
-    return () => clearTimeout(t)
-  }, [cooldown])
-
-  /** Mocked: 123456 is the "correct" code. Nothing is sent anywhere. */
-  function verify() {
-    if (code.replace(/\s/g, '').length < 6) {
-      setError('Enter all 6 digits')
-      return
-    }
-    if (code.replace(/\s/g, '') === '123456') {
+  /** Mocked: 123456 is the accepted code. Nothing is sent anywhere. */
+  function submit(next: string) {
+    if (next.replace(/\s/g, '').length < 6) return
+    if (next.replace(/\s/g, '') === '123456') {
+      setError('')
       go('basic-info')
-      return
+    } else {
+      setError('That code is not correct. Check the code and try again.')
     }
-    const left = attempts - 1
-    setAttempts(left)
-    setError(
-      left > 0
-        ? `That code is not right. ${left} attempt${left === 1 ? '' : 's'} left.`
-        : 'Too many attempts. Request a new code.',
-    )
   }
 
   return (
     <AuthLayout
+      nudge={{ x: -15, y: 0.5 }}
       header={
         <>
           <LanguagePicker />
@@ -55,55 +50,60 @@ export function Otp({ channel }: { channel: 'email' | 'phone' }) {
         </>
       }
     >
-      <div className="flex w-full max-w-[424px] flex-col gap-s400">
-        <div className="flex flex-col gap-s200">
-          <h1 className="text-xl font-bold text-text-primary">
-            {channel === 'email' ? copy.title : copy.titlePhone}
-          </h1>
-          <p className="text-xs2 text-text-primary">
-            {copy.sentTo} <span className="font-bold">{target}</span>
+      <div className="flex w-full max-w-[424px] flex-col items-center gap-[45px]">
+        <div className="flex w-full flex-col gap-s200">
+          <h1 className="text-xl font-bold text-text-primary">{copy.title}</h1>
+          <p className="flex flex-wrap gap-s100 text-xs2 text-text-primary">
+            <span>{channel === 'email' ? copy.sentToEmail : copy.sentToPhone}</span>
+            <span className="font-bold">{target}</span>
           </p>
         </div>
 
-        <OtpInput value={code} onChange={setCode} invalid={!!error} />
+        <div className="flex w-full items-center justify-center">
+          <OtpInput
+            autoFocus
+            value={code}
+            invalid={!!error}
+            onChange={(v) => {
+              setCode(v)
+              setError('')
+              submit(v)
+            }}
+          />
+        </div>
 
-        {error && <p className="text-xs3 text-danger">{error}</p>}
+        <Captcha />
 
-        <p className="rounded-s200 bg-neutral-100 px-s200 py-1.5 text-xs4 text-text-secondary">
-          Prototype: enter <span className="font-bold">123456</span> to continue. No code is sent.
-        </p>
+        <div className="flex w-full flex-col gap-s300">
+          {error && <p className="text-center text-xs3 text-danger">{error}</p>}
 
-        <Button className="w-full" onClick={verify} disabled={attempts <= 0}>
-          {copy.verify}
-        </Button>
-
-        <div className="flex flex-col gap-s200">
-          <div className="flex flex-wrap items-center gap-s200 text-xs3">
-            <span className="text-text-secondary">{copy.codePrompt}</span>
+          <div className="flex flex-wrap items-center justify-center gap-s100">
+            <p className="text-center text-xs3 text-text-primary">{copy.codePrompt}</p>
             <button
               type="button"
-              disabled={cooldown > 0}
+              disabled={resendsLeft === 0}
               onClick={() => {
-                setCooldown(30)
-                setAttempts(3)
+                setResendsLeft((n) => Math.max(0, n - 1))
+                setCode('')
                 setError('')
               }}
-              className="font-bold text-primary-400 underline disabled:text-neutral-400 disabled:no-underline"
+              className="text-xs2 font-bold text-primary-400 underline disabled:text-neutral-400 disabled:no-underline"
             >
-              {cooldown > 0 ? `Request again in ${cooldown}s` : copy.resend}
+              {copy.resend}
             </button>
-            <span className="text-xs4 text-neutral-500">{attempts} left</span>
+            <p className="text-center text-xs3 text-neutral-500">{copy.resendLeft(resendsLeft)}</p>
           </div>
-          <div className="flex flex-wrap items-center gap-s200 text-xs3">
-            <span className="text-text-secondary">
-              {channel === 'email' ? copy.changeEmail : copy.changePhone}
-            </span>
+
+          <div className="flex flex-wrap items-center justify-center gap-s100">
+            <p className="text-center text-xs3 text-text-primary">
+              {channel === 'email' ? copy.wrongEmail : copy.wrongPhone}
+            </p>
             <button
               type="button"
               onClick={() => go('create-account')}
-              className="font-bold text-primary-400 underline"
+              className="text-xs2 font-bold text-primary-400 underline"
             >
-              {channel === 'email' ? copy.changeEmailAction : copy.changePhoneAction}
+              {channel === 'email' ? copy.changeEmail : copy.changePhone}
             </button>
           </div>
         </div>

@@ -18,6 +18,13 @@ export function ScreenSwitcher() {
     <div className="fixed right-4 bottom-4 z-[60] print:hidden">
       {open && (
         <div className="mb-2 ml-auto max-h-[70vh] w-64 overflow-auto rounded-s300 border border-neutral-200 bg-white p-2 shadow-[0_16px_40px_-12px_rgba(16,24,40,.3)]">
+          <div className="mb-2 rounded-s200 bg-primary-50 p-2">
+            <p className="text-xs4 font-bold text-primary-600">Demo credentials</p>
+            <p className="mt-0.5 text-xs4 leading-[14px] text-text-secondary">
+              Any OTP code is <span className="font-bold">123456</span>. Forms validate locally;
+              nothing is sent anywhere.
+            </p>
+          </div>
           {groups.map((g) => (
             <div key={g} className="mb-2 last:mb-0">
               <p className="px-2 py-1 text-xs4 font-bold tracking-wide text-neutral-400 uppercase">

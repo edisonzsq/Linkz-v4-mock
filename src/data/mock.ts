@@ -34,28 +34,58 @@ export const createAccount = {
   login: 'Login',
 }
 
-/* ---------- inferred copy, matching the design's voice ---------- */
+/* ---------- from Figma (nodes 4001:76466, 4001:76532) ---------- */
 export const otpScreen = {
-  title: 'Verify your email',
-  titlePhone: 'Verify your phone',
-  sentTo: 'We sent a 6-digit code to',
+  title: 'Verify Account',
+  sentToEmail: 'We’ve sent a 6-digit OTP to your email ',
+  sentToPhone: 'We’ve sent a 6-digit OTP to your phone ',
+  /** Placeholder identity used in the Figma frames. */
+  sampleEmail: 'sanders@linkzasia.com',
+  samplePhone: '(+62)811-1509-265',
   codePrompt: 'Didn’t receive the code?',
-  resend: 'Request code again',
-  changeEmail: 'Wrong email address?',
-  changeEmailAction: 'Change email',
-  changePhone: 'Wrong phone number?',
-  changePhoneAction: 'Change phone',
-  verify: 'Verify',
+  resend: 'Request code again ',
+  resendLeft: (n: number) => `(${n} left)`,
+  wrongEmail: 'Wrong email? Go back or',
+  changeEmail: 'Change email',
+  wrongPhone: 'Wrong phone? Go back or',
+  changePhone: 'Change phone',
 }
 
 export const basicInfo = {
-  title: 'Tell us about you',
-  subtitle: 'This helps us set up your catalogue and match you with the right buyers.',
+  title: 'Basic Information',
+  subtitle: 'Help us know who’s behind this account so we can personalize your experience.',
+  fullName: { label: 'Full Name', placeholder: 'Your Full Name' },
+  country: { label: 'Country', placeholder: 'Select a country' },
+  address: { label: 'Address', placeholder: ' Address' },
+  state: { label: 'State/Province', placeholder: 'Select a state', sample: 'DKI Jakarta' },
+  postal: { label: 'Postal Code', placeholder: 'Postal Code', sample: '12345' },
+  referral: { label: 'Referral (Optional)', placeholder: 'Referral Code' },
+  learn: { label: 'How did you learn about us?', placeholder: 'Select an option' },
   wrongDetails: 'Signed up with the wrong email or phone?',
-  startOver: 'Start over',
+  startOver: 'Start Over',
   submit: 'Continue',
 }
 
+export const states = [
+  { value: 'dki', label: 'DKI Jakarta' },
+  { value: 'jabar', label: 'Jawa Barat' },
+  { value: 'jateng', label: 'Jawa Tengah' },
+  { value: 'jatim', label: 'Jawa Timur' },
+  { value: 'banten', label: 'Banten' },
+  { value: 'bali', label: 'Bali' },
+  { value: 'sumut', label: 'Sumatera Utara' },
+]
+
+export const learnOptions = [
+  { value: 'friend', label: 'Friend or colleague' },
+  { value: 'social', label: 'Social media' },
+  { value: 'search', label: 'Search engine' },
+  { value: 'event', label: 'Event or exhibition' },
+  { value: 'sales', label: 'LINKZ sales team' },
+  { value: 'other', label: 'Other' },
+]
+
+/* ---------- inferred copy, matching the design's voice ---------- */
 export const accountCreated = {
   title: 'Account created',
   subtitle:
