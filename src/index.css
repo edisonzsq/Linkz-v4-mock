@@ -11,6 +11,7 @@
     sans-serif;
 
   /* primary-color/* — 400 is the brand green used across the design */
+  --color-primary-25: #f1f8f4;
   --color-primary-50: #edf5f1;
   --color-primary-100: #d6e8df;
   --color-primary-200: #a9cfbe;
@@ -52,6 +53,7 @@
   --spacing-s200: 8px;
   --spacing-s300: 16px;
   --spacing-s400: 24px;
+  --spacing-s500: 32px;
 
   /* font/size/* + font/line/height/* */
   --text-xs4: 10px;

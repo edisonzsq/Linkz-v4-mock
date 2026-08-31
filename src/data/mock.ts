@@ -204,67 +204,77 @@ export const kycSteps = [
   { id: 'review', label: 'Review & Submit' },
 ]
 
-/* ---------- in-app (Get Started dashboard, node 4001:77356) ---------- */
+/* ---------- in-app: Get Started dashboard (node 4001:77356) ---------- */
 export const currentUser = {
-  name: 'Andi Wijaya',
-  company: 'Sinar Jaya Trading',
-  email: 'andi@sinarjaya.co.id',
-  initials: 'AW',
+  /** Greeting name used in the dashboard header frame. */
+  greetingName: 'Sanders',
+  /** Profile shown in the sidebar footer. */
+  name: 'Dheana Titaura',
+  role: 'Business Owner',
+  email: 'sanders@linkzasia.com',
+  initials: 'DT',
 }
 
 export const welcomeModal = {
-  title: 'Welcome to LINKZ',
+  title: 'Welcome to LINKZ!',
   subtitle:
-    'Finish these four tasks to unlock your catalogue, invite buyers and apply for financing.',
+    'Your account is ready. You can pick up your unfinished KYC anytime from the Get Started to unlock more features.',
   cta: 'Get Started',
 }
 
 export const getStarted = {
-  title: 'Get your account ready',
-  subtitle: 'Complete each step to start trading and unlock working-capital financing.',
+  greeting: (name: string) => `Welcome, ${name}`,
+  title: 'Get Started with LINKZ',
+  subtitleLine1: 'Set up your account and start getting the most out of LINKZ.',
+  subtitleLine2: 'This page will be available until you complete all the steps.',
+  progress: (done: number, total: number) => `${done}/${total} Completed`,
+  notStarted: 'Not Started',
+  completed: 'Completed',
   tasks: [
     {
       id: 'kyc',
-      icon: 'building',
-      title: 'Complete your business profile',
-      description: 'Tell us who you are and what you trade so we can verify your account.',
-      cta: 'Start KYC',
-      done: false,
+      title: 'Verify Your Business',
+      description:
+        'Submit your business details to enable payments, financing, and other key features.',
+      cta: 'Verify Business',
     },
     {
-      id: 'bank',
-      icon: 'bank',
-      title: 'Add a bank account',
-      description: 'Where settlements and financing disbursements will land.',
-      cta: 'Add account',
-      done: false,
+      id: 'data',
+      title: 'Upload Your Business Data',
+      description: 'Add products, inventory, or customer data to get started faster on LINKZ.',
+      cta: 'Extract Data',
     },
     {
-      id: 'catalogue',
-      icon: 'file-check',
-      title: 'Upload your catalogue',
-      description: 'Import a spreadsheet of SKUs and prices, or add products by hand.',
-      cta: 'Upload',
-      done: false,
+      id: 'order',
+      title: 'Create Your First Order',
+      description:
+        'Experience how ordering works on LINKZ from request to payment in one flow.',
+      cta: 'Create Order',
     },
     {
-      id: 'invite',
-      icon: 'mail',
-      title: 'Invite your buyers',
-      description: 'Send an invite so partners can order straight from your catalogue.',
-      cta: 'Invite',
-      done: false,
+      id: 'team',
+      title: 'Invite Your Team',
+      description:
+        'Collaborate with your team by assigning roles and managing access together.',
+      cta: 'Invite Teammates',
     },
   ],
 }
 
 export const sidebarNav = [
-  { id: 'home', icon: 'building', label: 'Home' },
-  { id: 'catalogue', icon: 'file-check', label: 'Catalogue' },
-  { id: 'orders', icon: 'mail', label: 'Orders' },
-  { id: 'financing', icon: 'bank', label: 'Financing' },
-  { id: 'partners', icon: 'phone', label: 'Partners' },
+  { id: 'get-started', icon: 'house', label: 'Get Started' },
+  { id: 'order', icon: 'file-check', label: 'Order' },
+  { id: 'catalogue', icon: 'book', label: 'Catalogue' },
+  { id: 'manage', icon: 'user-cog', label: 'Manage' },
+  { id: 'finance', icon: 'banknote', label: 'Finance' },
 ]
+
+export const sidebarFooter = {
+  supportLabel: 'Support',
+  email: 'support@linkzasia.com',
+  phone: '(62)811-1509-265',
+  logout: 'Logout',
+}
 
 export const kycSubmitted = {
   title: 'Your details are with our team',

@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from 'react'
 import { Icon } from '../components/ui/Icon'
+import { LanguagePicker } from '../components/ui/Misc'
 import { Logo } from '../components/ui/Logo'
-import { currentUser, sidebarNav } from '../data/mock'
+import { currentUser, sidebarFooter, sidebarNav } from '../data/mock'
 import { useFlow } from '../prototype/flowContext'
 
 /**
@@ -49,13 +50,43 @@ export function AppShell({
             </button>
           ))}
         </nav>
-        <button
-          type="button"
-          onClick={() => go('login')}
-          className="m-2 rounded-s200 px-2 py-2 text-left text-xs3 text-neutral-500 hover:bg-neutral-100"
-        >
-          Sign out
-        </button>
+        <div className="flex flex-col gap-s200 border-t border-neutral-200 p-2">
+          <div className="px-2 py-1">
+            <p className="text-xs4 font-bold text-neutral-500">{sidebarFooter.supportLabel}</p>
+            <a
+              href={`mailto:${sidebarFooter.email}`}
+              className="mt-0.5 block truncate text-xs4 text-text-secondary underline"
+            >
+              {sidebarFooter.email}
+            </a>
+            <a
+              href={`tel:${sidebarFooter.phone}`}
+              className="block truncate text-xs4 text-text-secondary underline"
+            >
+              {sidebarFooter.phone}
+            </a>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => go('login')}
+            className="rounded-s200 px-2 py-2 text-left text-xs3 text-text-secondary hover:bg-neutral-100"
+          >
+            {sidebarFooter.logout}
+          </button>
+
+          <div className="flex items-center gap-s200 border-t border-neutral-200 px-2 pt-2">
+            <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary-400 text-xs4 font-bold text-white">
+              {currentUser.initials}
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-xs4 font-semibold text-text-primary">
+                {currentUser.name}
+              </span>
+              <span className="block truncate text-xs4 text-neutral-500">{currentUser.role}</span>
+            </span>
+          </div>
+        </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
@@ -70,34 +101,12 @@ export function AppShell({
             <Icon name="menu" className="size-4" />
           </button>
 
-          <div className="hidden min-w-0 flex-1 items-center gap-s200 rounded-s200 border border-neutral-300 px-s200 py-1.5 sm:flex sm:max-w-[320px]">
-            <Icon name="search" className="size-4 text-neutral-400" />
-            <input
-              placeholder="Search orders, products, partners"
-              className="min-w-0 flex-1 bg-transparent text-xs3 outline-none placeholder:text-neutral-400"
-            />
+          <div className="lg:hidden">
+            <Logo />
           </div>
 
           <div className="ml-auto flex items-center gap-s300">
-            <button
-              type="button"
-              aria-label="Notifications"
-              className="relative grid size-8 place-items-center rounded-full hover:bg-neutral-100"
-            >
-              <Icon name="bell" className="size-4 text-text-secondary" />
-              <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-danger" />
-            </button>
-            <div className="flex items-center gap-s200">
-              <span className="grid size-8 place-items-center rounded-full bg-primary-400 text-xs4 font-bold text-white">
-                {currentUser.initials}
-              </span>
-              <span className="hidden sm:block">
-                <span className="block text-xs3 font-semibold text-text-primary">
-                  {currentUser.name}
-                </span>
-                <span className="block text-xs4 text-neutral-500">{currentUser.company}</span>
-              </span>
-            </div>
+            <LanguagePicker />
           </div>
         </header>
 
