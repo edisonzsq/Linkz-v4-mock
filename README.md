@@ -19,6 +19,37 @@ npm run preview  # serve the production build
 npm run lint
 ```
 
+## Deploy to Vercel
+
+The prototype is a static SPA — no server, no environment variables, no secrets.
+
+**From the dashboard:** New Project → import `edisonzsq/Linkz-v4-landing-mock` → pick the
+branch → Deploy. Vercel detects Vite and reads `vercel.json`; no settings to change.
+
+**From the CLI:**
+
+```bash
+npm i -g vercel
+vercel          # preview deployment
+vercel --prod   # production
+```
+
+`vercel.json` pins the parts worth pinning:
+
+| Setting | Value | Why |
+| --- | --- | --- |
+| `framework` | `vite` | skips auto-detection |
+| `installCommand` | `npm ci` | reproducible install from `package-lock.json` |
+| `buildCommand` / `outputDirectory` | `npm run build` → `dist` | typecheck runs before the build |
+| `rewrites` | `/(.*)` → `/index.html` | any URL loads the app (Vercel serves real files first, so `/assets/*` is untouched) |
+| `headers` | immutable cache on `/assets/*` | filenames are content-hashed by Vite |
+
+`engines.node` is set to `22.x` because Vite 8 requires Node `^20.19 || >=22.12`.
+
+Fonts are self-hosted through `@fontsource-variable`, so the deployed page makes **no
+third-party requests at runtime** — it renders identically behind a corporate proxy or on
+a locked-down network.
+
 ## Walking the prototype
 
 A **screen switcher** sits in the bottom-right corner — jump to any screen without
