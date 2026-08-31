@@ -8,7 +8,8 @@ import { Login } from './screens/auth/Login'
 import { Benefit } from './screens/auth/Benefit'
 import { Otp } from './screens/auth/Otp'
 import { GetStarted } from './screens/app/GetStarted'
-import { KycBankAccount, KycBusinessOverview, KycSubmitted, KycTwoFactor } from './screens/app/Kyc'
+import { KycBankAccount, KycSubmitted, KycTwoFactor } from './screens/app/Kyc'
+import { KycBusinessOverview } from './screens/app/KycBusinessOverview'
 
 function CurrentScreen() {
   const { screen } = useFlow()

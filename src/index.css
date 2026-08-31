@@ -12,12 +12,12 @@
 
   /* primary-color/* — 400 is the brand green used across the design */
   --color-primary-25: #f1f8f4;
-  --color-primary-50: #edf5f1;
+  --color-primary-50: #cfe5da;
   --color-primary-100: #d6e8df;
   --color-primary-200: #a9cfbe;
   --color-primary-300: #75b096;
   --color-primary-400: #499873;
-  --color-primary-500: #3d8163;
+  --color-primary-500: #408565;
   --color-primary-600: #2f6a50;
 
   /* neutral-color/* */
@@ -66,6 +66,8 @@
   --text-xs--line-height: 24px;
   --text-xs1: 16px;
   --text-xs1--line-height: 24px;
+  --text-md: 20px;
+  --text-md--line-height: 28px;
   --text-lg: 24px;
   --text-lg--line-height: 32px;
   --text-xl: 30px;

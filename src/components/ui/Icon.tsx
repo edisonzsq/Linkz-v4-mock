@@ -174,6 +174,12 @@ const paths: Record<string, React.ReactNode> = {
       <path d="M4.2 8h.01M11.8 8h.01" />
     </>
   ),
+  lock: (
+    <>
+      <rect x="3.4" y="7" width="9.2" height="6.6" rx="1.2" />
+      <path d="M5.6 7V5.2a2.4 2.4 0 0 1 4.8 0V7" />
+    </>
+  ),
   edit: (
     <>
       <path d="M11.2 2.6a1.7 1.7 0 0 1 2.4 2.4L5.5 13 2.5 13.5l.5-3Z" />

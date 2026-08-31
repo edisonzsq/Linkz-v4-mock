@@ -126,32 +126,57 @@ Transcribed from the Figma variables, keeping Figma's names so they can be trace
 
 Read this before comparing side by side with Figma.
 
-**Assets could not be exported.** The Figma MCP allows 6 tool calls per month on a
-View seat, and the build environment blocks outbound requests to `figma.com`, so no
-image or icon asset could be downloaded. These are stand-ins drawn to the **same
-dimensions as the design**, and should be swapped for the real exports:
+### Screen-by-screen status
+
+| Screen | Figma node | Copy | Layout |
+| --- | --- | --- | --- |
+| Create Account | `4001:76309` | ✅ from Figma | ✅ verified against frame |
+| OTP (email / phone) | `4001:76466`, `4001:77314` | ✅ from Figma | ✅ verified against frame |
+| Basic Information | `4001:76532` | ✅ from Figma | ✅ verified against frame |
+| Benefit / KYC intro | `4001:76792` | ✅ from Figma | ✅ verified against frame |
+| Get Started dashboard | `4001:77356` | ✅ from Figma | ✅ verified against frame |
+| KYC — Business Overview | `4001:84233` | ✅ from Figma | ✅ verified against frame |
+| Account Created modal | `4001:76718` | ⚠️ placeholder | shell correct |
+| Login (phone / email) | `4001:77661`, `4001:77931` | ⚠️ placeholder | shell correct |
+| Google SSO | `4001:78216`, `4001:78300` | ⚠️ placeholder | approximate |
+| KYC — Bank Account | `4001:84939` | ⚠️ placeholder | ✅ correct shell |
+| KYC — 2FA | `4001:85492` | ⚠️ placeholder | ✅ correct shell |
+| KYC — Submitted | `4001:77400` | ⚠️ placeholder | approximate |
+
+Screens marked ⚠️ use copy written to match the design's voice; their Figma text has
+not been read yet. `src/data/mock.ts` marks which strings came from the file.
+
+### Assets could not be exported
+
+The build environment blocks outbound requests to `figma.com` by **organization
+egress policy** (`403 CONNECT tunnel failed`), and no Figma MCP tool returns image
+bytes as text — so no logo, icon or photograph could be downloaded. These are
+stand-ins drawn to the **same dimensions as the design** and should be swapped for
+the real exports:
 
 | Placeholder | Real asset | Designed box |
 | --- | --- | --- |
 | `ui/Logo.tsx` | LINKZ wordmark SVG (`4001:76332`) | 67.31 × 32 |
 | `BrandArtwork.tsx` → `BlockIllustration` | `hand-climbing-wooden-blocks…` photo (`4001:76347`) | 721.41 × 481 |
-| `ui/Icon.tsx` | exported icon set | 16 × 16 |
-| `GoogleIcon` | "Social Icon" export | 16 × 16 |
+| `GetStarted.tsx` → `DashboardIllustration` | "Dashboard Card Icons" (`4001:77361`) | 142 × 142 |
+| `GetStarted.tsx` → `WelcomeArt` | modal "Welcome Image" | 500 × 308 |
+| `ui/Icon.tsx`, `GoogleIcon`, `Captcha` Cloudflare mark | exported icon set | 16 × 16 / 75 × 25 |
 
-The concentric rings in the brand panel *are* faithful — reproduced at their designed
-diameters (796.25 / 653.33 / 510.42 / 367.5 / 224.58) and opacities.
+**To fix:** export those layers from Figma (select layer → Export), drop the files
+into `src/assets/figma/`, and replace the placeholder components with `<img>` tags at
+the same dimensions. The concentric ring artwork is already faithful — reproduced at
+its designed diameters (796.25 / 653.33 / 510.42 / 367.5 / 224.58) and opacities.
 
-**Copy.** `Create Account` copy, the tagline, the support details and the legal links
-were read from the Figma file and are exact. The other screens' text could not be read
-before the MCP quota ran out, so it is written to match the design's voice — treat it
-as placeholder. `src/data/mock.ts` marks which is which.
+### Coverage
 
-**Coverage.** The Figma page holds ~180 frames including every error and mobile variant.
-This prototype implements the primary flows and their key states (empty, filled,
-validation error, attempts-remaining, code-sent, success). It does not reproduce every
-individual variant frame.
+The Figma page holds 159 frames excluding flow-strip annotations: 71 desktop,
+71 mobile, 3 email/WhatsApp templates and 14 loose components. This prototype
+implements the primary desktop flows. Not yet built: the ~20 error/empty variant
+frames, the SSO-specific onboarding frames, the email/WhatsApp templates, and the
+mobile-specific frames (the app is responsive, but it is not a transcription of the
+375px designs).
 
-**Layout accuracy.** The auth shell is transcribed from the Figma geometry: card inset
-`left: calc(25% + 43px)`, `right: 16px`, height 829, radius 16; brand column 281 wide at
-`left: 100px`; 32px controls, 8px radius, 6px buttons. Below `lg` the brand column drops
-and the logo moves into the card, matching the 375px mobile frames.
+### Design tokens
+
+Tokens are transcribed from the Figma variables and keep Figma's names, so any value
+can be traced back — see the `@theme` block at the top of `src/index.css`.

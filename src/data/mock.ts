@@ -158,18 +158,6 @@ export const industries = [
   { value: 'other', label: 'Other (please specify)' },
 ]
 
-export const businessTypes = [
-  {
-    value: 'personal',
-    label: 'Personal / Sole proprietor',
-    description: 'Trading under your own name, no company registration yet.',
-  },
-  {
-    value: 'established',
-    label: 'Established business',
-    description: 'Registered entity with an NPWP / business licence.',
-  },
-]
 
 export const banks = [
   { value: 'bca', label: 'Bank Central Asia (BCA)' },
@@ -181,27 +169,87 @@ export const banks = [
   { value: 'danamon', label: 'Bank Danamon' },
 ]
 
-export const employeeCounts = [
-  { value: '1-5', label: '1–5 employees' },
-  { value: '6-20', label: '6–20 employees' },
-  { value: '21-50', label: '21–50 employees' },
-  { value: '51-200', label: '51–200 employees' },
+
+
+/* ---------- KYC (nodes 4001:84233, 4001:84868, 4001:84939) ---------- */
+export const kycNav = {
+  progressLabel: 'Verification progress',
+  afterKyc: 'After KYC',
+  sections: [
+    { id: 'business', label: 'Business Overview' },
+    { id: 'bank', label: 'Bank Account Details' },
+  ],
+  afterItems: [{ id: '2fa', label: '2-Factor Authentication' }],
+  inProgress: 'In Progress',
+  skipNote: 'If you skip, everything you’ve filled in will be cleared.',
+  skip: 'Skip for now',
+}
+
+export const kycBusiness = {
+  sectionLabel: 'KYC Section 1 of 2',
+  title: 'Business Overview',
+  continueCta: 'Continue',
+  intro: 'Tell us about your business. This determines which documents we’ll need from you.',
+  uploadAlert: {
+    prefix: 'All uploads accept',
+    formats: ' JPEG, PNG, PDF, DOC',
+    middle: ' · max ',
+    size: '10 MB',
+    suffix: '. Names must match across your KTP, NPWP, and bank account.',
+  },
+  fields: {
+    registration: {
+      label: 'Company registration',
+      hint: 'Determines which documents needed to complete verification.',
+      value: 'Personal Business (no Deed of Establishment)',
+    },
+    companyName: {
+      label: 'Company name',
+      hint: 'The name you operate under. ',
+      placeholder: 'Type in company name',
+      help: 'You can use your own name if you don’t have a separate company name.',
+    },
+    industry: {
+      label: 'Industry',
+      hint: 'The primary sector your business operates in.',
+      placeholder: 'Choose the business industry',
+    },
+    companySize: {
+      label: 'Company size',
+      hint: 'The approximate number of people working in your business.',
+      placeholder: 'Select a range',
+    },
+    address: {
+      label: 'Business Address',
+      hint: 'The main address where your business operates.',
+      placeholder: 'Type in company address',
+      state: 'State/Province',
+      postal: 'Postal Code',
+    },
+  },
+  uploads: [
+    { id: 'ktp', label: 'Personal ID', hint: 'Your government-issued identity card.' },
+    { id: 'npwp', label: 'Personal NPWP', hint: 'Your personal tax identification number.' },
+    { id: 'nib', label: 'Personal NIB', hint: 'Your business registration number.' },
+  ],
+  uploadCta: 'Upload File',
+  uploadHint: 'JPEG, PNG, PDF, DOC · Max 10 MB',
+}
+
+export const registrationTypes = [
+  { value: 'personal', label: 'Personal Business (no Deed of Establishment)' },
+  { value: 'cv', label: 'CV (Commanditaire Vennootschap)' },
+  { value: 'pt', label: 'PT (Perseroan Terbatas)' },
+  { value: 'pt-perorangan', label: 'PT Perorangan' },
+  { value: 'firma', label: 'Firma' },
+]
+
+export const companySizes = [
+  { value: '1-5', label: '1 - 5' },
+  { value: '6-20', label: '6 - 20' },
+  { value: '21-50', label: '21 - 50' },
+  { value: '51-200', label: '51 - 200' },
   { value: '200+', label: 'More than 200' },
-]
-
-export const monthlyRevenue = [
-  { value: '<100m', label: 'Under Rp 100 million' },
-  { value: '100-500m', label: 'Rp 100–500 million' },
-  { value: '500m-1b', label: 'Rp 500 million – 1 billion' },
-  { value: '1-5b', label: 'Rp 1–5 billion' },
-  { value: '5b+', label: 'Above Rp 5 billion' },
-]
-
-export const kycSteps = [
-  { id: 'business', label: 'Business Overview' },
-  { id: 'bank', label: 'Bank Account Details' },
-  { id: '2fa', label: 'Two-Factor Authentication' },
-  { id: 'review', label: 'Review & Submit' },
 ]
 
 /* ---------- in-app: Get Started dashboard (node 4001:77356) ---------- */
