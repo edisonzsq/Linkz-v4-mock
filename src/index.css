@@ -1,94 +1,89 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/plus-jakarta-sans';
 
+/**
+ * Design tokens transcribed from the Linkz v4 Figma file
+ * (file 9aWtR6gPo1PTqt1LbGr31g, page "1. Sign-Up & Login").
+ * Names mirror the Figma variable names so they can be traced back.
+ */
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', ui-sans-serif, system-ui,
+    sans-serif;
 
-  /* Brand */
-  --color-ink-50: #f5f7fa;
-  --color-ink-100: #e9edf4;
-  --color-ink-200: #ced7e6;
-  --color-ink-300: #a3b2cb;
-  --color-ink-400: #7186a8;
-  --color-ink-500: #4f6488;
-  --color-ink-600: #37496b;
-  --color-ink-700: #24344f;
-  --color-ink-800: #17233a;
-  --color-ink-900: #0d1728;
-  --color-ink-950: #070e1a;
+  /* primary-color/* — 400 is the brand green used across the design */
+  --color-primary-50: #edf5f1;
+  --color-primary-100: #d6e8df;
+  --color-primary-200: #a9cfbe;
+  --color-primary-300: #75b096;
+  --color-primary-400: #499873;
+  --color-primary-500: #3d8163;
+  --color-primary-600: #2f6a50;
 
-  --color-brand-50: #eef2ff;
-  --color-brand-100: #e0e7ff;
-  --color-brand-200: #c5cfff;
-  --color-brand-300: #9fb0ff;
-  --color-brand-400: #7b8cff;
-  --color-brand-500: #4f63ff;
-  --color-brand-600: #3742e0;
-  --color-brand-700: #2b33b4;
-  --color-brand-800: #232a8c;
-  --color-brand-900: #1d2470;
+  /* neutral-color/* */
+  --color-neutral-25: #fcfcfd;
+  --color-neutral-50: #f9fafb;
+  --color-neutral-100: #f2f4f7;
+  --color-neutral-200: #eaecf0;
+  --color-neutral-300: #d0d5dd;
+  --color-neutral-400: #98a2b3;
+  --color-neutral-500: #667085;
+  --color-neutral-600: #475467;
+  --color-neutral-700: #344054;
+  --color-neutral-800: #1d2939;
+  --color-neutral-900: #101828;
 
-  --color-signal-400: #34e0a1;
-  --color-signal-500: #12c98a;
-  --color-signal-600: #0aa572;
+  /* text-color/* */
+  --color-text-primary: #101828;
+  --color-text-secondary: #475467;
 
-  --color-amber-brand: #ffb020;
+  /* semantic */
+  --color-danger: #c31d1d;
+  --color-danger-bg: #fef3f2;
+  --color-warning: #b54708;
+  --color-warning-bg: #fffaeb;
+  --color-success: #027a48;
+  --color-success-bg: #ecfdf3;
 
-  --radius-4xl: 2rem;
+  /* spacings/* */
+  --spacing-s100: 4px;
+  --spacing-s200: 8px;
+  --spacing-s300: 16px;
+  --spacing-s400: 24px;
+
+  /* font/size/* + font/line/height/* */
+  --text-xs4: 10px;
+  --text-xs4--line-height: 14px;
+  --text-xs3: 12px;
+  --text-xs3--line-height: 16px;
+  --text-xs2: 14px;
+  --text-xs2--line-height: 20px;
+  --text-xs1: 16px;
+  --text-xs1--line-height: 24px;
+  --text-lg: 24px;
+  --text-lg--line-height: 32px;
+  --text-xl: 30px;
+  --text-xl--line-height: 38px;
 }
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-    -webkit-text-size-adjust: 100%;
-  }
-
   body {
-    @apply bg-white font-sans text-ink-800 antialiased;
-  }
-
-  ::selection {
-    @apply bg-brand-500/20;
+    @apply bg-neutral-100 font-sans text-xs3 text-text-primary antialiased;
   }
 
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-brand-500;
+    @apply outline-2 outline-offset-1 outline-primary-400;
   }
 }
 
 @layer utilities {
-  .container-page {
-    @apply mx-auto w-full max-w-[1200px] px-5 sm:px-8;
+  /* Tagline in the left brand panel carries a soft drop shadow in Figma */
+  .text-shadow-tagline {
+    text-shadow: 4px 4px 6px rgb(0 0 0 / 0.16);
   }
 
-  /* Faint blueprint grid used behind the hero + dark sections */
-  .bg-grid {
-    background-image:
-      linear-gradient(to right, color-mix(in oklab, currentColor 8%, transparent) 1px, transparent 1px),
-      linear-gradient(to bottom, color-mix(in oklab, currentColor 8%, transparent) 1px, transparent 1px);
-    background-size: 56px 56px;
-  }
-
-  .mask-fade-b {
-    mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
-  }
-
-  .marquee-track {
-    animation: marquee 38s linear infinite;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .marquee-track {
-      animation: none;
-    }
-  }
-}
-
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
+  .no-spinner::-webkit-outer-spin-button,
+  .no-spinner::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 }

@@ -1,105 +1,175 @@
-type IconProps = {
-  name: string
-  className?: string
-}
+import type { SVGProps } from 'react'
 
-/** Inline stroke icons — no icon library dependency. */
+/**
+ * Inline stroke icons.
+ *
+ * NOTE: the Figma file exports its own icon SVGs, but this environment could not
+ * download them (see README → "Assets"). These are visually equivalent stand-ins
+ * drawn at the same 16px box the design uses; swap them for the real exports when
+ * the Figma assets are available.
+ */
 const paths: Record<string, React.ReactNode> = {
-  catalogue: (
+  globe: (
     <>
-      <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10a2 2 0 0 1 2 2 2 2 0 0 1 2-2h4.5A1.5 1.5 0 0 1 20 5.5v11a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 0 0-2 2 2 2 0 0 0-2-2H5.5A1.5 1.5 0 0 1 4 16.5Z" />
-      <path d="M12 6v14" />
+      <circle cx="8" cy="8" r="6.5" />
+      <path d="M1.5 8h13" />
+      <path d="M8 1.5c1.7 1.8 2.6 4 2.6 6.5S9.7 12.7 8 14.5C6.3 12.7 5.4 10.5 5.4 8S6.3 3.3 8 1.5Z" />
     </>
   ),
-  orders: (
+  'chevron-down': <path d="m4 6 4 4 4-4" />,
+  'chevron-up': <path d="m4 10 4-4 4 4" />,
+  'chevron-left': <path d="m10 4-4 4 4 4" />,
+  'chevron-right': <path d="m6 4 4 4-4 4" />,
+  'arrow-left': (
     <>
-      <path d="M6 3.5h9l4 4V19a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 19V5a1.5 1.5 0 0 1 1-1.5Z" />
-      <path d="M14.5 3.5V8H19" />
-      <path d="m8.5 14 2 2 4-4.5" />
+      <path d="M13 8H3" />
+      <path d="m7 4-4 4 4 4" />
     </>
   ),
-  inventory: (
+  check: <path d="m3 8.5 3.2 3.2L13 5" />,
+  x: (
     <>
-      <path d="M3.5 8.5 12 4l8.5 4.5v7L12 20l-8.5-4.5Z" />
-      <path d="M3.5 8.5 12 13l8.5-4.5M12 13v7" />
+      <path d="m4 4 8 8" />
+      <path d="M12 4 4 12" />
     </>
   ),
-  partners: (
+  plus: (
     <>
-      <circle cx="8.5" cy="8" r="3" />
-      <circle cx="16.5" cy="10.5" r="2.5" />
-      <path d="M3.5 19c0-2.6 2.2-4.5 5-4.5s5 1.9 5 4.5" />
-      <path d="M15 14.6c2.9-.4 5.5 1.2 5.5 4.4" />
+      <path d="M8 3v10" />
+      <path d="M3 8h10" />
     </>
   ),
-  automation: (
+  info: (
     <>
-      <path d="M13 3 5.5 13H11l-1 8 7.5-10H12Z" />
+      <circle cx="8" cy="8" r="6.5" />
+      <path d="M8 7.2v4" />
+      <path d="M8 4.9h.01" />
     </>
   ),
-  insights: (
+  'alert-circle': (
     <>
-      <path d="M4 20V4" />
-      <path d="M4 20h16" />
-      <path d="m7.5 15 3.5-4 3 2.5 4.5-6" />
+      <circle cx="8" cy="8" r="6.5" />
+      <path d="M8 4.8v3.6" />
+      <path d="M8 11.2h.01" />
     </>
   ),
-  check: <path d="m5 12.5 4.5 4.5L19 7" />,
-  arrowRight: (
+  shield: (
     <>
-      <path d="M4.5 12h14" />
-      <path d="m13 6.5 5.5 5.5-5.5 5.5" />
+      <path d="M8 1.6 13.2 3.5v4.2c0 2.9-2.1 5.2-5.2 6.1-3.1-.9-5.2-3.2-5.2-6.1V3.5Z" />
+      <path d="m5.9 7.9 1.4 1.4 2.8-2.8" />
     </>
   ),
-  chevronDown: <path d="m6 9.5 6 6 6-6" />,
-  sparkle: (
+  upload: (
     <>
-      <path d="M12 3.5 13.8 9 19.5 10.8 13.8 12.6 12 18.1 10.2 12.6 4.5 10.8 10.2 9Z" />
-      <path d="M18.5 16.5 19.3 18.7 21.5 19.5 19.3 20.3 18.5 22.5 17.7 20.3 15.5 19.5 17.7 18.7Z" />
+      <path d="M2.5 10.5v2a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-2" />
+      <path d="M8 2.5v7.5" />
+      <path d="m4.8 5.7 3.2-3.2 3.2 3.2" />
+    </>
+  ),
+  mail: (
+    <>
+      <rect x="1.8" y="3.2" width="12.4" height="9.6" rx="1.4" />
+      <path d="m2.4 4.2 5.6 4 5.6-4" />
+    </>
+  ),
+  phone: (
+    <path d="M5.4 2.3 6.7 5 5.4 6.3a8.6 8.6 0 0 0 4.3 4.3L11 9.3l2.7 1.3v2.1a1 1 0 0 1-1.1 1A11.4 11.4 0 0 1 2.3 3.4a1 1 0 0 1 1-1.1Z" />
+  ),
+  building: (
+    <>
+      <path d="M2.5 13.5h11" />
+      <path d="M3.8 13.5V3.2a.7.7 0 0 1 .7-.7h5a.7.7 0 0 1 .7.7v10.3" />
+      <path d="M10.2 13.5V6.3h1.8a.7.7 0 0 1 .7.7v6.5" />
+      <path d="M5.8 5h2M5.8 7.5h2M5.8 10h2" />
+    </>
+  ),
+  bank: (
+    <>
+      <path d="m8 1.9 5.8 3.1H2.2Z" />
+      <path d="M3.7 6.6v5.1M6.6 6.6v5.1M9.4 6.6v5.1M12.3 6.6v5.1" />
+      <path d="M2.2 13.5h11.6" />
+    </>
+  ),
+  'file-check': (
+    <>
+      <path d="M9 1.8H4.6a1 1 0 0 0-1 1v10.4a1 1 0 0 0 1 1h6.8a1 1 0 0 0 1-1V5.2Z" />
+      <path d="M9 1.8v3.4h3.4" />
+      <path d="m6 9.6 1.4 1.4 2.6-2.8" />
+    </>
+  ),
+  bell: (
+    <>
+      <path d="M4 6.6a4 4 0 1 1 8 0c0 3 1.2 4.1 1.2 4.1H2.8S4 9.6 4 6.6Z" />
+      <path d="M6.6 13a1.6 1.6 0 0 0 2.8 0" />
+    </>
+  ),
+  search: (
+    <>
+      <circle cx="7.2" cy="7.2" r="4.7" />
+      <path d="m10.8 10.8 2.7 2.7" />
     </>
   ),
   menu: (
     <>
-      <path d="M4 7h16" />
-      <path d="M4 12h16" />
-      <path d="M4 17h16" />
+      <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" />
     </>
   ),
-  close: (
+  clock: (
     <>
-      <path d="m6 6 12 12" />
-      <path d="M18 6 6 18" />
+      <circle cx="8" cy="8" r="6.3" />
+      <path d="M8 4.5V8l2.4 1.4" />
     </>
   ),
-  bolt: <path d="M13 3 5.5 13H11l-1 8 7.5-10H12Z" />,
-  shield: (
+  edit: (
     <>
-      <path d="M12 3.5 19 6v6c0 4-3 7.2-7 8.5-4-1.3-7-4.5-7-8.5V6Z" />
-      <path d="m9 12 2 2 4-4" />
-    </>
-  ),
-  plug: (
-    <>
-      <path d="M9 3v5M15 3v5" />
-      <path d="M6.5 8h11v3a5.5 5.5 0 0 1-11 0Z" />
-      <path d="M12 16.5V21" />
+      <path d="M11.2 2.6a1.7 1.7 0 0 1 2.4 2.4L5.5 13 2.5 13.5l.5-3Z" />
     </>
   ),
 }
 
-export function Icon({ name, className = 'size-5' }: IconProps) {
+export function Icon({
+  name,
+  className = 'size-4',
+  strokeWidth = 1.5,
+  ...rest
+}: { name: keyof typeof paths | string; className?: string } & SVGProps<SVGSVGElement>) {
   return (
     <svg
-      viewBox="0 0 24 24"
+      viewBox="0 0 16 16"
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.6}
+      strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
       className={className}
       aria-hidden="true"
+      {...rest}
     >
       {paths[name] ?? null}
+    </svg>
+  )
+}
+
+/** Google's mark, drawn inline (the design uses an exported "Social Icon" asset). */
+export function GoogleIcon({ className = 'size-4' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
+      <path
+        fill="#4285F4"
+        d="M45.1 24.5c0-1.6-.1-3.2-.4-4.7H24v8.9h11.8c-.5 2.7-2 5.1-4.4 6.7v5.5h7.1c4.2-3.8 6.6-9.5 6.6-16.4Z"
+      />
+      <path
+        fill="#34A853"
+        d="M24 46c5.9 0 10.9-2 14.5-5.3l-7.1-5.5c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.5-3.8-12.2-9H4.5v5.7C8.1 41.2 15.5 46 24 46Z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M11.8 28.3c-.4-1.3-.7-2.7-.7-4.3s.3-3 .7-4.3v-5.7H4.5A22 22 0 0 0 2 24c0 3.6.9 6.9 2.5 9.9l7.3-5.6Z"
+      />
+      <path
+        fill="#EA4335"
+        d="M24 10.7c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 4.1 29.9 2 24 2 15.5 2 8.1 6.8 4.5 13.8l7.3 5.7c1.7-5.2 6.5-8.8 12.2-8.8Z"
+      />
     </svg>
   )
 }
