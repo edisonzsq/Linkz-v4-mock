@@ -59,6 +59,9 @@ export const emptyShared: SharedData = {
   products: [],
 }
 
+/** Success popups: KYC complete, 2FA complete, first-time onboarding. */
+export type PopupId = 'kyc-complete' | 'two-factor-complete' | 'welcome'
+
 export type SessionValue = {
   /** null until someone signs in. */
   user: DemoUser | null
@@ -69,6 +72,23 @@ export type SessionValue = {
   add: (collection: Collection, fields: Record<string, string | boolean>) => void
   /** Clears the shared store — the reset button on the demo-data panel. */
   clearShared: () => void
+
+  /**
+   * Success popups queued by things that just happened (2FA enabled, KYC
+   * submitted). A queue rather than a single slot: finishing 2FA and submitting
+   * KYC happen back to back, and both deserve to be seen — they show in turn.
+   */
+  pendingPopups: PopupId[]
+  notify: (id: PopupId) => void
+  /** Drops the popup currently showing and reveals the next one, if any. */
+  dismissPopup: () => void
+
+  /**
+   * Popups already shown to this user. Backs the first-entry welcome, which
+   * must appear once regardless of which path the user took to get in.
+   */
+  hasSeen: (id: PopupId) => boolean
+  markSeen: (id: PopupId) => void
 }
 
 export const SessionContext = createContext<SessionValue | null>(null)

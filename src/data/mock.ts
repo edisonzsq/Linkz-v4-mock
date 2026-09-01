@@ -234,6 +234,12 @@ export const kycBusiness = {
   ],
   uploadCta: 'Upload File',
   uploadHint: 'JPEG, PNG, PDF, DOC · Max 10 MB',
+  registrationWarning: {
+    title: 'Change business registration?',
+    body: 'Changing your business registration clears everything you have filled in on this form, because a different registration needs a different set of documents. You will need to enter your details again.',
+    confirm: 'Change and clear',
+    cancel: 'Keep my answers',
+  },
 }
 
 /**
@@ -311,6 +317,31 @@ export const getStarted = {
     },
   ],
 }
+
+/**
+ * Success popups (KYC complete, 2FA complete, first entry). All three auto-close
+ * after ~7s and carry a dismiss icon — see `SuccessPopup`.
+ */
+export const successPopups = {
+  'kyc-complete': {
+    icon: 'circle-check',
+    title: 'KYC submitted',
+    body: 'Your business details are with our team. Verification usually takes one working day, and we will email you as soon as it is done.',
+    cta: 'Continue',
+  },
+  'two-factor-complete': {
+    icon: 'shield',
+    title: 'Two-factor authentication is on',
+    body: 'From now on you will confirm a 6-digit code when you log in and when you approve orders or financing.',
+    cta: 'Done',
+  },
+  welcome: {
+    icon: 'rocket',
+    title: 'Welcome to LINKZ!',
+    body: 'Your account is ready. You can pick up anything you have not finished from Get Started whenever you like.',
+    cta: 'Get Started',
+  },
+} as const
 
 export const sidebarNav = [
   { id: 'get-started', icon: 'house', label: 'Get Started' },

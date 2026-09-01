@@ -4,9 +4,10 @@ import { Checkbox, SelectField, TextField } from '../../components/ui/Field'
 import { Icon } from '../../components/ui/Icon'
 import { Alert, OtpInput } from '../../components/ui/Misc'
 import { AppShell } from '../../layouts/AppShell'
-import { KycField, KycLayout } from '../../layouts/KycLayout'
+import { KycField, KycLayout, UploadBox } from '../../layouts/KycLayout'
 import { banks, currentUser, kycSubmitted, twoFactor } from '../../data/mock'
 import { useFlow } from '../../prototype/flowContext'
+import { useSession } from '../../prototype/sessionContext'
 
 /**
  * Figma: "Phone Email KYC - Bank Account Details" (4001:84939).
@@ -81,6 +82,13 @@ export function KycBankAccount() {
         />
       </KycField>
 
+      <KycField
+        label="Bank statement"
+        hint="A recent statement showing the account holder name and number."
+      >
+        <UploadBox label="Bank statement" />
+      </KycField>
+
       <div className="h-px w-full border-t border-neutral-200" />
 
       <Alert tone="warning" className="w-full max-w-[816px]">
@@ -106,6 +114,7 @@ export function KycBankAccount() {
  */
 export function KycTwoFactor() {
   const { go, state, set } = useFlow()
+  const { notify } = useSession()
   const [stage, setStage] = useState<'intro' | 'otp' | 'done'>('intro')
   const [code, setCode] = useState('')
   const [error, setError] = useState('')
@@ -128,7 +137,11 @@ export function KycTwoFactor() {
       title={twoFactor.title}
       continueLabel={stage === 'done' ? 'Finish' : 'Send code'}
       continueDisabled={stage === 'otp'}
-      onContinue={() => (stage === 'done' ? go('kyc-submitted') : setStage('otp'))}
+      onContinue={() => {
+        if (stage !== 'done') return setStage('otp')
+        notify('two-factor-complete')
+        go('kyc-submitted')
+      }}
     >
       <p className="text-xs3 text-text-secondary">{twoFactor.subtitle}</p>
 
@@ -178,6 +191,7 @@ export function KycTwoFactor() {
 /** Figma: "SSO KYC Submitted" (4001:77400). NOTE: copy not yet read from Figma. */
 export function KycSubmitted() {
   const { go, state } = useFlow()
+  const { notify } = useSession()
   return (
     <AppShell activeNav="get-started">
       <div className="mx-auto flex max-w-[560px] flex-col items-center gap-s300 rounded-s300 border border-neutral-200 bg-white px-8 py-14 text-center">
@@ -192,7 +206,13 @@ export function KycSubmitted() {
         <Alert tone="info" className="w-full text-left">
           {kycSubmitted.meanwhile}
         </Alert>
-        <Button className="mt-2 w-[220px]" onClick={() => go('get-started')}>
+        <Button
+          className="mt-2 w-[220px]"
+          onClick={() => {
+            notify('kyc-complete')
+            go('get-started')
+          }}
+        >
           {kycSubmitted.cta}
         </Button>
       </div>

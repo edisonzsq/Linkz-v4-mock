@@ -4,6 +4,7 @@ import {
   emptyShared,
   SessionContext,
   type Collection,
+  type PopupId,
   type SessionValue,
   type SharedData,
   type UserId,
@@ -11,6 +12,7 @@ import {
 
 const USER_KEY = 'linkz-v4-demo-user'
 const DATA_KEY = 'linkz-v4-shared-data'
+const SEEN_KEY = 'linkz-v4-seen-popups'
 
 /**
  * Mocked multi-user session.
@@ -54,6 +56,19 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   })
 
   const [shared, setShared] = useState<SharedData>(() => readJson(DATA_KEY, emptyShared))
+  const [pendingPopups, setPendingPopups] = useState<PopupId[]>([])
+  const [seen, setSeen] = useState<string[]>(() => {
+    try {
+      const raw = window.localStorage.getItem(SEEN_KEY)
+      return raw ? (JSON.parse(raw) as string[]) : []
+    } catch {
+      return []
+    }
+  })
+
+  useEffect(() => {
+    writeJson(SEEN_KEY, seen)
+  }, [seen])
 
   useEffect(() => {
     try {
@@ -99,6 +114,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     [userId],
   )
 
+  // "Seen" is tracked per identity, so each user gets their own first entry.
+  const seenKey = useCallback((id: PopupId) => `${userId ?? 'anon'}:${id}`, [userId])
+
   const value = useMemo<SessionValue>(
     () => ({
       user: userId ? demoUsers[userId] : null,
@@ -106,9 +124,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       signOut: () => setUserId(null),
       shared,
       add,
-      clearShared: () => setShared(emptyShared),
+      clearShared: () => {
+        setShared(emptyShared)
+        setSeen([])
+      },
+      pendingPopups,
+      notify: (id) => setPendingPopups((q) => (q.includes(id) ? q : [...q, id])),
+      dismissPopup: () => setPendingPopups((q) => q.slice(1)),
+      hasSeen: (id) => seen.includes(seenKey(id)),
+      markSeen: (id) =>
+        setSeen((prev) => (prev.includes(seenKey(id)) ? prev : [...prev, seenKey(id)])),
     }),
-    [userId, shared, add],
+    [userId, shared, add, pendingPopups, seen, seenKey],
   )
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>

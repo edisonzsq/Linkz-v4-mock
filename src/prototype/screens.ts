@@ -13,6 +13,11 @@ export const screens = [
   { id: 'kyc-2fa', label: 'KYC — 2FA', group: 'KYC' },
   { id: 'kyc-submitted', label: 'KYC — Submitted', group: 'KYC' },
 
+  /* Success popups, addressable so each can be shown on its own. */
+  { id: 'popup-kyc-complete', label: 'Popup — KYC complete', group: 'Sign up' },
+  { id: 'popup-2fa-complete', label: 'Popup — 2FA complete', group: 'Sign up' },
+  { id: 'popup-welcome', label: 'Popup — First entry', group: 'Sign up' },
+
   /* ---- V.4 Compilation: general features ---- */
   { id: 'dashboard', label: 'Dashboard', group: 'General' },
   { id: 'sales-orders', label: 'Sales Order', group: 'General' },

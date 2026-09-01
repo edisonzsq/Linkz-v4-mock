@@ -80,6 +80,21 @@ Login paths set the user: `GoogleAuth.tsx` → `signIn('sanders')`, `Login.tsx`'
 verify → `signIn('dheana')`. The screen switcher carries a user toggle and a
 **Reset data** button so a trainer can swap without re-walking a flow.
 
+## Popups and simulated uploads
+
+`UploadBox` (in `layouts/KycLayout.tsx`) simulates `idle → uploading → uploaded` on a
+timer — no file handling anywhere. `SuccessPopup` (`components/ui/SuccessPopup.tsx`)
+auto-closes after `AUTO_DISMISS_MS` (7s) with a countdown bar; that rule is for success
+popups only, and the business-registration warning deliberately does not use it.
+
+Queued popups live in the session as `pendingPopups: PopupId[]` and show in turn, so
+finishing 2FA and submitting KYC both get seen. The first-entry welcome is gated on
+`hasSeen('welcome')`, persisted per user under `linkz-v4-seen-popups`.
+
+**`App.tsx` keys the current screen on its id** (`<Fragment key={screen}>`). Without that,
+two routes rendering the same component share its state — which is how a dismissed popup
+stayed hidden on the next popup route. Keep the key if you touch the router.
+
 ## Conventions
 
 - Design tokens live in the `@theme` block at the top of `src/index.css` and keep Figma's

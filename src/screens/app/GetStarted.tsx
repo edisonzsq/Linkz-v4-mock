@@ -1,19 +1,44 @@
 import { useState } from 'react'
-import { Button } from '../../components/ui/Button'
 import { Icon } from '../../components/ui/Icon'
-import { Modal } from '../../components/ui/Misc'
+import { SuccessPopup } from '../../components/ui/SuccessPopup'
 import { AppShell } from '../../layouts/AppShell'
-import { currentUser, getStarted as copy, welcomeModal } from '../../data/mock'
+import { currentUser, getStarted as copy, successPopups } from '../../data/mock'
 import { useFlow } from '../../prototype/flowContext'
+import { useSession, type PopupId } from '../../prototype/sessionContext'
 
 /**
  * Figma: "Phone Email Get Started" (4001:77356) — dashboard header with the
  * 142px illustration, progress bar (264 × 12) and four 510.4 × 236 task cards,
  * with the welcome modal (4001:77356 → "Account Created Pop Up") on top.
  */
-export function GetStarted() {
+export function GetStarted({ forcePopup }: { forcePopup?: PopupId } = {}) {
   const { go, state, set } = useFlow()
-  const [welcome, setWelcome] = useState(true)
+  const { pendingPopups, dismissPopup, hasSeen, markSeen } = useSession()
+
+  /**
+   * Which success popup to show, in priority order:
+   *   1. one forced by a demo route (so each is directly viewable),
+   *   2. one queued by something that just happened (KYC / 2FA),
+   *   3. the first-entry welcome, which fires once per user whatever path they
+   *      took in — skipped KYC, KYC without 2FA, or both.
+   */
+  const popupId: PopupId | null =
+    forcePopup ?? pendingPopups[0] ?? (hasSeen('welcome') ? null : 'welcome')
+  const popup = popupId ? successPopups[popupId] : null
+
+  /**
+   * Track *which* popup was dismissed rather than a bare boolean. React reuses
+   * this component instance when only the `forcePopup` prop changes, so a plain
+   * flag would leak across popups and suppress the next one.
+   */
+  const [dismissedId, setDismissedId] = useState<PopupId | null>(null)
+  const popupOpen = popupId !== null && dismissedId !== popupId
+
+  function closePopup() {
+    if (popupId === 'welcome') markSeen('welcome')
+    if (!forcePopup) dismissPopup()
+    setDismissedId(popupId)
+  }
 
   const done = state.completedTasks
   const total = copy.tasks.length
@@ -103,16 +128,17 @@ export function GetStarted() {
         </div>
       </div>
 
-      <Modal open={welcome} onClose={() => setWelcome(false)}>
-        <WelcomeArt />
-        <div className="flex flex-col items-center gap-s200 px-10 py-8 text-center">
-          <h2 className="text-xl font-bold text-text-primary">{welcomeModal.title}</h2>
-          <p className="text-xs2 text-text-secondary">{welcomeModal.subtitle}</p>
-          <Button className="mt-2 w-[160px]" onClick={() => setWelcome(false)}>
-            {welcomeModal.cta}
-          </Button>
-        </div>
-      </Modal>
+      {popup && (
+        <SuccessPopup
+          open={popupOpen}
+          onClose={closePopup}
+          icon={popup.icon}
+          title={popup.title}
+          body={popup.body}
+          cta={popup.cta}
+          art={popupId === 'welcome' ? <WelcomeArt /> : undefined}
+        />
+      )}
     </AppShell>
   )
 }

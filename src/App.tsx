@@ -1,6 +1,8 @@
+import { Fragment } from 'react'
 import { FlowProvider } from './prototype/flow'
 import { SessionProvider } from './prototype/session'
 import { useFlow } from './prototype/flowContext'
+import type { ScreenId } from './prototype/screens'
 import { ScreenSwitcher } from './prototype/ScreenSwitcher'
 import { BasicInfo } from './screens/auth/BasicInfo'
 import { CreateAccount } from './screens/auth/CreateAccount'
@@ -26,8 +28,7 @@ import {
 import { NotBuilt } from './screens/app/NotBuilt'
 import { Checkout } from './screens/app/Checkout'
 
-function CurrentScreen() {
-  const { screen } = useFlow()
+function renderScreen(screen: ScreenId) {
   switch (screen) {
     case 'create-account':
       return <CreateAccount />
@@ -55,6 +56,12 @@ function CurrentScreen() {
       return <KycTwoFactor />
     case 'kyc-submitted':
       return <KycSubmitted />
+    case 'popup-kyc-complete':
+      return <GetStarted forcePopup="kyc-complete" />
+    case 'popup-2fa-complete':
+      return <GetStarted forcePopup="two-factor-complete" />
+    case 'popup-welcome':
+      return <GetStarted forcePopup="welcome" />
     case 'dashboard':
       return <Dashboard />
     case 'sales-orders':
@@ -96,6 +103,17 @@ function CurrentScreen() {
     default:
       return <CreateAccount />
   }
+}
+
+/**
+ * Keyed on the screen id so changing route remounts the screen instead of
+ * reusing the previous instance. Without this, two routes rendering the same
+ * component (e.g. the Get Started popup routes) would share its state, and a
+ * popup already dismissed on one route would stay hidden on the next.
+ */
+function CurrentScreen() {
+  const { screen } = useFlow()
+  return <Fragment key={screen}>{renderScreen(screen)}</Fragment>
 }
 
 export default function App() {

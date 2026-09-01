@@ -237,6 +237,35 @@ the designed error state.
 | `#/kyc-bank` | KYC — Bank account details | `4001:84939` |
 | `#/kyc-2fa` | KYC — Two-factor auth | `4001:85492`, `4001:85916` |
 | `#/kyc-submitted` | KYC submitted | `4001:77400` |
+| `#/popup-kyc-complete` | Success popup — KYC complete | `4001:85240` |
+| `#/popup-2fa-complete` | Success popup — 2FA complete | `4001:87636` |
+| `#/popup-welcome` | Success popup — first entry | `4001:77356` |
+
+### Document uploads are simulated
+
+Every **Upload File** button — the three in KYC section 1 and the bank statement in
+section 2 — runs `idle → uploading → uploaded` on click. **No file is chosen, read or
+stored**; the progress bar is a timer and the file name is generated from the field
+label. The uploaded state offers **Replace** (re-runs the animation) and **Remove**
+(back to idle). Good for demoing the flow; there is nothing behind it.
+
+### Popups and when they fire
+
+| Popup | Fires when | Auto-closes |
+| --- | --- | --- |
+| KYC complete | leaving the KYC submitted screen via **Back to Get Started** | yes, ~7s |
+| 2FA complete | pressing **Finish** on the 2-factor step | yes, ~7s |
+| First entry | the first time a user reaches Get Started, whichever path they took in — skipped KYC, KYC without 2FA, or both | yes, ~7s |
+| Change business registration | changing the registration dropdown **after** answering something in KYC section 1 | **no** — it needs a decision |
+
+The three success popups close themselves after ~7 seconds, show a live countdown, and
+carry a dismiss icon so a reader who is done need not wait. The registration warning is
+deliberately excluded from that rule: it asks whether to discard the form, so it waits.
+
+If more than one success popup is queued — finishing 2FA and submitting KYC happen back
+to back — they show **in turn** rather than overwriting each other. First entry is tracked
+per user in `localStorage` (`linkz-v4-seen-popups`), so it fires once and stays dismissed
+across reloads.
 
 ### V.4 Compilation — general features
 

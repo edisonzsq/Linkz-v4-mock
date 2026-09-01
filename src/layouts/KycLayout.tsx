@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Button } from '../components/ui/Button'
 import { Icon } from '../components/ui/Icon'
 import { Logo } from '../components/ui/Logo'
@@ -186,11 +186,97 @@ export function KycField({
 }
 
 /** Figma "Uploaded / Upload" component (4001:90616). Mocked — no file is read. */
-export function UploadBox({ label }: { label: string }) {
+/**
+ * Simulated document upload — Figma "Upload Document" component states.
+ *
+ * There is no file handling behind this: clicking **Upload File** moves the box
+ * through `uploading` (a progress bar that fills over ~1.4s) to `uploaded`, which
+ * names a stand-in file and offers Replace / Remove. That is enough to demo the
+ * flow, and it means no file is ever read from or written to the user's machine.
+ */
+export function UploadBox({ label, fileName }: { label: string; fileName?: string }) {
+  const [state, setState] = useState<'idle' | 'uploading' | 'uploaded'>('idle')
+  const [progress, setProgress] = useState(0)
+
+  // Drive the fake progress bar. Timing from a fixed start keeps the effect free
+  // of synchronous state writes; `progress` is reset by the click that starts it.
+  useEffect(() => {
+    if (state !== 'uploading') return
+
+    const startedAt = Date.now()
+    const duration = 1400
+    const tick = window.setInterval(() => {
+      const pct = Math.min(100, Math.round(((Date.now() - startedAt) / duration) * 100))
+      setProgress(pct)
+      if (pct >= 100) setState('uploaded')
+    }, 120)
+
+    return () => window.clearInterval(tick)
+  }, [state])
+
+  const name = fileName ?? `${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`
+
+  if (state === 'uploading') {
+    return (
+      <div className="flex w-full flex-col gap-s200 rounded-s200 border border-neutral-300 bg-white p-s300">
+        <div className="flex items-center gap-s200">
+          <Icon name="upload" className="size-4 shrink-0 text-primary-400" />
+          <span className="min-w-0 flex-1 truncate text-xs3 font-semibold text-text-primary">
+            {name}
+          </span>
+          <span className="shrink-0 text-xs4 text-text-secondary">Uploading… {progress}%</span>
+        </div>
+        <span className="block h-1.5 w-full overflow-hidden rounded-full bg-neutral-100">
+          <span
+            style={{ width: `${progress}%` }}
+            className="block h-full rounded-full bg-primary-400 transition-[width] duration-100"
+          />
+        </span>
+      </div>
+    )
+  }
+
+  if (state === 'uploaded') {
+    return (
+      <div className="flex w-full flex-wrap items-center gap-s200 rounded-s200 border border-primary-200 bg-primary-25 p-s300">
+        <Icon name="circle-check" className="size-4 shrink-0 text-primary-400" />
+        <span className="min-w-0 flex-1 truncate text-xs3 font-semibold text-text-primary">
+          {name}
+        </span>
+        <span className="shrink-0 text-xs4 text-text-secondary">Uploaded</span>
+        <button
+          type="button"
+          onClick={() => {
+            setProgress(0)
+            setState('uploading')
+          }}
+          className="shrink-0 rounded-s200 px-s200 py-1 text-xs4 font-semibold text-primary-500 hover:bg-primary-50"
+        >
+          Replace
+        </button>
+        <button
+          type="button"
+          onClick={() => setState('idle')}
+          aria-label={`Remove ${label}`}
+          className="grid size-7 shrink-0 place-items-center rounded-s200 text-neutral-500 hover:bg-neutral-100"
+        >
+          <Icon name="trash" className="size-4" />
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div className="flex w-full flex-col items-start rounded-s200 border border-neutral-300 bg-white p-s300">
-      <div className="flex items-center gap-s400">
-        <Button variant="outline" aria-label={`Upload ${label}`}>
+      <div className="flex flex-wrap items-center gap-s400">
+        <Button
+          variant="outline"
+          aria-label={`Upload ${label}`}
+          onClick={() => {
+            setProgress(0)
+            setState('uploading')
+          }}
+        >
           <Icon name="upload" className="size-4" />
           Upload File
         </Button>

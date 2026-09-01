@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { Button } from '../../components/ui/Button'
 import { SelectField, TextAreaField, TextField } from '../../components/ui/Field'
 import { Icon } from '../../components/ui/Icon'
+import { Modal } from '../../components/ui/Misc'
 import { KycField, KycLayout, UploadBox } from '../../layouts/KycLayout'
 import {
   companySizes,
@@ -13,19 +15,47 @@ import { useFlow } from '../../prototype/flowContext'
 
 /** Figma: "Phone Email KYC - Business Overview - Personal" (4001:84233)
  *  and the Established variant (4001:84868). */
+const emptyForm = {
+  registration: 'personal',
+  companyName: '',
+  industry: '',
+  companySize: '1-5',
+  address: '',
+  state: '',
+  postal: '',
+}
+
 export function KycBusinessOverview() {
   const { go } = useFlow()
-  const [form, setForm] = useState({
-    registration: 'personal',
-    companyName: '',
-    industry: '',
-    companySize: '1-5',
-    address: '',
-    state: '',
-    postal: '',
-  })
+  const [form, setForm] = useState(emptyForm)
+  /** Pending registration value while the "this clears your answers" warning is up. */
+  const [pendingRegistration, setPendingRegistration] = useState<string | null>(null)
   const upd = (k: keyof typeof form) => (e: { target: { value: string } }) =>
     setForm((f) => ({ ...f, [k]: e.target.value }))
+
+  // Changing the registration type changes which documents verification asks
+  // for, so it discards everything already entered. Only warn when there is
+  // something to lose — switching on an untouched form just switches.
+  const hasAnswers =
+    form.companyName.trim() !== '' ||
+    form.industry !== '' ||
+    form.address.trim() !== '' ||
+    form.state !== '' ||
+    form.postal.trim() !== ''
+
+  function requestRegistrationChange(next: string) {
+    if (next === form.registration) return
+    if (!hasAnswers) {
+      setForm((f) => ({ ...f, registration: next }))
+      return
+    }
+    setPendingRegistration(next)
+  }
+
+  function confirmRegistrationChange() {
+    if (pendingRegistration) setForm({ ...emptyForm, registration: pendingRegistration })
+    setPendingRegistration(null)
+  }
 
   const canContinue = form.companyName.trim() !== '' && form.industry !== ''
 
@@ -45,7 +75,7 @@ export function KycBusinessOverview() {
           name="registration"
           options={registrationTypes}
           value={form.registration}
-          onChange={upd('registration')}
+          onChange={(e) => requestRegistrationChange(e.target.value)}
         />
       </KycField>
 
@@ -134,6 +164,23 @@ export function KycBusinessOverview() {
           <UploadBox label={u.label} />
         </KycField>
       ))}
+      <Modal open={pendingRegistration !== null} onClose={() => setPendingRegistration(null)}>
+        <div className="flex flex-col items-center gap-s300 px-10 py-8 text-center">
+          <span className="grid size-12 place-items-center rounded-full bg-warning-bg text-warning">
+            <Icon name="alert-circle" className="size-6" />
+          </span>
+          <h2 className="text-md font-bold text-text-primary">{copy.registrationWarning.title}</h2>
+          <p className="text-xs3 text-text-secondary">{copy.registrationWarning.body}</p>
+          <div className="mt-s200 flex w-full flex-col-reverse gap-s200 sm:flex-row sm:justify-center">
+            <Button variant="outline" onClick={() => setPendingRegistration(null)}>
+              {copy.registrationWarning.cancel}
+            </Button>
+            <Button onClick={confirmRegistrationChange}>
+              {copy.registrationWarning.confirm}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </KycLayout>
   )
 }
