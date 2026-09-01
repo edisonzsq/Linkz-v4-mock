@@ -1,7 +1,15 @@
-# LINKZ v4 — Sign-up, Login & KYC Prototype
+# LINKZ v4 — Prototype
 
-A React prototype built from the LINKZ v4 Figma file
-(`9aWtR6gPo1PTqt1LbGr31g`, page **"1. Sign-Up & Login"**).
+A React prototype of the LINKZ v4 product, built from two Figma files:
+
+| Area | Figma file | Pages |
+| --- | --- | --- |
+| Onboarding — sign-up, login, KYC | `9aWtR6gPo1PTqt1LbGr31g` | "1. Sign-Up & Login" |
+| General features, finance, account management | `eX8Lc53tVFuY2QEDW4t1QT` — *V.4 Compilation (Edison)* | 13 pages, listed in [`FIGMA-PAGES.md`](./FIGMA-PAGES.md) |
+
+It covers the **happy path through each area** at both the 1440px desktop and 375px
+mobile sizes the designs are drawn at — not every frame. See
+[Coverage](#coverage) for what is in and what is out.
 
 **Everything is mocked.** There is no backend, no API calls, no analytics, no auth.
 Forms validate and navigate locally; nothing leaves the browser.
@@ -91,10 +99,61 @@ digit — there is no button, matching the design.
 | Postal code | `12345` |
 | Document uploads | buttons are inert — no file is read or stored |
 
-> **Payment and finance test data is not documented yet.** The finance screens have not
-> been built (they live in the newer "V.4 Compilation" Figma file), so there are no card
-> numbers, virtual accounts or disbursement details to publish. This section will be
-> extended when those flows are implemented.
+### Payment details
+
+Every payment screen is a mock. **No card is charged, no account is debited, no request
+leaves the browser** — the "Proceed Payment" button just advances to the confirmation
+state. Use these values so a training session shows the same numbers on every machine.
+
+**Checkout** (`#/checkout` — reachable from Purchase Order → the **Pay** button on the
+`Sent` row):
+
+| Field | Value |
+| --- | --- |
+| Payable amount | `IDR 1.000.000,00` (Subtotal `IDR 1.000.000,00`, Delivery `IDR 0,00`, Discount `(IDR 0,00)`, Taxes `IDR 0,00`) |
+| Item | `Hazmat Suit` · `SKU-001` · Qty 1 |
+| Buyer | LINKZ Asia Jogja — Dheana Titaura, `+62 8310123456789`, `Dheana@email.com` |
+| Seller | KFC Indonesia Co., Ltd. — Sanders, `Sanders@kfc.com` |
+
+| Payment method | What to demo |
+| --- | --- |
+| **Cards Payment → BRI** | the default selection; the LINKZ partner processor |
+| Cards Payment → Local Cards / Foreign Cards | Indonesian-issued vs overseas cards |
+| QRIS | scan-to-pay |
+| **Bank Transfer → VIMA Bank** | virtual account `8808 1509 2650 4471` |
+| Bank Transfer → BCA | virtual account `7011 1509 2650 4471` |
+| Offline Payment | pay the seller directly after confirmation |
+
+> **No card number is needed anywhere.** The design has no card-entry form — selecting a
+> method and pressing **Proceed Payment** is the whole flow. If someone asks for a test
+> card, the honest answer is that this prototype never collects one.
+
+**Credit and financing** (`#/spl`, `#/bpl`, `#/dashboard`):
+
+| Field | Value |
+| --- | --- |
+| Biz Growth Fund limit | `IDR 20.000.000` total, shared between SPL and BPL |
+| Available / Used | `IDR 20.000.000` / `IDR 0` |
+| Disbursement account | VIMA Bank · `8808 1509 2650 4471` |
+| SPL financing fee | 3% — on a `IDR 15.000,00` invoice: fee `IDR 450,00`, payout `IDR 14.550,00` |
+| SPL request statuses | `Processing`, `Approved`, `Rejected` (one row each) |
+| BPL bills | two `Outstanding`, one `Repaid`; 30-day terms |
+| Settlement | next `IDR 1.000.000` on 20 Jul 2026 |
+
+**Dashboard figures** (all `This month`): revenue `IDR 120.000.000` (+20%), spending
+`IDR 80.000.000` (−14.3%), gross profit `IDR 40.000.000` at 33.3% margin, payable
+`IDR 3.000.000`, receivable `IDR 8.500.000`.
+
+### Referral code
+
+| Field | Value |
+| --- | --- |
+| Referral code | `DHEANA-8241` |
+| Referral link | `https://linkzasia.com/r/DHEANA-8241` |
+
+The **Copy** buttons write to the real clipboard. A referral stays `Pending` until the
+invited user's first transaction, then flips to `Completed` — the two sample rows show
+one of each.
 
 ## Walking the prototype
 
@@ -123,6 +182,42 @@ the designed error state.
 | `#/kyc-2fa` | KYC — Two-factor auth | `4001:85492`, `4001:85916` |
 | `#/kyc-submitted` | KYC submitted | `4001:77400` |
 
+### V.4 Compilation — general features
+
+| Hash | Screen | Figma node |
+| --- | --- | --- |
+| `#/dashboard` | Dashboard (overview, performance, order, finance, BI) | `4001:113931` |
+| `#/sales-orders` | Sales Order list | `4001:13925` |
+| `#/purchase-orders` | Purchase Order list | `4001:13925` |
+| `#/order-new` | Create Order | `4001:11308` |
+| `#/checkout` | Checkout — payment methods | `4001:18536` |
+| `#/master-products` | Master Products | `4033:50119` |
+| `#/product-new` | Create Product | `4033:50119` |
+
+### V.4 Compilation — finance
+
+| Hash | Screen | Figma node |
+| --- | --- | --- |
+| `#/spl` | Seller Pay Later — claim, requests, billings | `4001:187533` |
+| `#/bpl` | Buyer Pay Later — billings, history | `4001:198717` |
+| `#/bizloan` | Biz Loan landing | `4001:204677` |
+
+### V.4 Compilation — account management
+
+| Hash | Screen | Figma node |
+| --- | --- | --- |
+| `#/profile` | My Profile — Account Information | `4001:222163` |
+| `#/address-book` | My Profile — Address Book | `4001:222917` |
+| `#/company-list` | My Profile — Company List | `4001:223181` |
+| `#/employees` | My Employee | `4001:246556` |
+| `#/contacts` | Business Contact | `4001:253744` |
+| `#/referrals` | Referrals — how it works + history | `4001:263130` |
+
+Three sidebar destinations exist in the design but are **outside the built happy path** —
+`#/order-report`, `#/my-catalogue`, `#/shared-catalogue`. They render an explicit
+"not part of this mock" placeholder rather than dropping you on the sign-up screen
+mid-demo.
+
 ## Stack
 
 - Vite + React 19 + TypeScript
@@ -138,19 +233,26 @@ the designed error state.
 src/
 ├── App.tsx                     # screen switch
 ├── index.css                   # ⭐ design tokens transcribed from Figma
-├── data/mock.ts                # ⭐ all copy and mock data
+├── data/
+│   ├── mock.ts                 # ⭐ onboarding copy and mock data
+│   └── appData.ts              # ⭐ copy and mock data for the four V.4 areas
 ├── prototype/
 │   ├── flow.tsx / flowContext.ts / screens.ts   # screen + mock signup state (hash-addressable)
 │   └── ScreenSwitcher.tsx      # prototype-only jump menu (not in the design)
 ├── layouts/
 │   ├── AuthLayout.tsx          # split screen: brand column + white card
-│   └── AppShell.tsx            # sidebar 160 + topnav 64 + sub-menu 232
+│   ├── AppShell.tsx            # onboarding/KYC shell
+│   └── ConsoleShell.tsx        # in-app shell: sidebar 160 + breadcrumb top bar 56
 ├── components/
 │   ├── BrandArtwork.tsx        # concentric rings + illustration
+│   ├── app/                    # Console.tsx (card, table, toolbar, pager, empty
+│   │                           #   state, tabs) + consoleUtils.ts
 │   └── ui/                     # Button, Field, Icon, Logo, Misc (tabs, OTP, modal…)
 └── screens/
     ├── auth/                   # CreateAccount, Otp, BasicInfo, Login, GoogleAuth
-    └── app/                    # GetStarted, Kyc (4 steps)
+    └── app/                    # GetStarted, Kyc, Dashboard, Orders, Checkout,
+                                #   Products, Finance, Account, NotBuilt
+tools/screenshot.mjs            # renders every screen at both sizes (see tools/README.md)
 ```
 
 ## Design tokens
@@ -192,13 +294,42 @@ Read this before comparing side by side with Figma.
 Screens marked ⚠️ use copy written to match the design's voice; their Figma text has
 not been read yet. `src/data/mock.ts` marks which strings came from the file.
 
+#### V.4 Compilation areas
+
+Every screen below was built against the rendered Figma frame, so labels, column
+headings, tab names and button text are the design's own.
+
+| Screen | Figma node | Copy | Layout |
+| --- | --- | --- | --- |
+| Dashboard | `4001:113931` | ✅ from frame | ✅ verified against frame |
+| Sales / Purchase Order list | `4001:13925` | ✅ from frame | ✅ verified against frame |
+| Checkout | `4001:18536` | ✅ from frame | ✅ verified against frame |
+| Master Products | `4033:50119` | ✅ from frame | ✅ verified against frame |
+| Seller Pay Later | `4001:187533` | ✅ from frame | ✅ verified against frame |
+| My Profile — Account Information | `4001:222163` | ✅ from frame | ✅ verified against frame |
+| Buyer Pay Later | `4001:198717` | ✅ headings from frame | ⚠️ built from the SPL frame's shape |
+| Biz Loan | `4001:204677` | ✅ from metadata | ⚠️ banner photo is a stand-in |
+| Referrals | `4001:263130` | ✅ from metadata | ⚠️ step illustrations are stand-ins |
+| Create Order | `4001:11308` | ⚠️ field labels inferred | ⚠️ built from the list frame's conventions |
+| Create Product | `4033:50119` | ⚠️ field labels inferred | ⚠️ form not rendered in the frames surveyed |
+| Address Book / Company List | `4001:222917`, `4001:223181` | ⚠️ from metadata | ⚠️ list shape follows the other tables |
+| My Employee | `4001:246556` | ⚠️ from metadata | ⚠️ list shape follows the other tables |
+| Business Contact | `4001:253744` | ⚠️ from metadata | ⚠️ list shape follows the other tables |
+
+**Table rows are invented.** The frames show one to three sample rows; the lists here
+extend that pattern so tables, pagination, filters and empty states have something to
+show. Every row is fictional — see the header comment in `src/data/appData.ts`.
+
 ### Assets could not be exported
 
-The build environment blocks outbound requests to `figma.com` by **organization
-egress policy** (`403 CONNECT tunnel failed`), and no Figma MCP tool returns image
-bytes as text — so no logo, icon or photograph could be downloaded. These are
-stand-ins drawn to the **same dimensions as the design** and should be swapped for
-the real exports:
+The build environment blocks outbound requests to `figma.com` by **organization egress
+policy** (`403 CONNECT tunnel failed`), so exported asset URLs cannot be fetched and no
+logo, icon or photograph could be downloaded. These are stand-ins drawn to the **same
+dimensions as the design** and should be swapped for the real exports:
+
+(Frame *renders* can still be seen: `get_screenshot` with `enableBase64Response: true`
+returns the PNG inline and bypasses the blocked egress. That is how the V.4 screens were
+verified — but it returns a picture of the frame, not the underlying asset files.)
 
 | Placeholder | Real asset | Designed box |
 | --- | --- | --- |
@@ -207,6 +338,9 @@ the real exports:
 | `GetStarted.tsx` → `DashboardIllustration` | "Dashboard Card Icons" (`4001:77361`) | 142 × 142 |
 | `GetStarted.tsx` → `WelcomeArt` | modal "Welcome Image" | 500 × 308 |
 | `ui/Icon.tsx`, `GoogleIcon`, `Captcha` Cloudflare mark | exported icon set | 16 × 16 / 75 × 25 |
+| `Finance.tsx` → Biz Loan banner | `side-view-business-people-working-with-ipad` photo (`4001:204556`) | 304 × 219.66 |
+| `Account.tsx` → Referral step art | `undraw_social-share`, `undraw_gift-card` (`4001:263149`, `4001:263318`) | 150 × 100 / 185 × 101 |
+| `Products.tsx`, `Checkout.tsx` → product thumbnails | product photography | 40 × 40 / 56 × 56 |
 
 **To fix:** export those layers from Figma (select layer → Export), drop the files
 into `src/assets/figma/`, and replace the placeholder components with `<img>` tags at
@@ -215,12 +349,38 @@ its designed diameters (796.25 / 653.33 / 510.42 / 367.5 / 224.58) and opacities
 
 ### Coverage
 
-The Figma page holds 159 frames excluding flow-strip annotations: 71 desktop,
-71 mobile, 3 email/WhatsApp templates and 14 loose components. This prototype
-implements the primary desktop flows. Not yet built: the ~20 error/empty variant
-frames, the SSO-specific onboarding frames, the email/WhatsApp templates, and the
-mobile-specific frames (the app is responsive, but it is not a transcription of the
-375px designs).
+The V.4 Compilation file was surveyed page by page before building. It holds
+**803 screen frames** across 13 pages, which fold to **181 distinct base screens** once
+state variants and desktop/mobile pairs of the same screen are grouped:
+
+| Area | Pages | Frames | Base screens | Built here |
+| --- | ---: | ---: | ---: | ---: |
+| Onboarding | 2 | 166 | 38 | 13 screens (from the older file) |
+| General features | 3 | 249 | 63 | 7 |
+| Finance | 4 | 160 | 41 | 3 |
+| Account management | 4 | 228 | 39 | 6 |
+| **Total** | **13** | **803** | **181** | **29** |
+
+Per-page counts and the node IDs live in [`FIGMA-PAGES.md`](./FIGMA-PAGES.md).
+
+**What is not built:** the error, empty-search and loading variants of each list; the
+multi-step KYC flows inside the finance area (`4. Know Your Customer`, 55 frames); the
+pop-up/modal frames (send order, delete confirmations, address pickers); Order Report,
+My Catalogue and Shared with me; and the mobile-specific frames as transcriptions — the
+app is responsive and was checked at 375px, but it is not a pixel copy of the 375px
+designs. The older onboarding file's ~20 error variants and email/WhatsApp templates
+also remain unbuilt.
+
+**One page may be missing.** General Features numbers `1. Dashboard`,
+`2. Order Management`, `4. Master Product` — there is no `3.`, while every other area
+numbers consecutively. Either a page was skipped when the page links were collected or
+one has not been shared.
+
+### Verifying against the design
+
+`tools/screenshot.mjs` renders every screen at 1440×900 and 375×824 and reports console
+errors. Figma renders can be pulled for comparison with the MCP `get_screenshot` tool
+using `enableBase64Response: true` — see the note in `FIGMA-PAGES.md`.
 
 ### Design tokens
 

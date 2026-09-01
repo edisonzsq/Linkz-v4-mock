@@ -18,6 +18,7 @@ export const screens = [
   { id: 'sales-orders', label: 'Sales Order', group: 'General' },
   { id: 'purchase-orders', label: 'Purchase Order', group: 'General' },
   { id: 'order-new', label: 'Create Order', group: 'General' },
+  { id: 'checkout', label: 'Checkout', group: 'General' },
   { id: 'master-products', label: 'Master Products', group: 'General' },
   { id: 'product-new', label: 'Create Product', group: 'General' },
 

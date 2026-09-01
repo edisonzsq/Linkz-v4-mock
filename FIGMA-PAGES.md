@@ -30,19 +30,19 @@ folding ` - ` state suffixes and `mobile`/desktop pairs together — the realist
 
 | Area | # | Node ID | Page | frames | named | base | Status |
 | --- | --- | --- | --- | ---: | ---: | ---: | --- |
-| Onboarding | 1 | `4001:66190` | 1. Sign-Up & Login | 148 | 126 | 36 | 🟡 surveyed |
-| Onboarding | 2 | `4001:109341` | 2. Get Started | 18 | 15 | 2 | 🟡 surveyed |
-| General Features | 3 | `4001:109342` | 1. Dashboard | 10 | 5 | 2 | 🟡 surveyed |
-| General Features | 4 | `9:80` | 2. Order Management | 164 | 75 | 42 | 🟡 surveyed |
-| General Features | 5 | `32:11725` | 4. Master Product | 75 | 70 | 19 | 🟡 surveyed |
-| Finance | 6 | `9:82` | 1. Seller Pay Later | 69 | 36 | 19 | 🟡 surveyed |
-| Finance | 7 | `4001:186598` | 2. Buyer Pay Later | 32 | 16 | 10 | 🟡 surveyed |
-| Finance | 8 | `4001:186599` | 3. BizLoan | 4 | 2 | 1 | 🟡 surveyed |
-| Finance | 9 | `4001:205473` | 4. Know Your Customer | 55 | 46 | 11 | 🟡 surveyed |
-| Account Mgmt | 10 | `9:77` | 1. My Profile | 127 | 24 | 13 | 🟡 surveyed |
-| Account Mgmt | 11 | `29:31462` | 2. My Employee | 48 | 18 | 15 | 🟡 surveyed |
-| Account Mgmt | 12 | `4001:219575` | 3. Business Contact | 46 | 12 | 9 | 🟡 surveyed |
-| Account Mgmt | 13 | `4001:219576` | 4. Referrals | 7 | 2 | 2 | 🟡 surveyed |
+| Onboarding | 1 | `4001:66190` | 1. Sign-Up & Login | 148 | 126 | 36 | 🟢 built (older file) |
+| Onboarding | 2 | `4001:109341` | 2. Get Started | 18 | 15 | 2 | 🟢 built (older file) |
+| General Features | 3 | `4001:109342` | 1. Dashboard | 10 | 5 | 2 | 🟢 built |
+| General Features | 4 | `9:80` | 2. Order Management | 164 | 75 | 42 | 🟢 built (list, create, checkout) |
+| General Features | 5 | `32:11725` | 4. Master Product | 75 | 70 | 19 | 🟢 built (list, create) |
+| Finance | 6 | `9:82` | 1. Seller Pay Later | 69 | 36 | 19 | 🟢 built |
+| Finance | 7 | `4001:186598` | 2. Buyer Pay Later | 32 | 16 | 10 | 🟢 built |
+| Finance | 8 | `4001:186599` | 3. BizLoan | 4 | 2 | 1 | 🟢 built |
+| Finance | 9 | `4001:205473` | 4. Know Your Customer | 55 | 46 | 11 | 🟡 surveyed — not built |
+| Account Mgmt | 10 | `9:77` | 1. My Profile | 127 | 24 | 13 | 🟢 built (3 sections) |
+| Account Mgmt | 11 | `29:31462` | 2. My Employee | 48 | 18 | 15 | 🟢 built |
+| Account Mgmt | 12 | `4001:219575` | 3. Business Contact | 46 | 12 | 9 | 🟢 built |
+| Account Mgmt | 13 | `4001:219576` | 4. Referrals | 7 | 2 | 2 | 🟢 built |
 | — | — | `0:1` | 🖼 Cover | — | — | — | ✅ cover art only, nothing to build |
 | **TOTAL** | | | **13 pages** | **803** | **447** | **181** | |
 
@@ -63,6 +63,9 @@ URLs were pasted, or a `3.` page exists that has not been shared. Ask Edison bef
 declaring General Features complete.
 
 Status legend: ⬜ not started · 🟡 surveyed · 🟢 built · ⛔ blocked (note reason)
+
+"Built" means the **happy path** for that page is implemented, not every frame. The
+coverage table in `README.md` says exactly what was left out.
 
 `4001-109342` was pasted twice in the source message; listed once here. 13 unique pages.
 

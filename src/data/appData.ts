@@ -48,9 +48,6 @@ export const appSubNav: Record<string, { id: string; label: string }[]> = {
   ],
 }
 
-/** Screens that exist in the design but are outside the built happy path. */
-export const notBuilt = ['order-report', 'my-catalogue', 'shared-catalogue']
-
 export const topBar = {
   getStartedLabel: 'Get Started',
   getStartedProgress: '1/3',
@@ -1091,14 +1088,117 @@ export const referrals = {
   ],
 }
 
+/* ---------- Checkout (from Figma, node 4001:18536) ---------- */
+
+export const checkout = {
+  breadcrumb: ['Purchase Order', 'Order Details', 'Checkout'],
+  shippingTitle: 'Shipping Destination',
+  sellerTitle: 'Seller Information',
+  summaryTitle: 'Order Summary',
+  buyer: {
+    company: 'LINKZ Asia Jogja',
+    person: 'Dheana Titaura',
+    phone: '+62 8310123456789',
+    email: 'Dheana@email.com',
+    addressLabel: 'My Office',
+    addressPerson: 'Dheana Titaura',
+    addressPhone: '+62 8310123456789',
+    address:
+      'Gg. Masjid Albarokah, Dusun Mudal, Karang Moko, Sariharjo, Ngaglik, Sleman, DI Yogyakarta',
+    newAddress: 'New Address',
+    changeAddress: 'Change Address',
+  },
+  seller: {
+    company: 'KFC Indonesia Co., Ltd.',
+    person: 'Sanders',
+    phone: '+62 8310123456789',
+    email: 'Sanders@kfc.com',
+    addressLabel: 'Office',
+    addressPerson: 'Colonel Sanders',
+    addressPhone: '+62 8310123456789',
+    address:
+      '16th floor - T9, APL Tower, Podomoro City (Central Park) Jl. Let. Jend. S. Parman, Kav 28 Jakarta 11470, Indonesia',
+  },
+  paymentTitle: 'Payment Method',
+  paymentSubtitle: 'Please choose what payment method that you want to use.',
+  methods: [
+    {
+      id: 'cards',
+      icon: 'card',
+      label: 'Cards Payment (Credit / Debit)',
+      description: 'Pay with Visa, Mastercard, or JCB cards.',
+      options: [
+        {
+          id: 'bri',
+          label: 'BRI',
+          description: 'Pay with the official LINKZ partner for seamless payment processing.',
+        },
+        {
+          id: 'local',
+          label: 'Local Cards',
+          description: 'Pay with cards issued by other Indonesian banks.',
+        },
+        {
+          id: 'foreign',
+          label: 'Foreign Cards',
+          description: 'Pay with card issued outside Indonesia.',
+        },
+      ],
+    },
+    {
+      id: 'qris',
+      icon: 'layout-grid',
+      label: 'QRIS',
+      description: 'Scan QRIS to complete your payment.',
+    },
+    {
+      id: 'transfer',
+      icon: 'arrow-right',
+      label: 'Bank Transfer',
+      description: 'Pay via virtual account from your selected bank.',
+      options: [
+        { id: 'vima', label: 'VIMA Bank', description: 'Virtual account 8808 1509 2650 4471.' },
+        { id: 'bca', label: 'BCA', description: 'Virtual account 7011 1509 2650 4471.' },
+      ],
+    },
+    {
+      id: 'offline',
+      icon: 'banknote',
+      label: 'Offline Payment',
+      description: 'Pay directly to the seller after order confirmation.',
+    },
+  ],
+  item: {
+    name: 'Hazmat Suit',
+    sku: 'SKU-001',
+    qty: 'Qty: 1',
+    unit: 'IDR 1.000.000,00',
+    total: 'IDR 1.000.000,00',
+  },
+  summary: {
+    subtotal: 'Subtotal',
+    subtotalValue: 'IDR 1.000.000,00',
+    delivery: 'Delivery Fee',
+    deliveryValue: 'IDR 0,00',
+    discount: 'Additional Discount',
+    discountValue: '(IDR 0,00)',
+    taxes: 'Taxes',
+    taxesValue: 'IDR 0,00',
+    payable: 'Payable Amount',
+    payableValue: 'IDR 1.000.000,00',
+  },
+  totalLabel: 'Total:',
+  totalValue: 'IDR 1.000.000,00',
+  proceed: 'Proceed Payment',
+  paidTitle: 'Payment received',
+  paidBody:
+    'We have received your payment and notified the seller. The order moves to Paid on the order list.',
+  paidCta: 'Back to Purchase Order',
+}
+
 /* ---------- shared ---------- */
 
 export const common = {
-  view: 'View',
-  edit: 'Edit',
-  delete: 'Delete',
-  close: 'Close',
-  cancel: 'Cancel',
   notBuiltTitle: 'Not part of this mock',
   notBuiltBody:
     'This screen exists in the Figma file but is outside the happy path built for training. Pick another item from the sidebar.',

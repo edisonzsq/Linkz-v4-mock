@@ -82,7 +82,13 @@ function OrderList({
             r.invoice,
             <span className="whitespace-nowrap">{r.updated}</span>,
             <Pill>{r.status}</Pill>,
-            <RowMenu />
+            activeNav === 'purchase-orders' && r.status === 'Sent' ? (
+              <Button variant="outline" onClick={() => go('checkout')}>
+                Pay
+              </Button>
+            ) : (
+              <RowMenu />
+            )
           )}
           card={(r) => (
             <>

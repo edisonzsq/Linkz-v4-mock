@@ -23,6 +23,7 @@ import {
   Referrals,
 } from './screens/app/Account'
 import { NotBuilt } from './screens/app/NotBuilt'
+import { Checkout } from './screens/app/Checkout'
 
 function CurrentScreen() {
   const { screen } = useFlow()
@@ -61,6 +62,8 @@ function CurrentScreen() {
       return <PurchaseOrders />
     case 'order-new':
       return <CreateOrder />
+    case 'checkout':
+      return <Checkout />
     case 'master-products':
       return <MasterProducts />
     case 'product-new':
