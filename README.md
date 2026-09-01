@@ -25,6 +25,7 @@ npm run dev      # http://localhost:5173
 npm run build    # typecheck + production build
 npm run preview  # serve the production build
 npm run lint
+npm run test     # unit tests for the order money model and date helpers
 ```
 
 ## Deploy to Vercel
@@ -281,6 +282,7 @@ across reloads.
 | `#/purchase-orders` | Purchase Order list | `4001:13925` |
 | `#/order-new` | Create Order | `4001:11308` |
 | `#/checkout` | Checkout — payment methods | `4001:18536` |
+| `#/order-report` | Order Report — Settlement / Payments | `7017:1308`, `7017:1508`, `7017:1350` |
 | `#/master-products` | Master Products | `4033:50119` |
 | `#/product-new` | Create Product | `4033:50119` |
 
@@ -309,8 +311,8 @@ Seller Pay Later and My Profile respectively. Clicking it while you are already 
 that section just collapses or expands the submenu. The same four entries on the
 onboarding shell (Get Started, KYC) cross into those areas too.
 
-Three sidebar destinations exist in the design but are **outside the built happy path** —
-`#/order-report`, `#/my-catalogue`, `#/shared-catalogue`. They render an explicit
+Two sidebar destinations exist in the design but are **outside the built happy path** —
+`#/my-catalogue` and `#/shared-catalogue`. They render an explicit
 "not part of this mock" placeholder rather than dropping you on the sign-up screen
 mid-demo.
 

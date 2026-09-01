@@ -82,7 +82,7 @@ function OrderList({
             r.invoice,
             <span className="whitespace-nowrap">{r.updated}</span>,
             <Pill>{r.status}</Pill>,
-            activeNav === 'purchase-orders' && r.status === 'Sent' ? (
+            activeNav === 'purchase-orders' && r.status === 'Invoiced' ? (
               <Button variant="outline" onClick={() => go('checkout')}>
                 Pay
               </Button>

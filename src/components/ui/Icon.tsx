@@ -9,6 +9,14 @@ import type { SVGProps } from 'react'
  * the Figma assets are available.
  */
 const paths: Record<string, React.ReactNode> = {
+  calendar: (
+    <>
+      <rect x="2.5" y="3.5" width="11" height="10" rx="1.5" />
+      <path d="M2.5 6.5h11" />
+      <path d="M5.5 2v3" />
+      <path d="M10.5 2v3" />
+    </>
+  ),
   'layout-grid': (
     <>
       <rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1" />

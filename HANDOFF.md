@@ -99,6 +99,30 @@ finishing 2FA and submitting KYC both get seen. The first-entry welcome is gated
 two routes rendering the same component share its state — which is how a dismissed popup
 stayed hidden on the next popup route. Keep the key if you touch the router.
 
+## Order module
+
+`docs/order-behaviour-handover.md` is the spec Edison supplied — read it before touching
+Orders. Every Figma node ID in it resolves in `eX8Lc53tVFuY2QEDW4t1QT`.
+
+**Built so far:**
+
+- `src/state/orders.ts` — the money model (§2–3): line/order totals, `financeFor`,
+  committed vs pending, status derivation, the single `completeOrder` path, send planning
+  and `parseAmount`. Pure functions, no React. `src/state/orders.test.ts` pins the rules
+  the spec calls out as costly to get wrong (37 tests).
+- `src/screens/app/OrderReport.tsx` + `components/app/DateRangePicker.tsx` — §9, from
+  Figma `7017:1308` / `7017:1508` / `7017:1350`. Date helpers live in
+  `components/app/dateUtils.ts` with their own tests (12).
+
+**Not built yet** (§4–8): the list reading from state, the rebuilt Create/Edit order,
+`OrderDetail` with the invoice table, the overpaid flow, the send dialogs, and wiring
+Checkout to settle an invoice. The state module already supports all of them — those
+screens are UI over `orders.ts`.
+
+**Open question** in §5.5, unanswered: on an even-out send the closing invoice currently
+lands at `IDR 0,00`. Making it non-zero would mean restating an earlier invoice, which
+contradicts §3.4. `sendOrder` implements the zero and flags it in a comment.
+
 ## Conventions
 
 - Design tokens live in the `@theme` block at the top of `src/index.css` and keep Figma's
