@@ -2,7 +2,8 @@ import { useState, type ReactNode } from 'react'
 import { Icon } from '../components/ui/Icon'
 import { Logo } from '../components/ui/Logo'
 import { appNav, appSubNav, navLanding, topBar } from '../data/appData'
-import { currentUser, sidebarFooter } from '../data/mock'
+import { sidebarFooter } from '../data/mock'
+import { useSession } from '../prototype/sessionContext'
 import { useFlow } from '../prototype/flowContext'
 import type { ScreenId } from '../prototype/screens'
 
@@ -28,6 +29,7 @@ export function ConsoleShell({
   activeNav: string
 }) {
   const { go } = useFlow()
+  const { user, signOut } = useSession()
   const [mobileNav, setMobileNav] = useState(false)
   const [open, setOpen] = useState<string | null>(() => {
     const group = Object.keys(appSubNav).find((g) =>
@@ -134,7 +136,10 @@ export function ConsoleShell({
 
           <button
             type="button"
-            onClick={() => go('login')}
+            onClick={() => {
+              signOut()
+              go('login')
+            }}
             className="flex items-center gap-s200 rounded-s200 px-2 py-2 text-left text-xs3 text-text-secondary hover:bg-neutral-100"
           >
             <Icon name="lock-keyhole" className="size-4" />
@@ -143,13 +148,15 @@ export function ConsoleShell({
 
           <div className="flex items-center gap-s200 border-t border-neutral-200 px-2 pt-2">
             <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary-100 text-xs4 font-bold text-primary-600">
-              {currentUser.initials}
+              {user?.initials ?? '—'}
             </span>
             <span className="min-w-0">
               <span className="block truncate text-xs4 font-semibold text-text-primary">
-                {currentUser.name}
+                {user?.name ?? 'Signed out'}
               </span>
-              <span className="block truncate text-xs4 text-neutral-500">{currentUser.role}</span>
+              <span className="block truncate text-xs4 text-neutral-500">
+                {user ? user.role : 'Sign in to continue'}
+              </span>
             </span>
           </div>
         </div>

@@ -15,6 +15,7 @@ import {
   Toolbar,
 } from '../../components/app/Console'
 import { cells } from '../../components/app/consoleUtils'
+import { AddedBy } from '../../components/app/AddedBy'
 import { Button } from '../../components/ui/Button'
 import { Checkbox, SelectField, TextField } from '../../components/ui/Field'
 import { Icon } from '../../components/ui/Icon'
@@ -28,8 +29,8 @@ import {
   profile as pf,
   referrals as rf,
 } from '../../data/appData'
-import { currentUser } from '../../data/mock'
 import { useFlow } from '../../prototype/flowContext'
+import { useSession, type UserId } from '../../prototype/sessionContext'
 import type { ScreenId } from '../../prototype/screens'
 
 /**
@@ -82,6 +83,19 @@ function ProfileLayout({
 
 /** Account Information — Figma node 4001:222163. */
 export function Profile() {
+  const { user } = useSession()
+
+  // The profile reflects whoever is signed in; the Figma frame is drawn with
+  // Dheana's details, which is User B.
+  const valueFor = (id: string) => {
+    if (!user) return undefined
+    if (id === 'fullName') return user.name
+    if (id === 'email') return user.email
+    if (id === 'phone') return user.phone
+    if (id === 'role') return user.role
+    return undefined
+  }
+
   return (
     <ProfileLayout active="profile" breadcrumb={pf.breadcrumb}>
       <div className="mb-s300 flex flex-wrap items-center gap-s200">
@@ -101,7 +115,7 @@ export function Profile() {
           </div>
           <div className="flex flex-wrap items-start gap-s300">
             <span className="grid size-20 shrink-0 place-items-center rounded-s200 bg-primary-100 text-lg font-bold text-primary-600">
-              {currentUser.initials}
+              {user?.initials ?? '—'}
             </span>
             <div>
               <ul className="flex flex-col gap-0.5">
@@ -152,8 +166,9 @@ export function Profile() {
                       </span>
                     )}
                     <input
+                      key={`${user?.id ?? 'none'}-${f.id}`}
                       aria-label={f.label}
-                      defaultValue={f.value}
+                      defaultValue={valueFor(f.id) ?? f.value}
                       readOnly={f.readOnly}
                       className="min-w-0 flex-1 bg-transparent text-xs3 text-text-primary outline-none"
                     />
@@ -179,17 +194,69 @@ export function Profile() {
             </div>
           </div>
         ))}
+        {user && (
+          <div className="flex flex-col gap-s300 border-t border-neutral-200 pt-s400 lg:flex-row">
+            <div className="lg:w-[340px] lg:shrink-0">
+              <p className="text-xs3 font-semibold text-text-primary">Sign-in method</p>
+              <p className="mt-s100 text-xs4 text-text-secondary">
+                How this account authenticates. Prototype only.
+              </p>
+            </div>
+            <div className="min-w-0 max-w-[520px] flex-1">
+              <span className="inline-flex items-center gap-s200 rounded-s200 bg-neutral-100 px-s300 py-s200 text-xs3 font-semibold text-text-primary">
+                <Icon
+                  name={user.signInMethod === 'Google SSO' ? 'globe' : 'phone'}
+                  className="size-4 text-text-secondary"
+                />
+                {user.signInMethod}
+              </span>
+            </div>
+          </div>
+        )}
       </Card>
     </ProfileLayout>
   )
 }
 
-type AddressRow = (typeof ab.rows)[number]
+type AddressRow = (typeof ab.rows)[number] & { addedBy?: UserId }
 
 /** Address Book — Figma "My Profile - Address Book", node 4001:222917. */
 export function AddressBook() {
+  const { shared, add } = useSession()
   const [adding, setAdding] = useState(false)
+  const [form, setForm] = useState<Record<string, string>>({})
   const f = ab.form
+
+  const field = (k: string) => ({
+    value: form[k] ?? '',
+    onChange: (e: { target: { value: string } }) => setForm((v) => ({ ...v, [k]: e.target.value })),
+  })
+
+  // Rows added this session come first, so a new entry is visible immediately.
+  const rows: AddressRow[] = [
+    ...shared.addresses.map((r) => ({
+      label: String(r.fields.label ?? ''),
+      recipient: String(r.fields.recipient ?? ''),
+      address: String(r.fields.address ?? ''),
+      type: String(r.fields.type ?? 'Shipping'),
+      primary: Boolean(r.fields.primary),
+      addedBy: r.addedBy,
+    })),
+    ...ab.rows,
+  ]
+
+  function save() {
+    if (!form.label?.trim() || !form.recipient?.trim()) return
+    add('addresses', {
+      label: form.label.trim(),
+      recipient: form.recipient.trim(),
+      address: [form.street, form.city, form.province, form.postal].filter(Boolean).join(', '),
+      type: form.type || 'Shipping',
+      primary: false,
+    })
+    setForm({})
+    setAdding(false)
+  }
 
   return (
     <ProfileLayout active="address-book" breadcrumb={ab.breadcrumb}>
@@ -206,19 +273,15 @@ export function AddressBook() {
         <Card className="mb-s300">
           <SectionLabel>{f.title}</SectionLabel>
           <div className="grid grid-cols-1 gap-s300 sm:grid-cols-2">
-            <TextField name="label" label={f.label} placeholder={f.labelPlaceholder} required />
-            <TextField
-              name="recipient"
-              label={f.recipient}
-              placeholder={f.recipientPlaceholder}
-              required
-            />
-            <TextField name="phone" label={f.phone} placeholder={f.phonePlaceholder} />
+            <TextField name="label" label={f.label} placeholder={f.labelPlaceholder} required {...field('label')} />
+            <TextField name="recipient" label={f.recipient} placeholder={f.recipientPlaceholder} required {...field('recipient')} />
+            <TextField name="phone" label={f.phone} placeholder={f.phonePlaceholder} {...field('phone')} />
             <SelectField
               name="type"
               label={f.type}
               placeholder="Select a type"
               options={f.types.map((t) => ({ value: t, label: t }))}
+              {...field('type')}
             />
             <TextField
               name="street"
@@ -226,26 +289,28 @@ export function AddressBook() {
               placeholder={f.streetPlaceholder}
               containerClassName="sm:col-span-2"
               required
+              {...field('street')}
             />
             <SelectField
               name="city"
               label={f.city}
               placeholder={f.cityPlaceholder}
               options={ab.cities.map((c) => ({ value: c, label: c }))}
+              {...field('city')}
             />
             <SelectField
               name="province"
               label={f.province}
               placeholder={f.provincePlaceholder}
               options={ab.provinces.map((c) => ({ value: c, label: c }))}
+              {...field('province')}
             />
-            <TextField name="postal" label={f.postal} placeholder={f.postalPlaceholder} />
-          </div>
-          <div className="mt-s300">
-            <Checkbox id="primary" label={f.setPrimary} checked={false} onChange={() => {}} />
+            <TextField name="postal" label={f.postal} placeholder={f.postalPlaceholder} {...field('postal')} />
           </div>
           <div className="mt-s300 flex gap-s200">
-            <Button onClick={() => setAdding(false)}>{f.save}</Button>
+            <Button onClick={save} disabled={!form.label?.trim() || !form.recipient?.trim()}>
+              {f.save}
+            </Button>
             <Button variant="ghost" onClick={() => setAdding(false)}>
               {f.cancel}
             </Button>
@@ -260,13 +325,14 @@ export function AddressBook() {
       <Card padded={false}>
         <DataTable<AddressRow>
           columns={ab.columns}
-          rows={ab.rows}
+          rows={rows}
           empty={<EmptyState title={ab.emptyTitle} body={ab.emptyBody} />}
           render={(r, i) => cells(
             `${i + 1}.`,
             <span className="flex items-center gap-s200 whitespace-nowrap">
               <span className="font-semibold">{r.label}</span>
               {r.primary && <Pill tone="info">{ab.primaryBadge}</Pill>}
+              {r.addedBy && <AddedBy by={r.addedBy} />}
             </span>,
             r.recipient,
             <span className="block max-w-[320px]">{r.address}</span>,
@@ -275,9 +341,10 @@ export function AddressBook() {
           )}
           card={(r) => (
             <>
-              <div className="mb-s200 flex items-center gap-s200">
+              <div className="mb-s200 flex flex-wrap items-center gap-s200">
                 <span className="min-w-0 flex-1 truncate text-xs3 font-semibold">{r.label}</span>
                 {r.primary && <Pill tone="info">{ab.primaryBadge}</Pill>}
+                {r.addedBy && <AddedBy by={r.addedBy} />}
               </div>
               <Row label={ab.columns[2]} value={r.recipient} />
               <p className="mt-s200 text-xs3 text-text-secondary">{r.address}</p>
@@ -344,13 +411,45 @@ export function CompanyList() {
   )
 }
 
-type EmployeeRow = (typeof em.rows)[number]
+type EmployeeRow = (typeof em.rows)[number] & { addedBy?: UserId }
 
 /** My Employee — Figma "My Employee - Employee List", node 4001:246556. */
 export function Employees() {
+  const { shared, add } = useSession()
   const [inviting, setInviting] = useState(false)
   const [sent, setSent] = useState(false)
+  const [form, setForm] = useState<Record<string, string>>({})
   const f = em.form
+
+  const field = (k: string) => ({
+    value: form[k] ?? '',
+    onChange: (e: { target: { value: string } }) => setForm((v) => ({ ...v, [k]: e.target.value })),
+  })
+
+  const rows: EmployeeRow[] = [
+    ...shared.employees.map((r) => ({
+      name: String(r.fields.name ?? ''),
+      email: String(r.fields.email ?? ''),
+      role: String(r.fields.role ?? ''),
+      status: 'Invited',
+      joined: '—',
+      addedBy: r.addedBy,
+    })),
+    ...em.rows,
+  ]
+
+  const canSend = Boolean(form.name?.trim() && form.email?.trim() && form.role)
+
+  function send() {
+    if (!canSend) return
+    add('employees', {
+      name: form.name.trim(),
+      email: form.email.trim(),
+      role: form.role,
+    })
+    setForm({})
+    setSent(true)
+  }
 
   return (
     <ConsoleShell breadcrumb={em.breadcrumb} activeNav="employees">
@@ -384,13 +483,14 @@ export function Employees() {
             <>
               <SectionLabel>{f.title}</SectionLabel>
               <div className="grid grid-cols-1 gap-s300 sm:grid-cols-3">
-                <TextField name="name" label={f.name} placeholder={f.namePlaceholder} required />
+                <TextField name="name" label={f.name} placeholder={f.namePlaceholder} required {...field('name')} />
                 <TextField
                   name="email"
                   type="email"
                   label={f.email}
                   placeholder={f.emailPlaceholder}
                   required
+                  {...field('email')}
                 />
                 <SelectField
                   name="role"
@@ -398,17 +498,18 @@ export function Employees() {
                   placeholder={f.rolePlaceholder}
                   options={em.roles.map((r) => ({ value: r, label: r }))}
                   required
+                  {...field('role')}
                 />
               </div>
 
               <div className="mt-s400">
                 <SectionLabel>{f.permissionsSection}</SectionLabel>
                 <div className="grid grid-cols-1 gap-s200 sm:grid-cols-2">
-                  {f.permissions.map((p) => (
+                  {f.permissions.map((perm) => (
                     <Checkbox
-                      key={p.id}
-                      id={p.id}
-                      label={p.label}
+                      key={perm.id}
+                      id={perm.id}
+                      label={perm.label}
                       checked={false}
                       onChange={() => {}}
                     />
@@ -417,7 +518,9 @@ export function Employees() {
               </div>
 
               <div className="mt-s400 flex gap-s200">
-                <Button onClick={() => setSent(true)}>{f.send}</Button>
+                <Button onClick={send} disabled={!canSend}>
+                  {f.send}
+                </Button>
                 <Button variant="ghost" onClick={() => setInviting(false)}>
                   {f.cancel}
                 </Button>
@@ -435,7 +538,7 @@ export function Employees() {
       <Card padded={false}>
         <DataTable<EmployeeRow>
           columns={em.columns}
-          rows={em.rows}
+          rows={rows}
           empty={<EmptyState title={em.emptyTitle} body={em.emptyBody} />}
           render={(r, i) => cells(
             `${i + 1}.`,
@@ -443,11 +546,12 @@ export function Employees() {
               <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary-100 text-xs4 font-bold text-primary-600">
                 {r.name
                   .split(' ')
-                  .map((p) => p[0])
+                  .map((part) => part[0])
                   .join('')
                   .slice(0, 2)}
               </span>
               <span className="font-semibold whitespace-nowrap">{r.name}</span>
+              {r.addedBy && <AddedBy by={r.addedBy} />}
             </span>,
             <span className="whitespace-nowrap">{r.email}</span>,
             r.role,
@@ -457,9 +561,10 @@ export function Employees() {
           )}
           card={(r) => (
             <>
-              <div className="mb-s200 flex items-center gap-s200">
+              <div className="mb-s200 flex flex-wrap items-center gap-s200">
                 <span className="min-w-0 flex-1 truncate text-xs3 font-semibold">{r.name}</span>
                 <Pill>{r.status}</Pill>
+                {r.addedBy && <AddedBy by={r.addedBy} />}
               </div>
               <Row label={em.columns[2]} value={r.email} />
               <Row label={em.columns[3]} value={r.role} />
@@ -473,23 +578,91 @@ export function Employees() {
 }
 
 type ContactTab = (typeof ct.tabs)[number]['id']
-type ContactRow = (typeof ct.customers)[number]
+type ContactRow = (typeof ct.customers)[number] & { addedBy?: UserId }
 
 /** Business Contact — Figma "Business Contact", node 4001:253744. */
 export function Contacts() {
+  const { shared, add } = useSession()
   const [tab, setTab] = useState<ContactTab>('customers')
-  const rows = tab === 'customers' ? ct.customers : ct.suppliers
+  const [adding, setAdding] = useState(false)
+  const [form, setForm] = useState<Record<string, string>>({})
+  const f = ct.form
+
+  const field = (k: string) => ({
+    value: form[k] ?? '',
+    onChange: (e: { target: { value: string } }) => setForm((v) => ({ ...v, [k]: e.target.value })),
+  })
+
+  const kind = tab === 'customers' ? 'customer' : 'supplier'
+  const rows: ContactRow[] = [
+    ...shared.contacts
+      .filter((r) => (r.fields.kind ?? 'customer') === kind)
+      .map((r) => ({
+        company: String(r.fields.company ?? ''),
+        person: String(r.fields.person ?? ''),
+        email: String(r.fields.email ?? ''),
+        phone: String(r.fields.phone ?? ''),
+        linked: false,
+        addedBy: r.addedBy,
+      })),
+    ...(tab === 'customers' ? ct.customers : ct.suppliers),
+  ]
+
+  const canSave = Boolean(form.company?.trim() && form.person?.trim())
+
+  function save() {
+    if (!canSave) return
+    add('contacts', {
+      kind,
+      company: form.company.trim(),
+      person: form.person.trim(),
+      email: form.email?.trim() ?? '',
+      phone: form.phone?.trim() ?? '',
+    })
+    setForm({})
+    setAdding(false)
+  }
 
   return (
     <ConsoleShell breadcrumb={ct.breadcrumb} activeNav="contacts">
       <PageHeader title={ct.title}>
-        <Button>
+        <Button onClick={() => setAdding((v) => !v)}>
           <Icon name="plus" className="size-4" />
           {ct.create}
         </Button>
       </PageHeader>
 
       <p className="mb-s300 text-xs3 text-text-secondary">{ct.subtitle}</p>
+
+      {adding && (
+        <Card className="mb-s300">
+          <SectionLabel>{f.title}</SectionLabel>
+          <p className="mb-s300 text-xs4 text-text-secondary">
+            Saved as a {kind} — the tab you are on decides which list it joins.
+          </p>
+          <div className="grid grid-cols-1 gap-s300 sm:grid-cols-2">
+            <TextField name="company" label={f.company} placeholder={f.companyPlaceholder} required {...field('company')} />
+            <TextField name="person" label={f.person} placeholder={f.personPlaceholder} required {...field('person')} />
+            <TextField name="email" type="email" label={f.email} placeholder={f.emailPlaceholder} {...field('email')} />
+            <TextField name="phone" label={f.phone} placeholder={f.phonePlaceholder} {...field('phone')} />
+            <TextField
+              name="address"
+              label={f.address}
+              placeholder={f.addressPlaceholder}
+              containerClassName="sm:col-span-2"
+              {...field('address')}
+            />
+          </div>
+          <div className="mt-s300 flex gap-s200">
+            <Button onClick={save} disabled={!canSave}>
+              {f.save}
+            </Button>
+            <Button variant="ghost" onClick={() => setAdding(false)}>
+              {f.cancel}
+            </Button>
+          </div>
+        </Card>
+      )}
 
       <TabBar tabs={ct.tabs} value={tab} onChange={setTab} />
 
@@ -509,6 +682,7 @@ export function Contacts() {
                 <Icon name="building" className="size-4" />
               </span>
               <span className="font-semibold whitespace-nowrap">{r.company}</span>
+              {r.addedBy && <AddedBy by={r.addedBy} />}
             </span>,
             r.person,
             <span className="whitespace-nowrap">{r.email}</span>,
@@ -518,13 +692,14 @@ export function Contacts() {
           )}
           card={(r) => (
             <>
-              <div className="mb-s200 flex items-center gap-s200">
+              <div className="mb-s200 flex flex-wrap items-center gap-s200">
                 <span className="min-w-0 flex-1 truncate text-xs3 font-semibold">{r.company}</span>
                 {r.linked ? (
                   <Pill tone="success">{ct.linked}</Pill>
                 ) : (
                   <Pill tone="neutral">{ct.notLinked}</Pill>
                 )}
+                {r.addedBy && <AddedBy by={r.addedBy} />}
               </div>
               <Row label={ct.columns[2]} value={r.person} />
               <Row label={ct.columns[3]} value={r.email} />

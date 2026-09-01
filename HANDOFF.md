@@ -62,6 +62,24 @@ If asked to go deeper, the highest-value next targets are, in order:
   the build and Playwright's postinstall would download browsers there. Install it
   unsaved when you want to run `tools/screenshot.mjs` — see `tools/README.md`.
 
+## Mocked multi-user session
+
+`src/prototype/session.tsx` holds two identities — Sanders (Google SSO) and Dheana
+(Mobile OTP) — and **one** shared record store they both read and write, so a row added
+by one is visible to the other. It persists to `localStorage` (`linkz-v4-shared-data`),
+which is what survives the sign-out / sign-in round trip a demo needs; every storage
+access is wrapped in try/catch because it throws outright in some privacy-restricted
+contexts.
+
+Four lists accept additions: `addresses`, `employees`, `contacts`, `products`. Added rows
+are prepended to the design's seeded rows and carry an `AddedBy` badge. To wire another
+list, add its key to `Collection` in `sessionContext.ts`, call `add(collection, fields)`
+from the form, and merge `shared.<collection>` ahead of the static rows.
+
+Login paths set the user: `GoogleAuth.tsx` → `signIn('sanders')`, `Login.tsx`'s OTP
+verify → `signIn('dheana')`. The screen switcher carries a user toggle and a
+**Reset data** button so a trainer can swap without re-walking a flow.
+
 ## Conventions
 
 - Design tokens live in the `@theme` block at the top of `src/index.css` and keep Figma's

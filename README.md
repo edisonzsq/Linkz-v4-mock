@@ -65,33 +65,89 @@ a locked-down network.
 Nothing here is real and nothing leaves the browser — there is no backend, no auth
 and no payment processing. These are the values to type during a training session.
 
-### Signing in
+### The two demo users
+
+The prototype has **two identities**, each signing in through a different path, and they
+**share one data set** — anything User A adds is visible to User B, and vice versa.
+
+| | User A | User B |
+| --- | --- | --- |
+| Name | **Sanders** | **Dheana Titaura** |
+| Signs in with | **Google SSO** | **Mobile OTP** |
+| Email | `sanders@linkzasia.com` | `dheana@linkzasia.com` |
+| Phone | `(+62)811-1509-265` | `(+62)812-3456-7890` |
+| Role | Business Owner | Business Owner |
+
+**Sign in as User A (Sanders):** from `#/login` press **Continue with Google**, pick
+`sanders@linkzasia.com`, then **Continue**.
+
+**Sign in as User B (Dheana):** from `#/login` stay on the **Phone** tab, enter any
+number (e.g. `811 1509 265`), press **Send Code**, then enter **`123456`**.
+
+To swap users mid-demo without walking a login flow, use the **Signed in as** toggle in
+the screen switcher (bottom-right). The sidebar profile, the My Profile screen and the
+"Added by" tags all follow whoever is signed in.
 
 | Field | Value |
 | --- | --- |
 | Phone | any number, e.g. `811 1509 265` (dial code defaults to `+62` Indonesia) |
-| Email | any valid-looking address, e.g. `sanders@linkzasia.com` |
+| Email | any valid-looking address |
 | **OTP / verification code** | **`123456`** |
 | Google SSO | click through — the account picker is mocked |
 
 Any other 6-digit code is rejected and shows the designed error state, which is useful
-to demonstrate deliberately. On the OTP screen the form submits itself on the sixth
-digit — there is no button, matching the design.
+to demonstrate deliberately. On the sign-up OTP screen the form submits itself on the
+sixth digit — there is no button, matching the design.
+
+Deep-linking to an in-app screen (e.g. `#/dashboard`) before signing in shows
+**"Signed out"** in the sidebar. The screens still render; pick a user from the switcher
+or walk a login path.
+
+### Showing that both users share data
+
+This is the demo worth rehearsing:
+
+1. Sign in as **Sanders** (Google SSO).
+2. Go to **Manage → My Profile → Address Book**, press **Add Address**, fill in a label,
+   recipient and street, and save. The new row appears at the top of the list tagged
+   **"Added by Sanders"**.
+3. Switch to **Dheana** (switcher toggle, or Logout and sign in with the phone OTP).
+4. Open the same **Address Book** — Sanders' row is there, still tagged **Added by
+   Sanders**.
+5. As Dheana, invite an employee under **Manage → My Employee**, then switch back to
+   Sanders: the invite is visible, tagged **Added by Dheana**.
+
+Four lists accept new entries and are shared between the two users:
+
+| Screen | Add via | Stored as |
+| --- | --- | --- |
+| Address Book (`#/address-book`) | **Add Address** | `addresses` |
+| My Employee (`#/employees`) | **Invite Employee** | `employees` |
+| Business Contact (`#/contacts`) | **Add Contact** (saved to whichever tab you are on) | `contacts` |
+| Master Products (`#/master-products`) | **Create Product** | `products` |
+
+**How the sharing works, and its limits.** Added rows live in the browser's
+`localStorage` under `linkz-v4-shared-data`, which is what lets them survive a sign-out,
+a user switch and a page reload. It is still entirely local: **nothing is sent anywhere**,
+and the two "users" share data only because they share a browser profile. A different
+browser, a private window, or another machine starts empty — so this demonstrates
+multi-user visibility, it does not implement it. Rows seeded from the design are always
+present and carry no "Added by" tag. **Reset data** in the screen switcher clears
+everything added during the session.
 
 ### Identities used in the mock
 
 | Where | Value |
 | --- | --- |
-| Sign-up / OTP sample address | `sanders@linkzasia.com` |
+| Company on the top bar | LINKZ IN JOGJA |
 | Dashboard greeting | "Welcome, Sanders" |
-| Sidebar profile | Dheana Titaura — Business Owner |
 | Support contact | `support@linkzasia.com` · `(+62)811-1509-265` |
 
 ### KYC test data
 
 | Field | Value to use |
 | --- | --- |
-| Company registration | Personal Business (no Deed of Establishment) |
+| Company registration | `Personal Business (no Deed of Establishment)` or `Established Business (has Deed of Establishment)` — those are the only two options |
 | Company name | anything, e.g. `Sinar Jaya Trading` |
 | Industry | any option |
 | Company size | `1 - 5` |
@@ -244,6 +300,7 @@ src/
 │   └── appData.ts              # ⭐ copy and mock data for the four V.4 areas
 ├── prototype/
 │   ├── flow.tsx / flowContext.ts / screens.ts   # screen + mock signup state (hash-addressable)
+│   ├── session.tsx / sessionContext.ts          # ⭐ two demo users + the shared data store
 │   └── ScreenSwitcher.tsx      # prototype-only jump menu (not in the design)
 ├── layouts/
 │   ├── AuthLayout.tsx          # split screen: brand column + white card
@@ -252,7 +309,7 @@ src/
 ├── components/
 │   ├── BrandArtwork.tsx        # concentric rings + illustration
 │   ├── app/                    # Console.tsx (card, table, toolbar, pager, empty
-│   │                           #   state, tabs) + consoleUtils.ts
+│   │                           #   state, tabs), consoleUtils.ts, AddedBy.tsx
 │   └── ui/                     # Button, Field, Icon, Logo, Misc (tabs, OTP, modal…)
 └── screens/
     ├── auth/                   # CreateAccount, Otp, BasicInfo, Login, GoogleAuth

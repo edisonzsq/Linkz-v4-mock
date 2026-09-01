@@ -236,12 +236,15 @@ export const kycBusiness = {
   uploadHint: 'JPEG, PNG, PDF, DOC · Max 10 MB',
 }
 
+/**
+ * Company registration — the verification path branches on whether the business
+ * has a Deed of Establishment, so this is a two-way choice, not a list of legal
+ * forms. (The legal forms CV / PT / PT Perorangan / Firma all fall under
+ * "Established Business" and are collected later in the KYC flow.)
+ */
 export const registrationTypes = [
   { value: 'personal', label: 'Personal Business (no Deed of Establishment)' },
-  { value: 'cv', label: 'CV (Commanditaire Vennootschap)' },
-  { value: 'pt', label: 'PT (Perseroan Terbatas)' },
-  { value: 'pt-perorangan', label: 'PT Perorangan' },
-  { value: 'firma', label: 'Firma' },
+  { value: 'established', label: 'Established Business (has Deed of Establishment)' },
 ]
 
 export const companySizes = [

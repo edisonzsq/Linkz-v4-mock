@@ -3,7 +3,8 @@ import { Icon } from '../components/ui/Icon'
 import { LanguagePicker } from '../components/ui/Misc'
 import { Logo } from '../components/ui/Logo'
 import { navLanding } from '../data/appData'
-import { currentUser, sidebarFooter, sidebarNav } from '../data/mock'
+import { sidebarFooter, sidebarNav } from '../data/mock'
+import { useSession } from '../prototype/sessionContext'
 import { useFlow } from '../prototype/flowContext'
 import type { ScreenId } from '../prototype/screens'
 
@@ -22,6 +23,7 @@ export function AppShell({
   activeNav?: string
 }) {
   const { go } = useFlow()
+  const { user, signOut } = useSession()
   const [mobileNav, setMobileNav] = useState(false)
 
   return (
@@ -77,7 +79,10 @@ export function AppShell({
 
           <button
             type="button"
-            onClick={() => go('login')}
+            onClick={() => {
+              signOut()
+              go('login')
+            }}
             className="rounded-s200 px-2 py-2 text-left text-xs3 text-text-secondary hover:bg-neutral-100"
           >
             {sidebarFooter.logout}
@@ -85,13 +90,15 @@ export function AppShell({
 
           <div className="flex items-center gap-s200 border-t border-neutral-200 px-2 pt-2">
             <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary-400 text-xs4 font-bold text-white">
-              {currentUser.initials}
+              {user?.initials ?? '—'}
             </span>
             <span className="min-w-0">
               <span className="block truncate text-xs4 font-semibold text-text-primary">
-                {currentUser.name}
+                {user?.name ?? 'Signed out'}
               </span>
-              <span className="block truncate text-xs4 text-neutral-500">{currentUser.role}</span>
+              <span className="block truncate text-xs4 text-neutral-500">
+                {user ? user.role : 'Sign in to continue'}
+              </span>
             </span>
           </div>
         </div>

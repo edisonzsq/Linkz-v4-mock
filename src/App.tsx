@@ -1,4 +1,5 @@
 import { FlowProvider } from './prototype/flow'
+import { SessionProvider } from './prototype/session'
 import { useFlow } from './prototype/flowContext'
 import { ScreenSwitcher } from './prototype/ScreenSwitcher'
 import { BasicInfo } from './screens/auth/BasicInfo'
@@ -99,9 +100,11 @@ function CurrentScreen() {
 
 export default function App() {
   return (
-    <FlowProvider>
-      <CurrentScreen />
-      <ScreenSwitcher />
-    </FlowProvider>
+    <SessionProvider>
+      <FlowProvider>
+        <CurrentScreen />
+        <ScreenSwitcher />
+      </FlowProvider>
+    </SessionProvider>
   )
 }

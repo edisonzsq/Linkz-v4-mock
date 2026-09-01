@@ -18,19 +18,36 @@ import { Icon } from '../../components/ui/Icon'
 import { ConsoleShell } from '../../layouts/ConsoleShell'
 import { filters, masterProducts as mp } from '../../data/appData'
 import { useFlow } from '../../prototype/flowContext'
+import { useSession, type UserId } from '../../prototype/sessionContext'
+import { AddedBy } from '../../components/app/AddedBy'
 
-type ProductRow = (typeof mp.rows)[number]
+type ProductRow = (typeof mp.rows)[number] & { addedBy?: UserId }
 
 /** Master Products — Figma node 4033:50119 (page "4. Master Product"). */
 export function MasterProducts() {
   const { go } = useFlow()
+  const { shared } = useSession()
   const [selected, setSelected] = useState<string[]>([])
+
+  const rows: ProductRow[] = [
+    ...shared.products.map((r) => ({
+      name: String(r.fields.name ?? ''),
+      sku: String(r.fields.sku ?? ''),
+      isNew: true,
+      currency: String(r.fields.currency ?? 'IDR'),
+      price: String(r.fields.price ?? '0,00'),
+      category: String(r.fields.category ?? ''),
+      catalogues: '0',
+      addedBy: r.addedBy,
+    })),
+    ...mp.rows,
+  ]
 
   function toggle(sku: string) {
     setSelected((s) => (s.includes(sku) ? s.filter((x) => x !== sku) : [...s, sku]))
   }
 
-  const allSelected = selected.length === mp.rows.length
+  const allSelected = selected.length === rows.length
 
   return (
     <ConsoleShell breadcrumb={mp.breadcrumb} back="dashboard" activeNav="master-products">
@@ -51,7 +68,7 @@ export function MasterProducts() {
       <Card padded={false}>
         <DataTable<ProductRow>
           columns={mp.columns}
-          rows={mp.rows}
+          rows={rows}
           empty={<EmptyState title={mp.emptyTitle} body={mp.emptyBody} />}
           render={(r, i) => cells(
             <input
@@ -70,6 +87,7 @@ export function MasterProducts() {
                 <span className="flex items-center gap-s200">
                   <span className="truncate font-semibold">{r.name}</span>
                   {r.isNew && <NewChip />}
+                  {r.addedBy && <AddedBy by={r.addedBy} />}
                 </span>
                 <span className="block text-xs4 text-neutral-500">{r.sku}</span>
               </span>
@@ -99,6 +117,7 @@ export function MasterProducts() {
                   <span className="flex items-center gap-s200">
                     <span className="truncate text-xs3 font-semibold">{r.name}</span>
                     {r.isNew && <NewChip />}
+                    {r.addedBy && <AddedBy by={r.addedBy} />}
                   </span>
                   <span className="block text-xs4 text-neutral-500">{r.sku}</span>
                 </span>
@@ -132,8 +151,29 @@ export function MasterProducts() {
 /** Create Product — the form behind the "Create Product" button on node 4033:50119. */
 export function CreateProduct() {
   const { go } = useFlow()
+  const { add } = useSession()
   const f = mp.form
   const [category, setCategory] = useState('')
+  const [form, setForm] = useState<Record<string, string>>({})
+
+  const field = (k: string) => ({
+    value: form[k] ?? '',
+    onChange: (e: { target: { value: string } }) => setForm((v) => ({ ...v, [k]: e.target.value })),
+  })
+
+  const canSave = Boolean(form.name?.trim() && form.sku?.trim() && category)
+
+  function save() {
+    if (!canSave) return
+    add('products', {
+      name: form.name.trim(),
+      sku: form.sku.trim(),
+      category,
+      currency: 'IDR',
+      price: form.price?.trim() || '0,00',
+    })
+    go('master-products')
+  }
 
   return (
     <ConsoleShell breadcrumb={f.breadcrumb} back="master-products" activeNav="master-products">
@@ -141,7 +181,9 @@ export function CreateProduct() {
         <Button variant="ghost" onClick={() => go('master-products')}>
           {f.cancel}
         </Button>
-        <Button onClick={() => go('master-products')}>{f.save}</Button>
+        <Button onClick={save} disabled={!canSave}>
+          {f.save}
+        </Button>
       </PageHeader>
 
       <div className="grid grid-cols-1 gap-s300 xl:grid-cols-[2fr_1fr]">
@@ -166,8 +208,8 @@ export function CreateProduct() {
             </div>
 
             <div className="grid grid-cols-1 gap-s300 sm:grid-cols-2">
-              <TextField name="name" label={f.name} placeholder={f.namePlaceholder} required />
-              <TextField name="sku" label={f.sku} placeholder={f.skuPlaceholder} required />
+              <TextField name="name" label={f.name} placeholder={f.namePlaceholder} required {...field('name')} />
+              <TextField name="sku" label={f.sku} placeholder={f.skuPlaceholder} required {...field('sku')} />
               <SelectField
                 name="category"
                 label={f.category}
@@ -199,6 +241,7 @@ export function CreateProduct() {
                 placeholder={f.pricePlaceholder}
                 inputMode="decimal"
                 required
+                {...field('price')}
               />
             </div>
           </Card>
@@ -219,7 +262,9 @@ export function CreateProduct() {
             buyers.
           </p>
           <div className="mt-s300 flex flex-col gap-s200">
-            <Button onClick={() => go('master-products')}>{f.save}</Button>
+            <Button onClick={save} disabled={!canSave}>
+              {f.save}
+            </Button>
             <Button variant="ghost" onClick={() => go('master-products')}>
               {f.cancel}
             </Button>

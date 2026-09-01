@@ -1,17 +1,18 @@
 import { useState } from 'react'
 import { Button } from '../../components/ui/Button'
 import { GoogleIcon } from '../../components/ui/Icon'
-import { currentUser } from '../../data/mock'
 import { useFlow } from '../../prototype/flowContext'
+import { demoUsers, useSession } from '../../prototype/sessionContext'
 
 /** Figma: "Google Auth - Choose Account" / "- Confirmation"
  *  (nodes 4001:78216, 4001:78300). Mocked — no Google request is made. */
 export function GoogleAuth() {
   const { go, set } = useFlow()
+  const { signIn } = useSession()
   const [step, setStep] = useState<'choose' | 'confirm'>('choose')
 
   const accounts = [
-    { name: currentUser.name, email: currentUser.email, initials: currentUser.initials },
+    { name: demoUsers.sanders.name, email: demoUsers.sanders.email, initials: demoUsers.sanders.initials },
     { name: 'Rina Halim', email: 'rina@sinarjaya.co.id', initials: 'RH' },
   ]
   const [picked, setPicked] = useState(accounts[0])
@@ -64,7 +65,9 @@ export function GoogleAuth() {
               <Button
                 onClick={() => {
                   set({ email: picked.email, method: 'google' })
-                  go('basic-info')
+                  // Google SSO is User A's path.
+                  signIn('sanders')
+                  go('get-started')
                 }}
               >
                 Continue

@@ -6,6 +6,7 @@ import { LanguagePicker, OtpInput, Tabs } from '../../components/ui/Misc'
 import { AuthLayout } from '../../layouts/AuthLayout'
 import { countries, createAccount, login as copy } from '../../data/mock'
 import { useFlow } from '../../prototype/flowContext'
+import { useSession } from '../../prototype/sessionContext'
 
 type Method = 'phone' | 'email'
 
@@ -13,6 +14,7 @@ type Method = 'phone' | 'email'
  *  and their filled / code-sent / attempts-left variants. */
 export function Login() {
   const { go } = useFlow()
+  const { signIn } = useSession()
   const [method, setMethod] = useState<Method>('phone')
   const [identifier, setIdentifier] = useState('')
   const [country, setCountry] = useState('id')
@@ -33,9 +35,10 @@ export function Login() {
       ? identifier.replace(/\D/g, '').length >= 7
       : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)
 
-  /** Mocked: 123456 logs in. Nothing is sent anywhere. */
+  /** Mocked: 123456 logs in as User B (Dheana). Nothing is sent anywhere. */
   function verify() {
     if (code.replace(/\s/g, '') === '123456') {
+      signIn('dheana')
       go('get-started')
       return
     }
