@@ -19,3 +19,32 @@ Pass screen ids (the hash routes) as arguments; omit none — there is no defaul
 list. On this container Chromium is preinstalled, which is why the script points
 `executablePath` at `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`. Drop
 that option to use a locally installed Playwright browser instead.
+
+## build-questions-docx.py
+
+Regenerates `docs/Order module - open questions.docx` — the answer sheet sent to the
+author of the Order behaviour handover. `docs/order-open-questions.md` is the readable
+source of record; this script is what turns it into something a non-technical reviewer can
+fill in, so **edit the questions in both places** if they change.
+
+```sh
+pip install python-docx
+python3 tools/build-questions-docx.py
+```
+
+Two things to know if you touch it:
+
+- **OOXML child order is strict.** `w:shd`, `w:tcBorders`, `w:tcMar` and friends must appear
+  in schema sequence inside `tcPr` / `pPr` / `tblPr`. python-docx will happily write them
+  out of order and still reopen the file, but Word and LibreOffice both refuse to load it.
+  `insert_ordered()` exists for exactly this — use it instead of `parent.append()`.
+- **Column widths need `set_widths()`.** Setting `cell.width` alone does nothing; the table
+  also needs a fixed `w:tblLayout` and a matching `w:tblGrid`.
+
+To check a change actually renders, convert and eyeball it — `libreoffice-core` alone cannot
+open .docx, you need the Writer module:
+
+```sh
+apt-get install -y libreoffice-writer
+soffice --headless --convert-to pdf --outdir /tmp/out "docs/Order module - open questions.docx"
+```
