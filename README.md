@@ -50,6 +50,8 @@ Fonts are self-hosted through `@fontsource-variable`, so the deployed page makes
 third-party requests at runtime** — it renders identically behind a corporate proxy or on
 a locked-down network.
 
+> Continuing this work in a new session? Start with [`HANDOFF.md`](./HANDOFF.md).
+
 ## Demo credentials & test data
 
 Nothing here is real and nothing leaves the browser — there is no backend, no auth
