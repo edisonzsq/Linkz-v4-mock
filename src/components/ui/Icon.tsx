@@ -9,6 +9,96 @@ import type { SVGProps } from 'react'
  * the Figma assets are available.
  */
 const paths: Record<string, React.ReactNode> = {
+  'layout-grid': (
+    <>
+      <rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1" />
+      <rect x="9" y="2.5" width="4.5" height="4.5" rx="1" />
+      <rect x="2.5" y="9" width="4.5" height="4.5" rx="1" />
+      <rect x="9" y="9" width="4.5" height="4.5" rx="1" />
+    </>
+  ),
+  rocket: (
+    <>
+      <path d="M8.5 10.5 5.5 7.5c.6-2.6 2.4-4.8 5-5.7 1.3-.4 2.7-.3 2.7-.3s.1 1.4-.3 2.7c-.9 2.6-3.1 4.4-5.7 5Z" />
+      <path d="M5.8 10.2c-.9.9-1 3.3-1 3.3s2.4-.1 3.3-1" />
+      <circle cx="10" cy="6" r="1" />
+    </>
+  ),
+  'external-link': (
+    <>
+      <path d="M9 2.5h4.5V7" />
+      <path d="M13.5 2.5 7.5 8.5" />
+      <path d="M12 9.5v3a1 1 0 0 1-1 1H3.5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3" />
+    </>
+  ),
+  'trending-up': (
+    <>
+      <path d="m2.5 11.5 4-4 2.5 2.5 4.5-4.5" />
+      <path d="M10.5 5.5h3v3" />
+    </>
+  ),
+  'trending-down': (
+    <>
+      <path d="m2.5 5.5 4 4 2.5-2.5 4.5 4.5" />
+      <path d="M10.5 11.5h3v-3" />
+    </>
+  ),
+  'circle-check': (
+    <>
+      <circle cx="8" cy="8" r="6.5" />
+      <path d="m5.2 8.2 2 2 3.6-3.8" />
+    </>
+  ),
+  'lock-keyhole': (
+    <>
+      <rect x="3" y="7" width="10" height="7" rx="1.5" />
+      <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" />
+      <circle cx="8" cy="10.5" r="1" />
+    </>
+  ),
+  trash: (
+    <>
+      <path d="M2.5 4.5h11" />
+      <path d="M6 4.5V3h4v1.5" />
+      <path d="M4 4.5 4.6 13a1 1 0 0 0 1 1h4.8a1 1 0 0 0 1-1L12 4.5" />
+    </>
+  ),
+  filter: <path d="M2.5 3.5h11l-4.2 5v4l-2.6 1.5V8.5Z" />,
+  'arrow-right': (
+    <>
+      <path d="M3 8h10" />
+      <path d="m9 4 4 4-4 4" />
+    </>
+  ),
+  copy: (
+    <>
+      <rect x="5.5" y="5.5" width="8" height="8" rx="1.2" />
+      <path d="M10.5 5.5v-2a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2" />
+    </>
+  ),
+  users: (
+    <>
+      <circle cx="6" cy="5.5" r="2.5" />
+      <path d="M1.5 13.5c0-2.2 2-4 4.5-4s4.5 1.8 4.5 4" />
+      <path d="M11 3.4a2.5 2.5 0 0 1 0 4.2" />
+      <path d="M12 9.8c1.5.5 2.5 1.9 2.5 3.7" />
+    </>
+  ),
+  truck: (
+    <>
+      <path d="M1.5 4.5h8v6h-8z" />
+      <path d="M9.5 7h2.6l1.9 2.2v1.3H9.5z" />
+      <circle cx="4.5" cy="12" r="1.4" />
+      <circle cx="11.5" cy="12" r="1.4" />
+    </>
+  ),
+  package: (
+    <>
+      <path d="M8 1.8 14 5v6l-6 3.2L2 11V5Z" />
+      <path d="M2 5l6 3.2L14 5" />
+      <path d="M8 8.2v6" />
+    </>
+  ),
   globe: (
     <>
       <circle cx="8" cy="8" r="6.5" />

@@ -10,6 +10,19 @@ import { Otp } from './screens/auth/Otp'
 import { GetStarted } from './screens/app/GetStarted'
 import { KycBankAccount, KycSubmitted, KycTwoFactor } from './screens/app/Kyc'
 import { KycBusinessOverview } from './screens/app/KycBusinessOverview'
+import { Dashboard } from './screens/app/Dashboard'
+import { CreateOrder, PurchaseOrders, SalesOrders } from './screens/app/Orders'
+import { CreateProduct, MasterProducts } from './screens/app/Products'
+import { BizLoan, BuyerPayLater, SellerPayLater } from './screens/app/Finance'
+import {
+  AddressBook,
+  CompanyList,
+  Contacts,
+  Employees,
+  Profile,
+  Referrals,
+} from './screens/app/Account'
+import { NotBuilt } from './screens/app/NotBuilt'
 
 function CurrentScreen() {
   const { screen } = useFlow()
@@ -40,6 +53,42 @@ function CurrentScreen() {
       return <KycTwoFactor />
     case 'kyc-submitted':
       return <KycSubmitted />
+    case 'dashboard':
+      return <Dashboard />
+    case 'sales-orders':
+      return <SalesOrders />
+    case 'purchase-orders':
+      return <PurchaseOrders />
+    case 'order-new':
+      return <CreateOrder />
+    case 'master-products':
+      return <MasterProducts />
+    case 'product-new':
+      return <CreateProduct />
+    case 'spl':
+      return <SellerPayLater />
+    case 'bpl':
+      return <BuyerPayLater />
+    case 'bizloan':
+      return <BizLoan />
+    case 'profile':
+      return <Profile />
+    case 'address-book':
+      return <AddressBook />
+    case 'company-list':
+      return <CompanyList />
+    case 'employees':
+      return <Employees />
+    case 'contacts':
+      return <Contacts />
+    case 'referrals':
+      return <Referrals />
+    case 'order-report':
+      return <NotBuilt title="Order Report" activeNav="order-report" />
+    case 'my-catalogue':
+      return <NotBuilt title="My Catalogue" activeNav="my-catalogue" />
+    case 'shared-catalogue':
+      return <NotBuilt title="Shared with me" activeNav="shared-catalogue" />
     default:
       return <CreateAccount />
   }

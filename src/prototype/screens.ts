@@ -12,6 +12,32 @@ export const screens = [
   { id: 'kyc-bank', label: 'KYC — Bank Account', group: 'KYC' },
   { id: 'kyc-2fa', label: 'KYC — 2FA', group: 'KYC' },
   { id: 'kyc-submitted', label: 'KYC — Submitted', group: 'KYC' },
+
+  /* ---- V.4 Compilation: general features ---- */
+  { id: 'dashboard', label: 'Dashboard', group: 'General' },
+  { id: 'sales-orders', label: 'Sales Order', group: 'General' },
+  { id: 'purchase-orders', label: 'Purchase Order', group: 'General' },
+  { id: 'order-new', label: 'Create Order', group: 'General' },
+  { id: 'master-products', label: 'Master Products', group: 'General' },
+  { id: 'product-new', label: 'Create Product', group: 'General' },
+
+  /* ---- V.4 Compilation: finance ---- */
+  { id: 'spl', label: 'Seller Pay Later', group: 'Finance' },
+  { id: 'bpl', label: 'Buyer Pay Later', group: 'Finance' },
+  { id: 'bizloan', label: 'Biz Loan', group: 'Finance' },
+
+  /* ---- V.4 Compilation: account management ---- */
+  { id: 'profile', label: 'My Profile', group: 'Account' },
+  { id: 'address-book', label: 'Address Book', group: 'Account' },
+  { id: 'company-list', label: 'Company List', group: 'Account' },
+  { id: 'employees', label: 'My Employee', group: 'Account' },
+  { id: 'contacts', label: 'Business Contact', group: 'Account' },
+  { id: 'referrals', label: 'Referrals', group: 'Account' },
+
+  /* Design screens outside the built happy path — see NotBuilt.tsx */
+  { id: 'order-report', label: 'Order Report', group: 'Not built' },
+  { id: 'my-catalogue', label: 'My Catalogue', group: 'Not built' },
+  { id: 'shared-catalogue', label: 'Shared with me', group: 'Not built' },
 ] as const
 
 export type ScreenId = (typeof screens)[number]['id']
