@@ -50,6 +50,50 @@ Fonts are self-hosted through `@fontsource-variable`, so the deployed page makes
 third-party requests at runtime** — it renders identically behind a corporate proxy or on
 a locked-down network.
 
+## Demo credentials & test data
+
+Nothing here is real and nothing leaves the browser — there is no backend, no auth
+and no payment processing. These are the values to type during a training session.
+
+### Signing in
+
+| Field | Value |
+| --- | --- |
+| Phone | any number, e.g. `811 1509 265` (dial code defaults to `+62` Indonesia) |
+| Email | any valid-looking address, e.g. `sanders@linkzasia.com` |
+| **OTP / verification code** | **`123456`** |
+| Google SSO | click through — the account picker is mocked |
+
+Any other 6-digit code is rejected and shows the designed error state, which is useful
+to demonstrate deliberately. On the OTP screen the form submits itself on the sixth
+digit — there is no button, matching the design.
+
+### Identities used in the mock
+
+| Where | Value |
+| --- | --- |
+| Sign-up / OTP sample address | `sanders@linkzasia.com` |
+| Dashboard greeting | "Welcome, Sanders" |
+| Sidebar profile | Dheana Titaura — Business Owner |
+| Support contact | `support@linkzasia.com` · `(+62)811-1509-265` |
+
+### KYC test data
+
+| Field | Value to use |
+| --- | --- |
+| Company registration | Personal Business (no Deed of Establishment) |
+| Company name | anything, e.g. `Sinar Jaya Trading` |
+| Industry | any option |
+| Company size | `1 - 5` |
+| State / Province | `DKI Jakarta` |
+| Postal code | `12345` |
+| Document uploads | buttons are inert — no file is read or stored |
+
+> **Payment and finance test data is not documented yet.** The finance screens have not
+> been built (they live in the newer "V.4 Compilation" Figma file), so there are no card
+> numbers, virtual accounts or disbursement details to publish. This section will be
+> extended when those flows are implemented.
+
 ## Walking the prototype
 
 A **screen switcher** sits in the bottom-right corner — jump to any screen without
