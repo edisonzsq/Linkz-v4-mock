@@ -58,6 +58,10 @@ If asked to go deeper, the highest-value next targets are, in order:
 - **Figma MCP quota** is per seat: Full seat on Pro is ~200 calls/day, 15/min. The
   original file `9aWtR6gPo1PTqt1LbGr31g` sits on a **View** seat and its quota is
   exhausted — do not plan work that depends on reading it.
+- **Use `eX8Lc53tVFuY2QEDW4t1QT` for onboarding frames too.** Edison's copy carries the
+  *same node IDs* as the original onboarding file and is on a Full seat, so a link that
+  fails on `9aWtR6gPo1PTqt1LbGr31g` usually works by swapping the file key. That is how
+  KYC Section 2 (`4001:84939`) and the popup frames were finally read.
 - **Playwright is deliberately not a dependency.** Vercel installs devDependencies during
   the build and Playwright's postinstall would download browsers there. Install it
   unsaved when you want to run `tools/screenshot.mjs` — see `tools/README.md`.

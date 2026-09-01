@@ -237,9 +237,12 @@ the designed error state.
 | `#/kyc-bank` | KYC — Bank account details | `4001:84939` |
 | `#/kyc-2fa` | KYC — Two-factor auth | `4001:85492`, `4001:85916` |
 | `#/kyc-submitted` | KYC submitted | `4001:77400` |
-| `#/popup-kyc-complete` | Success popup — KYC complete | `4001:85240` |
-| `#/popup-2fa-complete` | Success popup — 2FA complete | `4001:87636` |
-| `#/popup-welcome` | Success popup — first entry | `4001:77356` |
+| `#/popup-kyc-complete` | "KYC Documents Submitted" popup | `4001:85240` |
+| `#/popup-2fa-complete` | "2FA Verified" popup | `4001:87636` |
+| `#/popup-welcome` | "Welcome to LINKZ!" first-entry popup | `4001:77356` |
+
+All five of these were built against the frames in **`eX8Lc53tVFuY2QEDW4t1QT`**, which
+carries the same node IDs as the original onboarding file and is readable here.
 
 ### Document uploads are simulated
 
@@ -256,11 +259,13 @@ label. The uploaded state offers **Replace** (re-runs the animation) and **Remov
 | KYC complete | leaving the KYC submitted screen via **Back to Get Started** | yes, ~7s |
 | 2FA complete | pressing **Finish** on the 2-factor step | yes, ~7s |
 | First entry | the first time a user reaches Get Started, whichever path they took in — skipped KYC, KYC without 2FA, or both | yes, ~7s |
-| Change business registration | changing the registration dropdown **after** answering something in KYC section 1 | **no** — it needs a decision |
+| Change business type | changing the registration dropdown **after** answering something in KYC section 1 | **no** — it needs a decision |
 
-The three success popups close themselves after ~7 seconds, show a live countdown, and
-carry a dismiss icon so a reader who is done need not wait. The registration warning is
-deliberately excluded from that rule: it asks whether to discard the form, so it waits.
+The three success popups close themselves after ~7 seconds and carry a dismiss icon so a
+reader who is done need not wait. The frames show a dismiss ✕ and nothing else — no
+confirm button, no visible countdown — so the popups match that; the auto-close is
+behaviour layered on top of the design. The business-type warning is deliberately excluded
+from the rule: it asks whether to discard the form, so it waits for an answer.
 
 If more than one success popup is queued — finishing 2FA and submitting KYC happen back
 to back — they show **in turn** rather than overwriting each other. First entry is tracked

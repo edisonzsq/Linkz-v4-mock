@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Button } from '../../components/ui/Button'
-import { Checkbox, SelectField, TextField } from '../../components/ui/Field'
+import { SelectField, TextField } from '../../components/ui/Field'
 import { Icon } from '../../components/ui/Icon'
 import { Alert, OtpInput } from '../../components/ui/Misc'
 import { AppShell } from '../../layouts/AppShell'
 import { KycField, KycLayout, UploadBox } from '../../layouts/KycLayout'
-import { banks, currentUser, kycSubmitted, twoFactor } from '../../data/mock'
+import { banks, currentUser, kycBank, kycSubmitted, legal, twoFactor } from '../../data/mock'
 import { useFlow } from '../../prototype/flowContext'
 import { useSession } from '../../prototype/sessionContext'
 
@@ -18,31 +18,52 @@ import { useSession } from '../../prototype/sessionContext'
  */
 export function KycBankAccount() {
   const { go } = useFlow()
-  const [form, setForm] = useState({ bank: '', accountName: '', accountNumber: '', branch: '' })
-  const [confirmed, setConfirmed] = useState(false)
+  const { notify } = useSession()
+  const [form, setForm] = useState({ bank: '', accountNumber: '', accountName: '' })
   const upd = (k: keyof typeof form) => (e: { target: { value: string } }) =>
     setForm((f) => ({ ...f, [k]: e.target.value }))
 
-  const canContinue =
-    form.bank !== '' &&
-    form.accountName.trim() !== '' &&
-    form.accountNumber.replace(/\D/g, '').length >= 8 &&
-    confirmed
+  const canSubmit =
+    form.bank !== '' && form.accountNumber.trim() !== '' && form.accountName.trim() !== ''
 
   return (
     <KycLayout
       active="bank"
-      sectionLabel="KYC Section 2 of 2"
-      title="Bank Account Details"
-      continueDisabled={!canContinue}
-      onContinue={() => go('kyc-2fa')}
+      sectionLabel={kycBank.sectionLabel}
+      title={kycBank.title}
+      continueLabel={kycBank.submit}
+      continueDisabled={!canSubmit}
+      onContinue={() => {
+        notify('kyc-complete')
+        go('kyc-submitted')
+      }}
+      secondaryLabel={kycBank.back}
+      onSecondary={() => go('kyc-business')}
     >
-      <p className="text-xs3 text-text-secondary">
-        Where settlements and financing disbursements land. The account must be in the business’s
-        name.
-      </p>
+      <p className="text-xs3 text-text-secondary">{kycBank.intro}</p>
 
-      <KycField label="Bank" hint="The bank holding your business account.">
+      {/* Consent notice — shown above the fields in the frame. */}
+      <div className="flex w-full max-w-[816px] items-start gap-s200 rounded-s200 bg-neutral-100 p-s300">
+        <Icon name="shield" className="mt-px size-4 shrink-0 text-text-secondary" />
+        <p className="text-xs4 text-text-secondary">
+          {kycBank.consent.prefix}
+          <span className="font-bold text-text-primary">{kycBank.consent.action}</span>
+          {kycBank.consent.body}
+          <a href={legal.terms} className="text-primary-500 underline">
+            {kycBank.consent.terms}
+          </a>
+          {kycBank.consent.and}
+          <a href={legal.privacy} className="text-primary-500 underline">
+            {kycBank.consent.privacy}
+          </a>
+          {kycBank.consent.suffix}
+        </p>
+      </div>
+
+      <KycField
+        label={kycBank.fields.bankName.label}
+        hint={kycBank.fields.bankName.hint}
+      >
         <SelectField
           name="bank"
           placeholder="Select your bank"
@@ -52,29 +73,14 @@ export function KycBankAccount() {
         />
       </KycField>
 
-      <KycField label="Branch" hint="Optional — the branch your account was opened at.">
-        <TextField
-          name="branch"
-          placeholder="e.g. Jakarta Kota"
-          value={form.branch}
-          onChange={upd('branch')}
-        />
-      </KycField>
-
-      <KycField label="Account holder name" hint="Exactly as printed on the bank statement.">
-        <TextField
-          name="accountName"
-          placeholder="Type in the account holder name"
-          value={form.accountName}
-          onChange={upd('accountName')}
-        />
-      </KycField>
-
-      <KycField label="Account number" hint="8–16 digits, no spaces.">
+      <KycField
+        label={kycBank.fields.accountNumber.label}
+        hint={kycBank.fields.accountNumber.hint}
+      >
         <TextField
           name="accountNumber"
           inputMode="numeric"
-          placeholder="0000000000"
+          placeholder={kycBank.fields.accountNumber.placeholder}
           value={form.accountNumber}
           onChange={(e) =>
             setForm((f) => ({ ...f, accountNumber: e.target.value.replace(/\D/g, '') }))
@@ -83,25 +89,36 @@ export function KycBankAccount() {
       </KycField>
 
       <KycField
-        label="Bank statement"
-        hint="A recent statement showing the account holder name and number."
+        label={kycBank.fields.accountName.label}
+        hint={kycBank.fields.accountName.hint}
+      >
+        <TextField
+          name="accountName"
+          placeholder={kycBank.fields.accountName.placeholder}
+          value={form.accountName}
+          onChange={upd('accountName')}
+        />
+      </KycField>
+
+      <div className="h-px w-full max-w-[816px] border-t border-neutral-200" />
+
+      <div className="flex w-full max-w-[816px] items-start gap-s200 rounded-s200 bg-neutral-100 p-s300">
+        <Icon name="info" className="mt-px size-4 shrink-0 text-text-secondary" />
+        <p className="text-xs4 text-text-secondary">
+          {kycBank.uploadNote.prefix}
+          <span className="font-bold text-text-primary">{kycBank.uploadNote.formats}</span>
+          {kycBank.uploadNote.middle}
+          <span className="font-bold text-text-primary">{kycBank.uploadNote.size}</span>
+          {kycBank.uploadNote.suffix}
+        </p>
+      </div>
+
+      <KycField
+        label={kycBank.fields.statement.label}
+        hint={kycBank.fields.statement.hint}
       >
         <UploadBox label="Bank statement" />
       </KycField>
-
-      <div className="h-px w-full border-t border-neutral-200" />
-
-      <Alert tone="warning" className="w-full max-w-[816px]">
-        A mismatch between the account name and your registered business name is the most common
-        reason verification is delayed.
-      </Alert>
-
-      <Checkbox
-        id="confirm-bank"
-        checked={confirmed}
-        onChange={setConfirmed}
-        label="I confirm this account belongs to the business named on this application."
-      />
     </KycLayout>
   )
 }

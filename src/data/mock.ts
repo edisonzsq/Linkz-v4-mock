@@ -159,6 +159,50 @@ export const industries = [
 ]
 
 
+/** KYC Section 2 — from Figma node 4001:84939. */
+export const kycBank = {
+  sectionLabel: 'KYC Section 2 of 2',
+  title: 'Bank Account Details',
+  intro:
+    'Where LINKZ will send your payouts. This account must be registered under your business or your own name.',
+  back: 'Back',
+  submit: 'Submit KYC',
+  consent: {
+    prefix: 'By clicking ',
+    action: 'Submit KYC',
+    body: ', you confirm the information and documents you have provided is accurate and agree to LINKZ\u2019s ',
+    terms: 'Terms & Conditions',
+    and: ' and ',
+    privacy: 'Privacy Policy',
+    suffix:
+      ', including storing and processing this data for business verification. Your KYC will be sent to LINKZ for review and can no longer be edited.',
+  },
+  fields: {
+    bankName: { label: 'Bank name', hint: 'The bank where your business account is held.' },
+    accountNumber: {
+      label: 'Bank account number',
+      hint: 'The account used for your business transactions.',
+      placeholder: 'Type in account number',
+    },
+    accountName: {
+      label: 'Account holder name',
+      hint: 'The name registered on your bank account.',
+      placeholder: 'Type in account holder name',
+    },
+    statement: {
+      label: 'Bank statement',
+      hint: 'A document showing your account number and account holder name.',
+    },
+  },
+  uploadNote: {
+    prefix: 'All uploads accept ',
+    formats: 'JPEG, PNG, PDF, DOC',
+    middle: ' \u00b7 max ',
+    size: '10 MB',
+    suffix: '. Names must match across your KTP, NPWP, and bank account.',
+  },
+}
+
 export const banks = [
   { value: 'bca', label: 'Bank Central Asia (BCA)' },
   { value: 'bri', label: 'Bank Rakyat Indonesia (BRI)' },
@@ -235,10 +279,12 @@ export const kycBusiness = {
   uploadCta: 'Upload File',
   uploadHint: 'JPEG, PNG, PDF, DOC · Max 10 MB',
   registrationWarning: {
-    title: 'Change business registration?',
-    body: 'Changing your business registration clears everything you have filled in on this form, because a different registration needs a different set of documents. You will need to enter your details again.',
-    confirm: 'Change and clear',
-    cancel: 'Keep my answers',
+    title: 'Change business type?',
+    body1: 'Changing your business type means we need different information and documents.',
+    body2:
+      'Everything you\u2019ve filled in so far, including your uploads, will be cleared. You\u2019ll need to start again from Business Overview.',
+    confirm: 'Change and Clear',
+    cancel: 'Cancel',
   },
 }
 
@@ -323,23 +369,23 @@ export const getStarted = {
  * after ~7s and carry a dismiss icon — see `SuccessPopup`.
  */
 export const successPopups = {
+  /** Figma 4001:85240 */
   'kyc-complete': {
-    icon: 'circle-check',
-    title: 'KYC submitted',
-    body: 'Your business details are with our team. Verification usually takes one working day, and we will email you as soon as it is done.',
-    cta: 'Continue',
+    art: 'check',
+    title: 'KYC Documents Submitted',
+    body: 'Your KYC documents have been successfully submitted and are currently under review.\nPlease allow 1-2 business days for the verification process. We\u2019ll notify you once your account has been approved.',
   },
+  /** Figma 4001:87636 */
   'two-factor-complete': {
-    icon: 'shield',
-    title: 'Two-factor authentication is on',
-    body: 'From now on you will confirm a 6-digit code when you log in and when you approve orders or financing.',
-    cta: 'Done',
+    art: 'check',
+    title: '2FA Verified',
+    body: 'Your account has been verified successfully. You\u2019ll be redirected to Get Started.',
   },
+  /** Figma 4001:77356 — illustration sits above the title on this one. */
   welcome: {
-    icon: 'rocket',
+    art: 'welcome',
     title: 'Welcome to LINKZ!',
-    body: 'Your account is ready. You can pick up anything you have not finished from Get Started whenever you like.',
-    cta: 'Get Started',
+    body: 'Your account is ready. You can pick up your unfinished KYC anytime from the Get Started to unlock more features.',
   },
 } as const
 

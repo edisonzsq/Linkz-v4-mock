@@ -164,14 +164,18 @@ export function KycBusinessOverview() {
           <UploadBox label={u.label} />
         </KycField>
       ))}
-      <Modal open={pendingRegistration !== null} onClose={() => setPendingRegistration(null)}>
-        <div className="flex flex-col items-center gap-s300 px-10 py-8 text-center">
-          <span className="grid size-12 place-items-center rounded-full bg-warning-bg text-warning">
-            <Icon name="alert-circle" className="size-6" />
+      {/* Figma 4001:84707 — title above the icon, two paragraphs, no auto-dismiss. */}
+      <Modal open={pendingRegistration !== null} onClose={() => setPendingRegistration(null)} width={480}>
+        <div className="flex flex-col items-center gap-s400 px-10 pt-10 pb-8 text-center">
+          <h2 className="text-lg font-bold text-text-primary">{copy.registrationWarning.title}</h2>
+          <span className="grid size-16 place-items-center rounded-full bg-[#f59e0b] text-white">
+            <span className="text-xl font-bold leading-none">!</span>
           </span>
-          <h2 className="text-md font-bold text-text-primary">{copy.registrationWarning.title}</h2>
-          <p className="text-xs3 text-text-secondary">{copy.registrationWarning.body}</p>
-          <div className="mt-s200 flex w-full flex-col-reverse gap-s200 sm:flex-row sm:justify-center">
+          <div className="flex flex-col gap-s300">
+            <p className="text-xs2 text-text-secondary">{copy.registrationWarning.body1}</p>
+            <p className="text-xs2 text-text-secondary">{copy.registrationWarning.body2}</p>
+          </div>
+          <div className="mt-s200 grid w-full grid-cols-1 gap-s200 sm:grid-cols-2">
             <Button variant="outline" onClick={() => setPendingRegistration(null)}>
               {copy.registrationWarning.cancel}
             </Button>

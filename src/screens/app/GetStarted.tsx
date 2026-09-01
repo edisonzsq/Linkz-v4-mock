@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Icon } from '../../components/ui/Icon'
-import { SuccessPopup } from '../../components/ui/SuccessPopup'
+import { ConfettiCheck, SuccessPopup } from '../../components/ui/SuccessPopup'
 import { AppShell } from '../../layouts/AppShell'
 import { currentUser, getStarted as copy, successPopups } from '../../data/mock'
 import { useFlow } from '../../prototype/flowContext'
@@ -132,11 +132,10 @@ export function GetStarted({ forcePopup }: { forcePopup?: PopupId } = {}) {
         <SuccessPopup
           open={popupOpen}
           onClose={closePopup}
-          icon={popup.icon}
           title={popup.title}
           body={popup.body}
-          cta={popup.cta}
-          art={popupId === 'welcome' ? <WelcomeArt /> : undefined}
+          art={popup.art === 'welcome' ? <WelcomeArt /> : <ConfettiCheck />}
+          artFirst={popup.art === 'welcome'}
         />
       )}
     </AppShell>

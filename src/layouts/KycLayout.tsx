@@ -20,6 +20,8 @@ export function KycLayout({
   onContinue,
   continueLabel = 'Continue',
   continueDisabled,
+  secondaryLabel,
+  onSecondary,
   children,
 }: {
   active: 'business' | 'bank' | '2fa'
@@ -28,6 +30,9 @@ export function KycLayout({
   onContinue: () => void
   continueLabel?: string
   continueDisabled?: boolean
+  /** Optional outline action beside the primary one — e.g. "Back" on Section 2. */
+  secondaryLabel?: string
+  onSecondary?: () => void
   children: ReactNode
 }) {
   const { go } = useFlow()
@@ -145,9 +150,17 @@ export function KycLayout({
                 <p className="text-xs3 font-bold text-primary-500">{sectionLabel}</p>
                 <p className="text-md font-bold text-text-primary">{title}</p>
               </div>
-              <Button onClick={onContinue} disabled={continueDisabled}>
-                {continueLabel}
-              </Button>
+              {/* Actions group together on the right, as in the frames. */}
+              <div className="flex shrink-0 items-center gap-s200">
+                {secondaryLabel && (
+                  <Button variant="outline" onClick={onSecondary}>
+                    {secondaryLabel}
+                  </Button>
+                )}
+                <Button onClick={onContinue} disabled={continueDisabled}>
+                  {continueLabel}
+                </Button>
+              </div>
             </div>
 
             <div className="flex w-full flex-col items-start gap-s400 bg-white p-s300">
