@@ -378,7 +378,7 @@ export const purchaseOrders = {
       total: 'IDR 1.000.000,00',
       invoice: '—',
       updated: '5 Feb 2026 08:20 AM',
-      status: 'Sent',
+      status: 'Invoiced',
     },
     {
       no: '150725-0000060',
@@ -1206,6 +1206,76 @@ export const checkout = {
   paidBody:
     'We have received your payment and notified the seller. The order moves to Paid on the order list.',
   paidCta: 'Back to Purchase Order',
+}
+
+/* ---------- Order Report (from Figma, nodes 7017:1308 / 7017:1508 / 7017:1350) ---------- */
+
+export const orderReport = {
+  breadcrumb: ['Order', 'Order Report'],
+  title: 'Order Report',
+  exportCta: 'Export as .XLSX',
+  tabs: [
+    { id: 'settlement', label: 'Settlement' },
+    { id: 'payments', label: 'Payments' },
+  ],
+  presets: [
+    { id: 'today', label: 'Today' },
+    { id: 'yesterday', label: 'Yesterday' },
+    { id: 'last7', label: 'Last 7 days' },
+    { id: 'custom', label: 'Custom' },
+  ],
+  picker: { from: 'From', to: 'To', cancel: 'Cancel', apply: 'Apply' },
+  allStatus: 'All Status',
+  sort: { desc: 'Descending', asc: 'Ascending' },
+
+  settlement: {
+    columns: [
+      'Payment Success Date',
+      'Order Number',
+      'Customer',
+      'Payment Method',
+      'Settlement Amount',
+      'Status',
+    ],
+    perPageNoun: 'order',
+    totalLabel: 'Total:',
+    orders: (n: number) => `${n} order${n === 1 ? '' : 's'}`,
+    emptyTitle: 'No settlements in this range',
+    emptyBody: 'Settle a sales invoice and it will appear here.',
+    /**
+     * Statuses per the designer's note (7017:1307):
+     *   paid but not yet in the sheet        -> Pending
+     *   in the sheet but not settled          -> Pending
+     *   in the sheet and settled              -> Settled
+     *   settled but turned out fraudulent     -> Charge Back
+     *   not settled and turned out fraudulent -> Cancelled
+     */
+    statuses: ['Settled', 'Pending', 'Charge Back', 'Cancelled'],
+    rows: [
+      { date: '5 June 2026', time: '09:15 AM', order: '20260605-001', customer: 'PT Maju Bersama', method: 'Credit Card', amount: 2_500_000, status: 'Charge Back' },
+      { date: '5 June 2026', time: '11:30 AM', order: '20260605-002', customer: 'CV Sumber Rezeki', method: 'Bank Transfer', amount: 1_500_000, status: 'Pending' },
+      { date: '4 June 2026', time: '02:45 PM', order: '20260604-001', customer: 'PT Sentosa Abadi', method: 'Virtual Account', amount: 3_000_000, status: 'Settled' },
+      { date: '3 June 2026', time: '04:20 PM', order: '20260603-001', customer: 'PT Harmoni Jaya', method: 'QRIS', amount: 1_500_000, status: 'Cancelled' },
+    ],
+  },
+
+  payments: {
+    columns: [
+      'No.',
+      'Order Number',
+      'Invoice Number',
+      'Paid to',
+      'Payment Date',
+      'Amount Paid',
+      'Payment Method',
+    ],
+    perPageNoun: 'payment',
+    emptyTitle: 'No payments in this range',
+    emptyBody: 'Pay a purchase invoice and it will appear here.',
+    rows: [
+      { order: '20225-0000001', invoice: 'INV-001', paidTo: 'Customer Company Ltd.', date: '5 June 2026 06:00 AM', amount: 100_000_000, method: 'Credit Card' },
+    ],
+  },
 }
 
 /* ---------- shared ---------- */

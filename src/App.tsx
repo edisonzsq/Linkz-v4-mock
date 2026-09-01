@@ -26,6 +26,7 @@ import {
   Referrals,
 } from './screens/app/Account'
 import { NotBuilt } from './screens/app/NotBuilt'
+import { OrderReport } from './screens/app/OrderReport'
 import { Checkout } from './screens/app/Checkout'
 
 function renderScreen(screen: ScreenId) {
@@ -95,7 +96,7 @@ function renderScreen(screen: ScreenId) {
     case 'referrals':
       return <Referrals />
     case 'order-report':
-      return <NotBuilt title="Order Report" activeNav="order-report" />
+      return <OrderReport />
     case 'my-catalogue':
       return <NotBuilt title="My Catalogue" activeNav="my-catalogue" />
     case 'shared-catalogue':

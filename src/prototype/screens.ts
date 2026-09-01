@@ -22,6 +22,7 @@ export const screens = [
   { id: 'dashboard', label: 'Dashboard', group: 'General' },
   { id: 'sales-orders', label: 'Sales Order', group: 'General' },
   { id: 'purchase-orders', label: 'Purchase Order', group: 'General' },
+  { id: 'order-report', label: 'Order Report', group: 'General' },
   { id: 'order-new', label: 'Create Order', group: 'General' },
   { id: 'checkout', label: 'Checkout', group: 'General' },
   { id: 'master-products', label: 'Master Products', group: 'General' },
@@ -40,8 +41,6 @@ export const screens = [
   { id: 'contacts', label: 'Business Contact', group: 'Account' },
   { id: 'referrals', label: 'Referrals', group: 'Account' },
 
-  /* Design screens outside the built happy path — see NotBuilt.tsx */
-  { id: 'order-report', label: 'Order Report', group: 'Not built' },
   { id: 'my-catalogue', label: 'My Catalogue', group: 'Not built' },
   { id: 'shared-catalogue', label: 'Shared with me', group: 'Not built' },
 ] as const

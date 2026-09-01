@@ -16,10 +16,10 @@ export function statusTone(status: string): Tone {
       return 'success'
     case 'Pending':
     case 'Processing':
+    case 'Overpaid':
     case 'Under Review':
     case 'Invited':
     case 'Outstanding':
-    case 'Sent':
       return 'warning'
     case 'Cancelled':
     case 'Rejected':
@@ -27,7 +27,10 @@ export function statusTone(status: string): Tone {
       return 'danger'
     case 'Confirmed':
     case 'Invoiced':
+    case 'Charge Back':
       return 'info'
+    case 'Void':
+      return 'neutral'
     default:
       return 'neutral'
   }
