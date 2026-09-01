@@ -2,8 +2,10 @@ import { useState, type ReactNode } from 'react'
 import { Icon } from '../components/ui/Icon'
 import { LanguagePicker } from '../components/ui/Misc'
 import { Logo } from '../components/ui/Logo'
+import { navLanding } from '../data/appData'
 import { currentUser, sidebarFooter, sidebarNav } from '../data/mock'
 import { useFlow } from '../prototype/flowContext'
+import type { ScreenId } from '../prototype/screens'
 
 /**
  * In-app shell used by the Get Started and KYC screens
@@ -38,7 +40,13 @@ export function AppShell({
             <button
               key={n.id}
               type="button"
-              onClick={() => setMobileNav(false)}
+              onClick={() => {
+                setMobileNav(false)
+                // These entries used to be inert. They now cross into the V.4
+                // areas, so the sidebar works the same on the onboarding
+                // screens as it does in the console.
+                go((navLanding[n.id] ?? n.id) as ScreenId)
+              }}
               className={`flex items-center gap-s200 rounded-s200 px-2 py-2 text-xs3 font-medium transition-colors ${
                 n.id === activeNav
                   ? 'bg-primary-50 text-primary-400'

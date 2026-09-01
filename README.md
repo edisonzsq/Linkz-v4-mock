@@ -213,6 +213,12 @@ the designed error state.
 | `#/contacts` | Business Contact | `4001:253744` |
 | `#/referrals` | Referrals — how it works + history | `4001:263130` |
 
+**Sidebar behaviour:** clicking a group (Order, Catalogue, Finance, Manage) from outside
+that section opens it *and* goes to its landing screen — Sales Order, Master Products,
+Seller Pay Later and My Profile respectively. Clicking it while you are already inside
+that section just collapses or expands the submenu. The same four entries on the
+onboarding shell (Get Started, KYC) cross into those areas too.
+
 Three sidebar destinations exist in the design but are **outside the built happy path** —
 `#/order-report`, `#/my-catalogue`, `#/shared-catalogue`. They render an explicit
 "not part of this mock" placeholder rather than dropping you on the sign-up screen

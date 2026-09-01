@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { Icon } from '../components/ui/Icon'
 import { Logo } from '../components/ui/Logo'
-import { appNav, appSubNav, topBar } from '../data/appData'
+import { appNav, appSubNav, navLanding, topBar } from '../data/appData'
 import { currentUser, sidebarFooter } from '../data/mock'
 import { useFlow } from '../prototype/flowContext'
 import type { ScreenId } from '../prototype/screens'
@@ -64,9 +64,15 @@ export function ConsoleShell({
               <div key={n.id}>
                 <button
                   type="button"
-                  onClick={() =>
-                    n.expandable ? setOpen(expanded ? null : n.id) : navigate(n.id)
-                  }
+                  onClick={() => {
+                    if (!n.expandable) return navigate(n.id)
+                    // Already inside this section: the label just toggles the
+                    // submenu. From anywhere else it opens the section AND goes
+                    // to its landing screen, so the click is never a no-op.
+                    if (groupOf === n.id) return setOpen(expanded ? null : n.id)
+                    setOpen(n.id)
+                    navigate(navLanding[n.id] ?? n.id)
+                  }}
                   aria-expanded={n.expandable ? expanded : undefined}
                   className={`flex w-full items-center gap-s200 rounded-s200 px-2 py-2 text-xs3 font-medium transition-colors ${
                     active

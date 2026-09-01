@@ -48,6 +48,18 @@ export const appSubNav: Record<string, { id: string; label: string }[]> = {
   ],
 }
 
+/**
+ * Where each sidebar group lands when its label is clicked. Points at the
+ * built screen in that section, not necessarily the first sub-item —
+ * Catalogue's first entry (My Catalogue) is outside the built happy path.
+ */
+export const navLanding: Record<string, string> = {
+  order: 'sales-orders',
+  catalogue: 'master-products',
+  finance: 'spl',
+  manage: 'profile',
+}
+
 export const topBar = {
   getStartedLabel: 'Get Started',
   getStartedProgress: '1/3',
