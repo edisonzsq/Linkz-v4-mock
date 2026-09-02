@@ -33,8 +33,8 @@ If asked to go deeper, the highest-value next targets are, in order:
    representation at all.
 3. **Pop-up frames** — send order, delete confirmation, address picker. `Modal` already
    exists in `components/ui/Misc.tsx`.
-4. **Order Report, My Catalogue, Shared with me** — currently render the `NotBuilt`
-   placeholder.
+4. **My Catalogue, Shared with me** — currently render the `NotBuilt` placeholder.
+   (Order Report is built — see below.)
 
 ## Environment constraints found the hard way
 
@@ -104,24 +104,37 @@ stayed hidden on the next popup route. Keep the key if you touch the router.
 `docs/order-behaviour-handover.md` is the spec Edison supplied — read it before touching
 Orders. Every Figma node ID in it resolves in `eX8Lc53tVFuY2QEDW4t1QT`.
 
+**`docs/order-answers.md` records the nine rulings** Sanders gave on 2 Sep 2026. Read it
+alongside the spec — three of them **override** the handover (Q3b, Q7, Q8), and the spec now
+carries a pointer at each affected section. Nothing in the Order module should be built
+against §6 or §9 without it.
+
 **Built so far:**
 
 - `src/state/orders.ts` — the money model (§2–3): line/order totals, `financeFor`,
   committed vs pending, status derivation, the single `completeOrder` path, send planning
-  and `parseAmount`. Pure functions, no React. `src/state/orders.test.ts` pins the rules
-  the spec calls out as costly to get wrong (37 tests).
+  and `parseAmount`. Plus the rulings: `canCancel` (Q8) and `invoiceActionsFor` (Q7).
+  Pure functions, no React; `orders.test.ts` pins them (54 tests).
+- `src/state/settlements.ts` — Order Report rows (Q3b, Q6): seeded relative to *today*,
+  created `Pending` and never `Settled`, with range filtering and day grouping. 19 tests.
 - `src/screens/app/OrderReport.tsx` + `components/app/DateRangePicker.tsx` — §9, from
-  Figma `7017:1308` / `7017:1508` / `7017:1350`. Date helpers live in
-  `components/app/dateUtils.ts` with their own tests (12).
+  Figma `7017:1308` / `7017:1508` / `7017:1350`. The range **filters for real**. Date
+  helpers live in `components/app/dateUtils.ts` with their own tests (12).
+- `src/screens/app/Orders.tsx` — the list reads from the shared store and **starts empty**
+  (Q4); Create Order writes a real order into it.
 
-**Not built yet** (§4–8): the list reading from state, the rebuilt Create/Edit order,
-`OrderDetail` with the invoice table, the overpaid flow, the send dialogs, and wiring
-Checkout to settle an invoice. The state module already supports all of them — those
-screens are UI over `orders.ts`.
+**Not built yet** (§5–8): the Create/Edit order rebuilt to the Figma layout with the
+Product & Service table and auto-save, `OrderDetail` with the invoice table, the overpaid
+flow UI, the send dialogs, wiring Checkout to settle an invoice, and Add New Contact. The
+state module already supports all of them — those screens are UI over `orders.ts`.
 
-**Open question** in §5.5, unanswered: on an even-out send the closing invoice currently
-lands at `IDR 0,00`. Making it non-zero would mean restating an earlier invoice, which
-contradicts §3.4. `sendOrder` implements the zero and flags it in a comment.
+**Two things a trainer needs to be told**, both intended, both easy to report as bugs:
+
+1. The order list starts empty, so the **Dashboard and Finance figures do not reconcile
+   against it** (Q4). Empty states for those screens are designed but not built.
+2. A settlement row created in the prototype **stays `Pending` forever** — only a LINKZ
+   admin can settle one, and there is no admin panel here (Q3b). The dev/demo control the
+   answer offered as an option is not built.
 
 ## Conventions
 

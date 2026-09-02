@@ -213,7 +213,23 @@ export function completeOrder(o: Order): void {
   o.updated = now()
 }
 
+/**
+ * Whether the order can still be cancelled.
+ *
+ * Answered in `docs/order-open-questions.md` Q8: an order that already has a
+ * paid invoice against it cannot be cancelled. Money has changed hands, so the
+ * way out is completion (or a refund handled outside this flow), not erasure.
+ * The handover's §6 allowed cancelling at any point before completion; this
+ * narrows it.
+ */
+export function canCancel(o: Order): boolean {
+  if (o.status === 'Completed' || o.status === 'Cancelled' || o.status === 'Draft') return false
+  return !o.invoices.some((i) => i.status === 'Paid')
+}
+
+/** No-ops when {@link canCancel} is false, so no caller can route around it. */
 export function cancelOrder(o: Order): void {
+  if (!canCancel(o)) return
   o.invoices.forEach((i) => {
     if (i.status === 'Unpaid') i.status = 'Void'
   })
@@ -326,6 +342,11 @@ function nextInvoiceNo(o: Order): string {
 export function sendOrder(o: Order, amount?: number): SendPlan {
   const plan = planSend(o)
 
+  // A draft leaves Draft on its first send. `refreshStatus` deliberately never
+  // derives *out* of Draft (§3.3), so the send is what has to say so — without
+  // this a sent order keeps showing as a draft while carrying a live invoice.
+  if (o.status === 'Draft') o.status = 'Invoiced'
+
   if (plan.kind === 'over-invoiced') {
     // Void the open invoices, commit, and let the caller reopen the amount
     // dialog at the corrected remaining.
@@ -344,8 +365,11 @@ export function sendOrder(o: Order, amount?: number): SendPlan {
       no: nextInvoiceNo(o),
       issued: now(),
       grand: o.grand,
-      // The paid invoices already cover the adjusted total, so nothing is left
-      // to bill. See the open question in §5.5 of the handover.
+      // Nothing is left to bill — the paid invoices already cover the adjusted
+      // total. Answered in `docs/order-open-questions.md` Q1: issue the closing
+      // invoice at zero and mark it Paid, so every send still raises an invoice
+      // and the table stays a complete record of what was sent, without
+      // restating an earlier invoice (§3.4).
       payable: 0,
       status: 'Paid',
       reminded: false,
@@ -381,8 +405,29 @@ export function actionsFor(o: Order): string[] {
   const actions = ['Duplicate as Draft', 'Download All PDF']
   if (sendable(o)) actions.push('Send Order')
   if (o.status === 'Overpaid') actions.push('Set as Complete')
-  // Cancel disappears once the order is closed or overpaid.
-  if (o.status === 'Invoiced') actions.push('Cancel Order')
+  // Cancel disappears once the order is closed, overpaid, or has taken money.
+  if (o.status === 'Invoiced' && canCancel(o)) actions.push('Cancel Order')
+  return actions
+}
+
+/**
+ * Row actions for one invoice inside an order (§6).
+ *
+ * Answered in `docs/order-open-questions.md` Q7: purchase invoices gain **Void
+ * Invoice** but deliberately not Mark as Paid. A buyer must not be able to
+ * settle a seller's invoice by fiat — payment happens only at checkout — but an
+ * invoice raised in error has to be retractable, or the order can never close.
+ * The handover's §6 gave purchase invoices a download icon and nothing else.
+ */
+export function invoiceActionsFor(o: Order, inv: Invoice): string[] {
+  const actions = ['Download PDF']
+  // A closed invoice is history; a closed order is not up for editing.
+  const settled = inv.status === 'Void' || inv.status === 'Paid'
+  const closed = o.status === 'Completed' || o.status === 'Cancelled'
+  if (settled || closed) return actions
+
+  if (o.kind === 'sales') actions.push('Mark as Paid')
+  actions.push('Void Invoice')
   return actions
 }
 

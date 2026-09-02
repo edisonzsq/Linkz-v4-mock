@@ -1241,22 +1241,17 @@ export const orderReport = {
     totalLabel: 'Total:',
     orders: (n: number) => `${n} order${n === 1 ? '' : 's'}`,
     emptyTitle: 'No settlements in this range',
-    emptyBody: 'Settle a sales invoice and it will appear here.',
+    emptyBody: 'Widen the date range, or settle a sales invoice and it will appear here.',
     /**
-     * Statuses per the designer's note (7017:1307):
-     *   paid but not yet in the sheet        -> Pending
-     *   in the sheet but not settled          -> Pending
-     *   in the sheet and settled              -> Settled
-     *   settled but turned out fraudulent     -> Charge Back
-     *   not settled and turned out fraudulent -> Cancelled
+     * Four statuses, not the five in the designer's note (7017:1307).
+     * Confirmed in `docs/order-open-questions.md` Q2: the note's two "pending"
+     * conditions — paid but not yet in the LINKZ admin sheet, and in the sheet
+     * but not yet settled out — are one and the same to the user. The
+     * distinction is an internal admin state and lives in the admin panel.
      */
     statuses: ['Settled', 'Pending', 'Charge Back', 'Cancelled'],
-    rows: [
-      { date: '5 June 2026', time: '09:15 AM', order: '20260605-001', customer: 'PT Maju Bersama', method: 'Credit Card', amount: 2_500_000, status: 'Charge Back' },
-      { date: '5 June 2026', time: '11:30 AM', order: '20260605-002', customer: 'CV Sumber Rezeki', method: 'Bank Transfer', amount: 1_500_000, status: 'Pending' },
-      { date: '4 June 2026', time: '02:45 PM', order: '20260604-001', customer: 'PT Sentosa Abadi', method: 'Virtual Account', amount: 3_000_000, status: 'Settled' },
-      { date: '3 June 2026', time: '04:20 PM', order: '20260603-001', customer: 'PT Harmoni Jaya', method: 'QRIS', amount: 1_500_000, status: 'Cancelled' },
-    ],
+    // Rows live in `src/state/settlements.ts` — they carry real timestamps
+    // seeded relative to today so the range filter has something to bite on.
   },
 
   payments: {
@@ -1271,10 +1266,8 @@ export const orderReport = {
     ],
     perPageNoun: 'payment',
     emptyTitle: 'No payments in this range',
-    emptyBody: 'Pay a purchase invoice and it will appear here.',
-    rows: [
-      { order: '20225-0000001', invoice: 'INV-001', paidTo: 'Customer Company Ltd.', date: '5 June 2026 06:00 AM', amount: 100_000_000, method: 'Credit Card' },
-    ],
+    emptyBody: 'Widen the date range, or pay a purchase invoice and it will appear here.',
+    // Rows live in `src/state/settlements.ts`.
   },
 }
 

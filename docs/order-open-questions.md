@@ -1,8 +1,17 @@
 # Order module — open questions
 
+> ## ✅ ANSWERED — 2 September 2026, by Sanders
+>
+> All nine questions were answered. **Read `docs/order-answers.md` instead of this file** —
+> it records the decisions and what each one changed. The signed sheet is
+> `docs/Order module - answers (Sanders, 2 Sep 2026).docx`.
+>
+> This file is kept as the record of what was asked, and as the source for
+> `tools/build-questions-docx.py` if another round of questions is needed.
+
 **To:** the author of `LINKZ ORDER BEHAVIOUR HANDOVER`
 **From:** the team implementing it in `edisonzsq/Linkz-v4-mock`
-**Date sent:** _(fill in)_
+**Date sent:** 2 September 2026 · **Answered:** 2 September 2026
 
 ---
 

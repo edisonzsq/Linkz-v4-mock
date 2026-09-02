@@ -218,6 +218,11 @@ Figma `4001:13592` (sales) / `4001:13799` (purchase).
 
 - Starts **empty**; the empty state is the front door with a single **Create Order** CTA.
   There is no Download Template or Upload Order button.
+
+  > **Confirmed — `docs/order-answers.md` Q4**, against the alternative of seeding the list
+  > for training. The knock-on is accepted and intended: the Dashboard's order counts and the
+  > Finance figures keep their own illustrative values and **do not reconcile against this
+  > list**. Say so in a training session before someone reports it as a bug.
 - Sales and purchase keep **separate lists** — filter by `kind`.
 - Sales has Search / Type / Status / Sort; **purchase has no Type filter**.
 - Status filter options are the five order statuses.
@@ -334,10 +339,10 @@ Assemble one confirmation from what the send will actually do:
 **Amount to Pay** (purchase, `4001:10618`) relabels the summary rows: *Already Paid* /
 *Remaining to Pay* / *Set Amount to Pay*.
 
-> **Open question for Edison.** On the even-out send the closing invoice currently lands at
-> `IDR 0,00` — the paid invoices already cover the adjusted total, so nothing is left to
-> bill. Making it non-zero requires restating the earlier invoice, which conflicts with
-> §3.4. Confirm the intended figure before building this one.
+> **Answered — `docs/order-answers.md` Q1.** On an even-out send the closing invoice is
+> raised at **IDR 0,00, with status Paid**, and the order is completed. Making it non-zero
+> would mean restating the earlier invoice, which §3.4 forbids. Every send still raises an
+> invoice, so the table stays a complete record of what was sent.
 
 ---
 
@@ -351,7 +356,12 @@ Columns: No. · Invoice No. · Issue Date · Grand Total Amount · Payable Amoun
 | | Sales | Purchase |
 | --- | --- | --- |
 | Last column | `Payment Link` → **Send Reminder** | `Payment` → **Make Payment** |
-| Row actions | ⋮ menu: Download PDF · Mark as Paid · Void Invoice | **download icon only** (no menu) |
+| Row actions | ⋮ menu: Download PDF · Mark as Paid · Void Invoice | ~~download icon only (no menu)~~ Download PDF · **Void Invoice** |
+
+> **Superseded — `docs/order-answers.md` Q7.** Purchase invoices also get **Void Invoice**,
+> though still no Mark as Paid: a buyer must not settle a seller's invoice by fiat, but an
+> invoice raised in error has to be retractable or the order can never be closed.
+> Implemented by `invoiceActionsFor()` in `src/state/orders.ts`.
 
 **When a menu would hold only Download, render the icon directly** instead of a one-item
 menu — that is why settled sales invoices also show the bare icon.
@@ -367,6 +377,11 @@ creates a separate Draft copy and leaves the original untouched.
 
 **Cancel Order** confirms (`4001:14986`), voids open invoices and locks the order
 (`4001:16814`).
+
+> **Narrowed — `docs/order-answers.md` Q8.** An order that already has a **paid** invoice
+> against it **cannot be cancelled** at all; the way out of it is completion. `canCancel()`
+> gates this and `cancelOrder()` refuses when it is false, so the row menu and the header
+> CTA cannot disagree.
 
 **Completed / Cancelled:** every field `disabled` (not read-only) so values still show but
 grey out — including Remarks and the Payment Details inputs.
@@ -467,7 +482,16 @@ Figma `7017:1308` (Settlement), `7017:1508` (Payments), `7017:1350` (date picker
 > `eX8Lc53tVFuY2QEDW4t1QT`; the Order Report was added later under section
 > `7017:1065`. The IDs above are the live ones and are what this repo was built
 > against.
-Currently the `NotBuilt` placeholder; `order-report` already exists in `screens.ts`.
+Built — `src/screens/app/OrderReport.tsx`, rows in `src/state/settlements.ts`.
+
+> **Three rulings apply here (`docs/order-answers.md`).**
+> **Q2** — four status chips, not the five in the designer's note; the two "pending"
+> conditions are one and the same to the user.
+> **Q3b** — a settlement row is created **Pending** and is only moved to Settled by a LINKZ
+> admin, which this prototype has no panel for; `Settled` therefore appears only on seeded
+> rows, and `newSettlementRow()` offers no way to construct one.
+> **Q6** — the date range **filters for real**, and the sample rows are seeded relative to
+> today so "Last 7 days" is never empty.
 
 Header: title + **Export as .XLSX**. Tabs: **Settlement** | **Payments**.
 Toolbar: date-range picker (left), Status filter and Descending/Ascending sort (right).

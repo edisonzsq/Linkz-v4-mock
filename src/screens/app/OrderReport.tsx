@@ -19,9 +19,19 @@ import { Icon } from '../../components/ui/Icon'
 import { ConsoleShell } from '../../layouts/ConsoleShell'
 import { orderReport as rp } from '../../data/appData'
 import { formatIDR } from '../../state/orders'
+import {
+  filterByRange,
+  formatClock,
+  formatDay,
+  formatDayTime,
+  groupByDay,
+  seedPayments,
+  seedSettlements,
+  type DayGroup,
+  type PaymentRow,
+} from '../../state/settlements'
 
 type Tab = (typeof rp.tabs)[number]['id']
-type SettlementRow = (typeof rp.settlement.rows)[number]
 
 /**
  * Order Report — Figma 7017:1308 (Settlement), 7017:1508 (Payments),
@@ -29,34 +39,34 @@ type SettlementRow = (typeof rp.settlement.rows)[number]
  *
  * §9 of `docs/order-behaviour-handover.md`. The two tables are shaped
  * differently on purpose: Settlement groups by day and carries a Status
- * column; Payments is a flat numbered ledger with neither.
+ * column; Payments is a flat numbered ledger with neither — confirmed in
+ * `docs/order-open-questions.md` Q5, which also removed the status filter from
+ * the Payments tab.
+ *
+ * The date range **filters for real** (Q6): rows are seeded relative to today
+ * in `state/settlements.ts`, so the default "Last 7 days" is always populated.
  */
 export function OrderReport() {
   const [tab, setTab] = useState<Tab>('settlement')
   const [preset, setPreset] = useState<PresetId>('last7')
   const [range, setRange] = useState<DateRange>(() => rangeForPreset('last7'))
   const [desc, setDesc] = useState(true)
+  const [status, setStatus] = useState('')
 
-  /** Settlement rows grouped by day, with a per-day total and order count. */
+  // Seeded once per mount, relative to the day the prototype is opened.
+  const [settlements] = useState(() => seedSettlements())
+  const [payments] = useState(() => seedPayments())
+
   const groups = useMemo(() => {
-    const byDay = new Map<string, SettlementRow[]>()
-    for (const r of rp.settlement.rows) {
-      byDay.set(r.date, [...(byDay.get(r.date) ?? []), r])
-    }
-    const entries = [...byDay.entries()]
-    // The sample dates are same-month, so ordering by the day number is enough
-    // here; real rows would carry a parsed date.
-    entries.sort((a, b) => {
-      const da = parseInt(a[0], 10)
-      const db = parseInt(b[0], 10)
-      return desc ? db - da : da - db
-    })
-    return entries.map(([date, rows]) => ({
-      date,
-      rows,
-      total: rows.reduce((n, r) => n + r.amount, 0),
-    }))
-  }, [desc])
+    const inWindow = filterByRange(settlements, range.from, range.to)
+    const matching = status ? inWindow.filter((r) => r.status === status) : inWindow
+    return groupByDay(matching, desc)
+  }, [settlements, range, status, desc])
+
+  const paymentRows = useMemo(() => {
+    const rows = filterByRange(payments, range.from, range.to)
+    return [...rows].sort((a, b) => (desc ? b.at.localeCompare(a.at) : a.at.localeCompare(b.at)))
+  }, [payments, range, desc])
 
   const isSettlement = tab === 'settlement'
 
@@ -103,8 +113,14 @@ export function OrderReport() {
           }}
         />
         <div className="ml-auto flex flex-wrap items-center gap-s200">
+          {/* Settlement only — the Payments table has no status to filter (Q5). */}
           {isSettlement && (
-            <FilterPill label={rp.allStatus} options={[...rp.settlement.statuses]} />
+            <FilterPill
+              label={rp.allStatus}
+              options={[...rp.settlement.statuses]}
+              value={status}
+              onChange={setStatus}
+            />
           )}
           <button
             type="button"
@@ -118,17 +134,17 @@ export function OrderReport() {
         </div>
       </div>
 
-      {isSettlement ? <SettlementTable groups={groups} /> : <PaymentsTable />}
+      {isSettlement ? (
+        <SettlementTable groups={groups} />
+      ) : (
+        <PaymentsTable rows={paymentRows} />
+      )}
     </ConsoleShell>
   )
 }
 
 /** Grouped by day: a header row per day carrying the total and order count. */
-function SettlementTable({
-  groups,
-}: {
-  groups: { date: string; rows: SettlementRow[]; total: number }[]
-}) {
+function SettlementTable({ groups }: { groups: DayGroup[] }) {
   const s = rp.settlement
   if (groups.length === 0) {
     return (
@@ -157,10 +173,10 @@ function SettlementTable({
           </thead>
           <tbody>
             {groups.map((g) => (
-              <Fragment key={g.date}>
+              <Fragment key={g.key}>
                 <tr className="border-b border-neutral-200 bg-neutral-50">
                   <td className="px-s300 py-s300 text-xs3 font-bold whitespace-nowrap text-text-primary">
-                    {g.date}
+                    {g.label}
                   </td>
                   <td colSpan={3} />
                   <td className="px-s300 py-s300 whitespace-nowrap">
@@ -175,11 +191,11 @@ function SettlementTable({
                 </tr>
                 {g.rows.map((r) => (
                   <tr
-                    key={r.order}
+                    key={r.id}
                     className="border-b border-neutral-200 last:border-0 hover:bg-neutral-50"
                   >
                     <td className="px-s300 py-s300 text-xs3 whitespace-nowrap text-text-primary">
-                      {r.date} {r.time}
+                      {formatDay(r.at)} {formatClock(r.at)}
                     </td>
                     <td className="px-s300 py-s300 text-xs3 whitespace-nowrap text-text-primary">
                       {r.order}
@@ -207,9 +223,9 @@ function SettlementTable({
       {/* Mobile — Figma 7017:2120 "Settlement Card" */}
       <div className="flex flex-col gap-s300 p-s300 md:hidden">
         {groups.map((g) => (
-          <div key={g.date}>
+          <div key={g.key}>
             <div className="mb-s200 flex flex-wrap items-baseline gap-s200">
-              <span className="text-xs3 font-bold text-text-primary">{g.date}</span>
+              <span className="text-xs3 font-bold text-text-primary">{g.label}</span>
               <span className="ml-auto text-xs3 text-text-secondary">
                 {s.totalLabel}{' '}
                 <span className="font-bold text-text-primary">{formatIDR(g.total)}</span>
@@ -220,7 +236,7 @@ function SettlementTable({
             </div>
             <div className="flex flex-col gap-s200">
               {g.rows.map((r) => (
-                <div key={r.order} className="rounded-s200 border border-neutral-200 p-s200">
+                <div key={r.id} className="rounded-s200 border border-neutral-200 p-s200">
                   <div className="mb-s200 flex items-center gap-s200">
                     <span className="min-w-0 flex-1 truncate text-xs3 font-semibold">
                       {r.order}
@@ -230,7 +246,7 @@ function SettlementTable({
                   <Row label={s.columns[2]} value={r.customer} />
                   <Row label={s.columns[3]} value={r.method} />
                   <Row label={s.columns[4]} value={formatIDR(r.amount)} strong />
-                  <Row label={s.columns[0]} value={`${r.date} ${r.time}`} />
+                  <Row label={s.columns[0]} value={`${formatDay(r.at)} ${formatClock(r.at)}`} />
                 </div>
               ))}
             </div>
@@ -244,9 +260,9 @@ function SettlementTable({
 }
 
 /** Flat numbered ledger — no grouping, no status column. */
-function PaymentsTable() {
+function PaymentsTable({ rows }: { rows: PaymentRow[] }) {
   const p = rp.payments
-  if (p.rows.length === 0) {
+  if (rows.length === 0) {
     return (
       <Card padded={false}>
         <EmptyState title={p.emptyTitle} body={p.emptyBody} />
@@ -272,9 +288,9 @@ function PaymentsTable() {
             </tr>
           </thead>
           <tbody>
-            {p.rows.map((r, i) => (
+            {rows.map((r, i) => (
               <tr
-                key={r.invoice}
+                key={r.id}
                 className="border-b border-neutral-200 last:border-0 hover:bg-neutral-50"
               >
                 <td className="px-s300 py-s300 text-xs3 text-text-primary">{i + 1}.</td>
@@ -288,7 +304,7 @@ function PaymentsTable() {
                   {r.paidTo}
                 </td>
                 <td className="px-s300 py-s300 text-xs3 whitespace-nowrap text-text-primary">
-                  {r.date}
+                  {formatDayTime(r.at)}
                 </td>
                 <td className="px-s300 py-s300 text-xs3 whitespace-nowrap text-text-primary">
                   {formatIDR(r.amount)}
@@ -304,14 +320,14 @@ function PaymentsTable() {
 
       {/* Mobile — Figma 7017:2063 "Payment Card" */}
       <div className="flex flex-col gap-s200 p-s300 md:hidden">
-        {p.rows.map((r) => (
-          <div key={r.invoice} className="rounded-s200 border border-neutral-200 p-s200">
+        {rows.map((r) => (
+          <div key={r.id} className="rounded-s200 border border-neutral-200 p-s200">
             <div className="mb-s200 flex items-center gap-s200">
               <span className="min-w-0 flex-1 truncate text-xs3 font-semibold">{r.order}</span>
               <span className="shrink-0 text-xs3 text-text-secondary">{r.invoice}</span>
             </div>
             <Row label={p.columns[3]} value={r.paidTo} />
-            <Row label={p.columns[4]} value={r.date} />
+            <Row label={p.columns[4]} value={formatDayTime(r.at)} />
             <Row label={p.columns[5]} value={formatIDR(r.amount)} strong />
             <Row label={p.columns[6]} value={r.method} />
           </div>

@@ -48,3 +48,19 @@ open .docx, you need the Writer module:
 apt-get install -y libreoffice-writer
 soffice --headless --convert-to pdf --outdir /tmp/out "docs/Order module - open questions.docx"
 ```
+
+## verify-orders.mjs
+
+Behavioural check for the Order module rulings recorded in `docs/order-answers.md`. The unit
+tests cover the money model; this covers what only a browser shows — that the empty order
+list actually leads somewhere, that a created order lands in the list and survives a reload,
+and that the Order Report's date range and status filters really filter.
+
+```sh
+npm i --no-save playwright
+npm run build && npx vite preview --port 4174 &
+node tools/verify-orders.mjs
+```
+
+Exits non-zero on any failure or console error. It clears `localStorage` first, so run it
+against a preview build rather than a session you care about.

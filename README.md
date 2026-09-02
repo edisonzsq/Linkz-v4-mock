@@ -162,8 +162,26 @@ Every payment screen is a mock. **No card is charged, no account is debited, no 
 leaves the browser** — the "Proceed Payment" button just advances to the confirmation
 state. Use these values so a training session shows the same numbers on every machine.
 
-**Checkout** (`#/checkout` — reachable from Purchase Order → the **Pay** button on the
-`Sent` row):
+### The order list starts empty — on purpose
+
+Both order lists open on their empty state, with **Create Order** as the only way forward.
+That is the specified behaviour, confirmed by the spec author on 2 Sep 2026
+(`docs/order-answers.md` Q4): the empty list is the trainee's front door.
+
+Two consequences to mention before someone reports them as bugs:
+
+- **The Dashboard and Finance figures do not reconcile against the order list.** They keep
+  their own illustrative values so the populated layouts stay demonstrable.
+- **A settlement row created during a session stays `Pending`.** Only a LINKZ admin can move
+  one to `Settled`, and there is no admin panel in this prototype. The seeded sample rows in
+  the Order Report show the other statuses.
+
+Orders created during a session are shared between Sanders and Dheana, like every other
+record here, and survive a reload. **Reset data** on the demo panel clears them.
+
+**Checkout** (`#/checkout`). The Purchase Order list starts empty (see below), so during a
+session reach this screen from the **screen switcher** or the `#/checkout` hash — the **Pay**
+button appears on a purchase order row only once one has been created:
 
 | Field | Value |
 | --- | --- |
@@ -401,7 +419,8 @@ headings, tab names and button text are the design's own.
 | Screen | Figma node | Copy | Layout |
 | --- | --- | --- | --- |
 | Dashboard | `4001:113931` | ✅ from frame | ✅ verified against frame |
-| Sales / Purchase Order list | `4001:13925` | ✅ from frame | ✅ verified against frame |
+| Sales / Purchase Order list | `4001:13925` | ✅ from frame | ✅ verified against frame — **starts empty**, see below |
+| Order Report — Settlement / Payments | `7017:1308`, `7017:1508` | ✅ from frame | ✅ verified against frame |
 | Checkout | `4001:18536` | ✅ from frame | ✅ verified against frame |
 | Master Products | `4033:50119` | ✅ from frame | ✅ verified against frame |
 | Seller Pay Later | `4001:187533` | ✅ from frame | ✅ verified against frame |

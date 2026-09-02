@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react'
+import type { Order } from '../state/orders'
 
 /**
  * Two demo identities. User A signs in with Google SSO, User B with a mobile
@@ -50,13 +51,24 @@ export type SharedRecord = {
   fields: Record<string, string | boolean>
 }
 
-export type SharedData = Record<Collection, SharedRecord[]>
+export type SharedData = Record<Collection, SharedRecord[]> & {
+  /**
+   * Orders created in the prototype.
+   *
+   * **Starts empty, deliberately** — `docs/order-open-questions.md` Q4. The
+   * order list is the trainee's front door: their first action is to create an
+   * order. The Dashboard and Finance screens keep their own illustrative
+   * figures and are not expected to reconcile against this list.
+   */
+  orders: Order[]
+}
 
 export const emptyShared: SharedData = {
   addresses: [],
   employees: [],
   contacts: [],
   products: [],
+  orders: [],
 }
 
 /** Success popups: KYC complete, 2FA complete, first-time onboarding. */
@@ -70,6 +82,14 @@ export type SessionValue = {
   /** Records added during this session, shared by both users. */
   shared: SharedData
   add: (collection: Collection, fields: Record<string, string | boolean>) => void
+  /** Adds an order to the shared list — both demo users see it. */
+  addOrder: (order: Order) => void
+  /**
+   * Mutates one order in place and re-publishes the list. `mutate` should call
+   * the transitions in `state/orders.ts` rather than assigning fields, so the
+   * invariants there cannot be sidestepped.
+   */
+  updateOrder: (no: string, mutate: (order: Order) => void) => void
   /** Clears the shared store — the reset button on the demo-data panel. */
   clearShared: () => void
 

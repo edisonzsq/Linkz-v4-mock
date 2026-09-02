@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import type { Order } from '../state/orders'
 import {
   demoUsers,
   emptyShared,
@@ -114,6 +115,24 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     [userId],
   )
 
+  const addOrder = useCallback((order: Order) => {
+    setShared((prev) => ({ ...prev, orders: [order, ...prev.orders] }))
+  }, [])
+
+  const updateOrder = useCallback((no: string, mutate: (order: Order) => void) => {
+    setShared((prev) => ({
+      ...prev,
+      orders: prev.orders.map((o) => {
+        if (o.no !== no) return o
+        // The transitions in `state/orders.ts` mutate; give them a copy so React
+        // still sees a new object and re-renders.
+        const next = structuredClone(o)
+        mutate(next)
+        return next
+      }),
+    }))
+  }, [])
+
   // "Seen" is tracked per identity, so each user gets their own first entry.
   const seenKey = useCallback((id: PopupId) => `${userId ?? 'anon'}:${id}`, [userId])
 
@@ -124,6 +143,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       signOut: () => setUserId(null),
       shared,
       add,
+      addOrder,
+      updateOrder,
       clearShared: () => {
         setShared(emptyShared)
         setSeen([])
@@ -135,7 +156,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       markSeen: (id) =>
         setSeen((prev) => (prev.includes(seenKey(id)) ? prev : [...prev, seenKey(id)])),
     }),
-    [userId, shared, add, pendingPopups, seen, seenKey],
+    [userId, shared, add, addOrder, updateOrder, pendingPopups, seen, seenKey],
   )
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>

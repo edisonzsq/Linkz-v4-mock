@@ -130,26 +130,40 @@ export function Toolbar({
   )
 }
 
-/** Filter / sort pill — a select styled like the design's dropdown buttons. */
+/**
+ * Filter / sort pill — a select styled like the design's dropdown buttons.
+ *
+ * Decorative by default — most lists in this mock are static — but
+ * pass `value` / `onChange` and it filters for real. `label` doubles as the
+ * "no filter" option, which carries the empty string as its value.
+ */
 export function FilterPill({
   label,
   icon = 'filter',
   options,
+  value,
+  onChange,
 }: {
   label: string
   icon?: string
   options?: string[]
+  value?: string
+  onChange?: (value: string) => void
 }) {
   return (
     <div className="flex h-8 items-center gap-s200 rounded-s200 border border-neutral-300 bg-white px-s200">
       <Icon name={icon} className="size-4 shrink-0 text-text-secondary" />
       <select
         aria-label={label}
+        value={onChange ? value : undefined}
+        onChange={onChange ? (e) => onChange(e.target.value) : undefined}
         className="min-w-0 cursor-pointer appearance-none bg-transparent text-xs3 text-text-secondary outline-none"
       >
-        <option>{label}</option>
+        <option value="">{label}</option>
         {options?.map((o) => (
-          <option key={o}>{o}</option>
+          <option key={o} value={o}>
+            {o}
+          </option>
         ))}
       </select>
       <Icon name="chevron-down" className="size-3.5 shrink-0 text-neutral-500" />
@@ -325,7 +339,16 @@ export function Pagination({ noun }: { noun: string }) {
  * Empty state — concentric rings behind a magnifier, matching the
  * "Empty state" frames (e.g. Figma node 4001:263886).
  */
-export function EmptyState({ title, body }: { title: string; body: string }) {
+export function EmptyState({
+  title,
+  body,
+  action,
+}: {
+  title: string
+  body: string
+  /** The front-door CTA, where the empty state is the way in (e.g. §4). */
+  action?: ReactNode
+}) {
   return (
     <div className="flex flex-col items-center px-s300 py-s500 text-center">
       <div className="relative grid size-40 place-items-center">
@@ -340,6 +363,7 @@ export function EmptyState({ title, body }: { title: string; body: string }) {
       </div>
       <h3 className="mt-s300 text-xs2 font-semibold text-text-primary">{title}</h3>
       <p className="mt-s100 max-w-[360px] text-xs3 text-text-secondary">{body}</p>
+      {action && <div className="mt-s300">{action}</div>}
     </div>
   )
 }
