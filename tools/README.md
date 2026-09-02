@@ -20,19 +20,32 @@ list. On this container Chromium is preinstalled, which is why the script points
 `executablePath` at `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`. Drop
 that option to use a locally installed Playwright browser instead.
 
-## build-questions-docx.py
+## The question sheets — `docx_builder.py` and `build-questions-*.py`
 
-Regenerates `docs/Order module - open questions.docx` — the answer sheet sent to the
-author of the Order behaviour handover. `docs/order-open-questions.md` is the readable
-source of record; this script is what turns it into something a non-technical reviewer can
-fill in, so **edit the questions in both places** if they change.
+Answer sheets sent to the author of the Order behaviour handover, as Word documents a
+non-technical reviewer can fill in: each question ends in a shaded **YOUR ANSWER** box and
+tickable ☐ options.
+
+| Round | Script | Output | Status |
+| --- | --- | --- | --- |
+| 1 | `build-questions-docx.py` | `docs/Order module - open questions.docx` | Answered 2 Sep 2026 |
+| 2 | `build-questions-2-docx.py` | `docs/Order module - open questions round 2.docx` | Sent |
+
+Each round has a markdown twin (`docs/order-open-questions.md`,
+`docs/order-open-questions-2.md`) which is the readable source of record — **edit both** when
+a question changes. Answers come back as a filled-in .docx, are recorded in
+`docs/order-answers.md`, and the handover gets a pointer wherever an answer overrides it.
 
 ```sh
 pip install python-docx
-python3 tools/build-questions-docx.py
+python3 tools/build-questions-2-docx.py
 ```
 
-Two things to know if you touch it:
+`docx_builder.py` holds the shared machinery — `Sheet` plus the OOXML helpers. Round 2 onward
+uses it; **round 1's script predates it and still carries its own copy**, deliberately left
+alone because that document is already answered and archived.
+
+Two things to know before touching any of this:
 
 - **OOXML child order is strict.** `w:shd`, `w:tcBorders`, `w:tcMar` and friends must appear
   in schema sequence inside `tcPr` / `pPr` / `tblPr`. python-docx will happily write them
@@ -46,8 +59,12 @@ open .docx, you need the Writer module:
 
 ```sh
 apt-get install -y libreoffice-writer
-soffice --headless --convert-to pdf --outdir /tmp/out "docs/Order module - open questions.docx"
+soffice --headless --convert-to pdf --outdir /tmp/out "docs/Order module - open questions round 2.docx"
 ```
+
+Markdown is not a substitute for looking at the PDF: the three defects found this way were
+a file Word could not open at all, ignored column widths, and an answer box split across a
+page break.
 
 ## verify-orders.mjs
 

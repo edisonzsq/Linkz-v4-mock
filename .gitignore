@@ -25,3 +25,6 @@ dist-ssr
 
 # Vercel
 .vercel
+
+# Python bytecode from tools/
+__pycache__/
