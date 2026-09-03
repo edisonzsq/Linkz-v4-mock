@@ -60,6 +60,17 @@ export type SignupState = {
   email: string
   country: string
   method: 'phone' | 'email' | 'google'
+  /**
+   * Why the user is at the Google screen. Google serves both sign-up and log
+   * in, and only sign-up owes Basic Info — see the SSO card `4001:77653`.
+   */
+  googleIntent: 'signup' | 'login'
+  /**
+   * How KYC was entered. From Get Started it is "Verify Business after login",
+   * which is a different shell — breadcrumb instead of the onboarding logo bar,
+   * Cancel beside Continue, and no "Skip for now". Figma `4001:206888`.
+   */
+  kycMode: 'onboarding' | 'post-login'
   businessType: string
   twoFactorOn: boolean
   completedTasks: string[]

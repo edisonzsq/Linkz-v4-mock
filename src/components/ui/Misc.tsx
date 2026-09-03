@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react'
+import { Button } from './Button'
 import { Icon } from './Icon'
 
 export function LanguagePicker({ className = '' }: { className?: string }) {
@@ -135,6 +136,54 @@ export function OtpInput({
         />
       ))}
     </div>
+  )
+}
+
+/**
+ * Confirmation dialog — amber "!" mark, title, body, two buttons.
+ *
+ * Figma "Start over?" (`4001:76576`, file I7UK2KGWw5dRDEhcXaqFGC) and the same
+ * pattern the Order handover describes in §8.4: **which button carries the
+ * action varies**, so `confirmVariant` decides whether the confirming choice is
+ * the filled green one or the outline. Cancel always sits on the left.
+ */
+export function ConfirmDialog({
+  open,
+  title,
+  body,
+  cancelLabel = 'Cancel',
+  confirmLabel,
+  confirmVariant = 'primary',
+  onCancel,
+  onConfirm,
+}: {
+  open: boolean
+  title: string
+  body: string
+  cancelLabel?: string
+  confirmLabel: string
+  confirmVariant?: 'primary' | 'danger'
+  onCancel: () => void
+  onConfirm: () => void
+}) {
+  return (
+    <Modal open={open} onClose={onCancel} width={420}>
+      <div className="flex flex-col items-center gap-s300 px-s400 py-s400 text-center">
+        <h2 className="text-md font-bold text-text-primary">{title}</h2>
+        <span className="grid size-14 place-items-center rounded-full bg-warning text-white">
+          <span className="text-lg leading-none font-bold">!</span>
+        </span>
+        <p className="text-xs3 text-text-secondary">{body}</p>
+        <div className="mt-s200 flex w-full gap-s300">
+          <Button variant="outline" className="flex-1" onClick={onCancel}>
+            {cancelLabel}
+          </Button>
+          <Button variant={confirmVariant} className="flex-1" onClick={onConfirm}>
+            {confirmLabel}
+          </Button>
+        </div>
+      </div>
+    </Modal>
   )
 }
 

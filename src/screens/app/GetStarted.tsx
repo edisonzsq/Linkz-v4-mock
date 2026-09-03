@@ -1,10 +1,17 @@
 import { useState } from 'react'
+import { Button } from '../../components/ui/Button'
 import { Icon } from '../../components/ui/Icon'
 import { ConfettiCheck, SuccessPopup } from '../../components/ui/SuccessPopup'
 import { AppShell } from '../../layouts/AppShell'
-import { currentUser, getStarted as copy, successPopups } from '../../data/mock'
+import {
+  currentUser,
+  getStarted as copy,
+  moreFromLinkz,
+  successPopups,
+} from '../../data/mock'
 import { useFlow } from '../../prototype/flowContext'
 import { useSession, type PopupId } from '../../prototype/sessionContext'
+import type { ScreenId } from '../../prototype/screens'
 
 /**
  * Figma: "Phone Email Get Started" (4001:77356) — dashboard header with the
@@ -12,7 +19,7 @@ import { useSession, type PopupId } from '../../prototype/sessionContext'
  * with the welcome modal (4001:77356 → "Account Created Pop Up") on top.
  */
 export function GetStarted({ forcePopup }: { forcePopup?: PopupId } = {}) {
-  const { go, state, set } = useFlow()
+  const { go, state, set, completeTask } = useFlow()
   const { pendingPopups, dismissPopup, hasSeen, markSeen } = useSession()
 
   /**
@@ -45,8 +52,16 @@ export function GetStarted({ forcePopup }: { forcePopup?: PopupId } = {}) {
   const pct = done.length / total
 
   function openTask(id: string) {
-    if (id === 'kyc') return go('kyc-business')
-    set({ completedTasks: [...new Set([...done, id])] })
+    // KYC is completed by submitting it, not by opening it — see `completeTask`
+    // in `Kyc.tsx`. The others have no screen of their own in this mock, so
+    // opening them is what marks them done.
+    if (id === 'kyc') {
+      set({ kycMode: 'post-login' })
+      return go('kyc-business')
+    }
+    if (id === 'order') return go('order-new')
+    if (id === 'team') return go('employees')
+    completeTask(id)
   }
 
   return (
@@ -126,6 +141,32 @@ export function GetStarted({ forcePopup }: { forcePopup?: PopupId } = {}) {
             )
           })}
         </div>
+
+        {/* Figma 4029:45150 — "More from LINKZ", below the steps. */}
+        <section className="flex flex-col gap-s300 px-s500 pt-s400 pb-s500">
+          <h2 className="text-xs font-bold text-text-primary">{moreFromLinkz.title}</h2>
+          <div className="grid grid-cols-1 gap-s300 lg:grid-cols-2">
+            {moreFromLinkz.cards.map((c) => (
+              <article
+                key={c.id}
+                className="flex flex-col items-start gap-s200 rounded-s300 border border-neutral-200 bg-white p-s300"
+              >
+                <span className="grid size-8 place-items-center rounded-s200 bg-primary-25 text-primary-400">
+                  <Icon name={c.icon} className="size-4" />
+                </span>
+                <p className="text-xs2 font-bold text-text-primary">{c.title}</p>
+                <p className="text-xs3 text-text-secondary">{c.body}</p>
+                <Button
+                  variant="outline"
+                  className="mt-s100"
+                  onClick={() => c.target && go(c.target as ScreenId)}
+                >
+                  {c.cta}
+                </Button>
+              </article>
+            ))}
+          </div>
+        </section>
       </div>
 
       {popup && (

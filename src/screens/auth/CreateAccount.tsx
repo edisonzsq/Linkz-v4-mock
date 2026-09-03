@@ -97,7 +97,10 @@ export function CreateAccount() {
             <Button className="w-full" disabled={!canSubmit} onClick={submit}>
               {copy.submit}
             </Button>
-            <Button variant="outline" className="w-full" onClick={() => go('google-auth')}>
+            <Button variant="outline" className="w-full" onClick={() => {
+                set({ googleIntent: 'signup' })
+                go('google-auth')
+              }}>
               <GoogleIcon className="size-4" />
               {copy.google}
             </Button>

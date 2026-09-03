@@ -26,7 +26,7 @@ type ProductRow = (typeof mp.rows)[number] & { addedBy?: UserId }
 /** Master Products — Figma node 4033:50119 (page "4. Master Product"). */
 export function MasterProducts() {
   const { go } = useFlow()
-  const { shared } = useSession()
+  const { shared, add } = useSession()
   const [selected, setSelected] = useState<string[]>([])
 
   const rows: ProductRow[] = [
@@ -48,6 +48,26 @@ export function MasterProducts() {
   }
 
   const allSelected = selected.length === rows.length
+
+  /**
+   * Copies each selected product into the shared store with a fresh SKU, so the
+   * copy is a distinct row both demo users can see. Suffixes the name the way a
+   * duplicate reads in the design's list.
+   */
+  function duplicateSelected() {
+    for (const sku of selected) {
+      const src = rows.find((r) => r.sku === sku)
+      if (!src) continue
+      add('products', {
+        name: `${src.name} (Copy)`,
+        sku: `${src.sku}-C${Math.random().toString(36).slice(2, 5).toUpperCase()}`,
+        currency: src.currency,
+        price: src.price,
+        category: src.category,
+      })
+    }
+    setSelected([])
+  }
 
   return (
     <ConsoleShell breadcrumb={mp.breadcrumb} back="dashboard" activeNav="master-products">
@@ -139,6 +159,11 @@ export function MasterProducts() {
           <div className="ml-auto flex gap-s200">
             <Button variant="ghost" onClick={() => setSelected([])}>
               Clear
+            </Button>
+            {/* Figma 4033:50391 — Duplicate sits between Clear and Add to
+                Catalogue. It writes real copies, so the list actually grows. */}
+            <Button variant="outline" onClick={duplicateSelected}>
+              Duplicate
             </Button>
             <Button>Add to Catalogue</Button>
           </div>

@@ -13,7 +13,7 @@ type Method = 'phone' | 'email'
 /** Figma: "Login with Phone" / "Login with Email" (nodes 4001:77661, 4001:77931)
  *  and their filled / code-sent / attempts-left variants. */
 export function Login() {
-  const { go } = useFlow()
+  const { go, set } = useFlow()
   const { signIn } = useSession()
   const [method, setMethod] = useState<Method>('phone')
   const [identifier, setIdentifier] = useState('')
@@ -140,7 +140,10 @@ export function Login() {
               <span className="h-px flex-1 bg-neutral-200" />
             </div>
 
-            <Button variant="outline" className="w-full" onClick={() => go('google-auth')}>
+            <Button variant="outline" className="w-full" onClick={() => {
+                set({ googleIntent: 'login' })
+                go('google-auth')
+              }}>
               <GoogleIcon className="size-4" />
               {createAccount.google}
             </Button>

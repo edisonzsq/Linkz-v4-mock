@@ -17,7 +17,7 @@ import { useSession } from '../../prototype/sessionContext'
  * "Fidelity notes" for which screens are still placeholder copy.
  */
 export function KycBankAccount() {
-  const { go } = useFlow()
+  const { go, completeTask } = useFlow()
   const { notify } = useSession()
   const [form, setForm] = useState({ bank: '', accountNumber: '', accountName: '' })
   const upd = (k: keyof typeof form) => (e: { target: { value: string } }) =>
@@ -34,6 +34,9 @@ export function KycBankAccount() {
       continueLabel={kycBank.submit}
       continueDisabled={!canSubmit}
       onContinue={() => {
+        // Step 1 of Get Started is "Verify Your Business" — submitting KYC is
+        // what completes it. Without this it navigated but never ticked over.
+        completeTask('kyc')
         notify('kyc-complete')
         go('kyc-submitted')
       }}
@@ -130,7 +133,7 @@ export function KycBankAccount() {
  * NOTE: field copy not yet read from Figma — see README → "Fidelity notes".
  */
 export function KycTwoFactor() {
-  const { go, state, set } = useFlow()
+  const { go, state, set, completeTask } = useFlow()
   const { notify } = useSession()
   const [stage, setStage] = useState<'intro' | 'otp' | 'done'>('intro')
   const [code, setCode] = useState('')
@@ -156,6 +159,7 @@ export function KycTwoFactor() {
       continueDisabled={stage === 'otp'}
       onContinue={() => {
         if (stage !== 'done') return setStage('otp')
+        completeTask('2fa')
         notify('two-factor-complete')
         go('kyc-submitted')
       }}

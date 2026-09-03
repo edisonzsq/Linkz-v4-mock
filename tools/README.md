@@ -81,3 +81,21 @@ node tools/verify-orders.mjs
 
 Exits non-zero on any failure or console error. It clears `localStorage` first, so run it
 against a preview build rather than a session you care about.
+
+## verify-flow.mjs
+
+Walks the flows from Edison's 3 Sep 2026 flow check (`docs/flow-check-2026-09-03.md`) —
+items 1–9 and 14. 26 checks: Start Over confirms and clears the email, the account-created
+popup is not a dead end, Google sign-up still owes Basic Info while log-in does not, the KYC
+document set follows the registration type, Industry "Other" reveals its field, KYC entered
+from Get Started uses the post-login shell and completes step 1, the sidebar has Dashboard,
+and Duplicate sits between Clear and Add to Catalogue.
+
+```sh
+npm i --no-save playwright
+npm run build && npx vite preview --port 4174 &
+node tools/verify-flow.mjs
+```
+
+KYC field labels sit in their own column rather than a `<label for>`, so these select on
+`name=` rather than by label — worth knowing before adding a check that mysteriously times out.

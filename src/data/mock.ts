@@ -121,11 +121,26 @@ export const benefit = {
   secondaryCta: 'Skip for now',
 }
 
+/**
+ * Figma `4001:76718` (file I7UK2KGWw5dRDEhcXaqFGC). The frame shows this over an
+ * **empty** Basic Information form, and the SSO card `4001:77653` spells out the
+ * order as "account created -> Basic Info" — so it greets you on arrival, and
+ * carries no CTA of its own. Dismissing it leaves the form to fill in.
+ */
 export const accountCreated = {
-  title: 'Account created',
+  title: 'Account Created!',
   subtitle:
-    'Your LINKZ account is ready. Next, complete your business profile to unlock the catalogue and financing.',
-  cta: 'Continue to KYC',
+    "Your account has been created. Let's get a few basic details so we can set up your dashboard.",
+}
+
+/** Figma `4001:76576` — the Start Over confirmation. */
+export const startOverConfirm = {
+  title: 'Start over?',
+  body:
+    "You'll go back to the beginning and need to verify your email or phone again. " +
+    "Anything you've filled in here won't be kept.",
+  cancel: 'Cancel',
+  confirm: 'Start over',
 }
 
 export const login = {
@@ -239,7 +254,8 @@ export const kycBusiness = {
     formats: ' JPEG, PNG, PDF, DOC',
     middle: ' · max ',
     size: '10 MB',
-    suffix: '. Names must match across your KTP, NPWP, and bank account.',
+    // The tail of this sentence names the documents, so it moves with the
+    // registration type — see `byRegistration` below.
   },
   fields: {
     registration: {
@@ -251,12 +267,14 @@ export const kycBusiness = {
       label: 'Company name',
       hint: 'The name you operate under. ',
       placeholder: 'Type in company name',
-      help: 'You can use your own name if you don’t have a separate company name.',
+      // `help` moves with the registration type — see `byRegistration`.
     },
     industry: {
       label: 'Industry',
       hint: 'The primary sector your business operates in.',
       placeholder: 'Choose the business industry',
+      /** Revealed when Industry is "Other" — Figma `4001:84329`. */
+      otherPlaceholder: 'Please specify the industry',
     },
     companySize: {
       label: 'Company size',
@@ -271,11 +289,59 @@ export const kycBusiness = {
       postal: 'Postal Code',
     },
   },
-  uploads: [
-    { id: 'ktp', label: 'Personal ID', hint: 'Your government-issued identity card.' },
-    { id: 'npwp', label: 'Personal NPWP', hint: 'Your personal tax identification number.' },
-    { id: 'nib', label: 'Personal NIB', hint: 'Your business registration number.' },
-  ],
+  /**
+   * What the registration type actually determines — the field says it
+   * "determines which documents needed", and until now nothing changed.
+   *
+   * Personal from Figma `4001:84233`, Established from `4001:89494`
+   * (file I7UK2KGWw5dRDEhcXaqFGC).
+   */
+  byRegistration: {
+    personal: {
+      nameHelp: 'You can use your own name if you don’t have a separate company name.',
+      matchNote: '. Names must match across your KTP, NPWP, and bank account.',
+      uploads: [
+        { id: 'ktp', label: 'Personal ID', hint: 'Your government-issued identity card.' },
+        {
+          id: 'npwp',
+          label: 'Personal NPWP',
+          hint: 'Your personal tax identification number.',
+          bold: false,
+        },
+        { id: 'nib', label: 'Personal NIB', hint: 'Your business registration number.' },
+      ],
+    },
+    established: {
+      nameHelp: 'Must match exactly as written on the Deed of Establishment (Akta Pendirian).',
+      matchNote:
+        '. Names must match across your NIB, NPWP, Deed of Establishment, and bank account.',
+      uploads: [
+        {
+          id: 'company-npwp',
+          label: 'Company NPWP',
+          hint: 'Your company tax identification number.',
+        },
+        { id: 'company-nib', label: 'Company NIB', hint: 'Your business registration number.' },
+        {
+          id: 'deed',
+          label: 'Deed of Establishment',
+          hint: 'Akta Pendirian. If your company is over 5 years old, also include the latest Akta Perubahan.',
+        },
+        {
+          id: 'deed-amendment',
+          label: 'Deed of Amendment',
+          hint: 'Required if your company is over 5 years old. Upload the most recent version.',
+        },
+      ],
+    },
+  } as Record<
+    string,
+    {
+      nameHelp: string
+      matchNote: string
+      uploads: { id: string; label: string; hint: string; bold?: boolean }[]
+    }
+  >,
   uploadCta: 'Upload File',
   uploadHint: 'JPEG, PNG, PDF, DOC · Max 10 MB',
   registrationWarning: {
@@ -389,13 +455,49 @@ export const successPopups = {
   },
 } as const
 
+/**
+ * Onboarding sidebar — Figma `4029:45120` (file I7UK2KGWw5dRDEhcXaqFGC).
+ * Dashboard was missing entirely; the frame also puts Finance above Manage and
+ * gives Get Started the rocket.
+ */
 export const sidebarNav = [
-  { id: 'get-started', icon: 'house', label: 'Get Started' },
+  { id: 'get-started', icon: 'rocket', label: 'Get Started' },
+  { id: 'dashboard', icon: 'layout-grid', label: 'Dashboard' },
   { id: 'order', icon: 'file-check', label: 'Order' },
   { id: 'catalogue', icon: 'book', label: 'Catalogue' },
-  { id: 'manage', icon: 'user-cog', label: 'Manage' },
   { id: 'finance', icon: 'banknote', label: 'Finance' },
+  { id: 'manage', icon: 'user-cog', label: 'Manage' },
 ]
+
+/** Figma `4029:45150` — the two cards below the Get Started steps. */
+export const moreFromLinkz = {
+  title: 'More from LINKZ',
+  cards: [
+    {
+      id: 'invite',
+      icon: 'mail',
+      title: 'Invite Team Members',
+      body: 'Give people access to your company account and work together on LINKZ.',
+      cta: 'Invite Members',
+      /** Lands on My Employee, which is where access is actually granted. */
+      target: 'employees',
+    },
+    {
+      id: 'help',
+      icon: 'headset',
+      title: 'Help & Support',
+      body: 'Get step-by-step guidance on using the LINKZ platform.',
+      cta: 'Help Articles',
+      target: null,
+    },
+  ],
+}
+
+/** Post-login KYC — Figma `4001:206888`. */
+export const kycPostLogin = {
+  breadcrumb: ['Get Started', 'KYC Documents'],
+  cancel: 'Cancel',
+}
 
 export const sidebarFooter = {
   supportLabel: 'Support',

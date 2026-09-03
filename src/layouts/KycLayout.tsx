@@ -3,7 +3,8 @@ import { Button } from '../components/ui/Button'
 import { Icon } from '../components/ui/Icon'
 import { Logo } from '../components/ui/Logo'
 import { LanguagePicker } from '../components/ui/Misc'
-import { kycNav } from '../data/mock'
+import { kycNav, kycPostLogin } from '../data/mock'
+import { topBar } from '../data/appData'
 import { useFlow } from '../prototype/flowContext'
 
 /**
@@ -35,18 +36,50 @@ export function KycLayout({
   onSecondary?: () => void
   children: ReactNode
 }) {
-  const { go } = useFlow()
+  const { go, state } = useFlow()
   const activeIndex = kycNav.sections.findIndex((s) => s.id === active)
+
+  // Verifying after login is a different journey from onboarding: you are
+  // already in the app, so the shell keeps the console breadcrumb, offers
+  // Cancel rather than "Skip for now", and never pretends this is sign-up.
+  const postLogin = state.kycMode === 'post-login'
 
   return (
     <div className="flex min-h-screen items-stretch bg-neutral-100">
       <div className="flex min-w-0 flex-1 flex-col">
         {/* TopNavBar */}
-        <header className="sticky top-0 z-20 flex w-full items-center justify-between border-b border-neutral-200 bg-white px-4 py-3">
-          <div className="flex w-[84px] items-center justify-center">
-            <Logo />
+        <header className="sticky top-0 z-20 flex w-full items-center justify-between gap-s300 border-b border-neutral-200 bg-white px-4 py-3">
+          {postLogin ? (
+            <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-s200">
+              {kycPostLogin.breadcrumb.map((b, i) => (
+                <span key={b} className="flex items-center gap-s200">
+                  {i > 0 && <span className="text-xs3 text-neutral-300">/</span>}
+                  <span
+                    className={`truncate text-xs3 ${
+                      i === kycPostLogin.breadcrumb.length - 1
+                        ? 'font-bold text-text-primary'
+                        : 'text-text-secondary'
+                    }`}
+                  >
+                    {b}
+                  </span>
+                </span>
+              ))}
+            </nav>
+          ) : (
+            <div className="flex w-[84px] items-center justify-center">
+              <Logo />
+            </div>
+          )}
+          <div className="flex shrink-0 items-center gap-s200">
+            {postLogin && (
+              <span className="hidden items-center gap-s200 rounded-s200 border border-neutral-300 px-s200 py-1 text-xs3 text-text-primary sm:flex">
+                <span className="text-text-secondary">{topBar.companyLabel}</span>
+                <span className="font-bold">{topBar.company}</span>
+              </span>
+            )}
+            <LanguagePicker />
           </div>
-          <LanguagePicker />
         </header>
 
         <div className="flex w-full flex-1 items-stretch">
@@ -136,11 +169,17 @@ export function KycLayout({
               })}
             </div>
 
-            <div className="h-px w-full border-t border-neutral-200" />
-            <p className="w-full text-xs4 text-text-secondary">{kycNav.skipNote}</p>
-            <Button variant="outline" className="w-full" onClick={() => go('get-started')}>
-              {kycNav.skip}
-            </Button>
+            {/* Skipping belongs to onboarding. After login you came here on
+                purpose, so the way out is Cancel in the action bar. */}
+            {!postLogin && (
+              <>
+                <div className="h-px w-full border-t border-neutral-200" />
+                <p className="w-full text-xs4 text-text-secondary">{kycNav.skipNote}</p>
+                <Button variant="outline" className="w-full" onClick={() => go('get-started')}>
+                  {kycNav.skip}
+                </Button>
+              </>
+            )}
           </nav>
 
           {/* Form column */}
@@ -152,10 +191,16 @@ export function KycLayout({
               </div>
               {/* Actions group together on the right, as in the frames. */}
               <div className="flex shrink-0 items-center gap-s200">
-                {secondaryLabel && (
+                {secondaryLabel ? (
                   <Button variant="outline" onClick={onSecondary}>
                     {secondaryLabel}
                   </Button>
+                ) : (
+                  postLogin && (
+                    <Button variant="outline" onClick={() => go('get-started')}>
+                      {kycPostLogin.cancel}
+                    </Button>
+                  )
                 )}
                 <Button onClick={onContinue} disabled={continueDisabled}>
                   {continueLabel}

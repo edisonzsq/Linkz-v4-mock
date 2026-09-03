@@ -7,7 +7,7 @@ import { demoUsers, useSession } from '../../prototype/sessionContext'
 /** Figma: "Google Auth - Choose Account" / "- Confirmation"
  *  (nodes 4001:78216, 4001:78300). Mocked — no Google request is made. */
 export function GoogleAuth() {
-  const { go, set } = useFlow()
+  const { go, set, state } = useFlow()
   const { signIn } = useSession()
   const [step, setStep] = useState<'choose' | 'confirm'>('choose')
 
@@ -67,7 +67,11 @@ export function GoogleAuth() {
                   set({ email: picked.email, method: 'google' })
                   // Google SSO is User A's path.
                   signIn('sanders')
-                  go('get-started')
+                  // Signing UP with Google still owes Basic Info — the SSO card
+                  // (4001:77653) reads "account created -> Basic Info", and the
+                  // AC makes it mandatory. Logging in skips it: an existing
+                  // account already has one.
+                  go(state.googleIntent === 'login' ? 'get-started' : 'account-created')
                 }}
               >
                 Continue

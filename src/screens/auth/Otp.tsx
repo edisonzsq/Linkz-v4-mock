@@ -29,7 +29,8 @@ export function Otp({ channel }: { channel: 'email' | 'phone' }) {
     if (next.replace(/\s/g, '').length < 6) return
     if (next.replace(/\s/g, '') === '123456') {
       setError('')
-      go('basic-info')
+      // Account is created at this point — Basic Info greets you with the popup.
+      go('account-created')
     } else {
       setError('That code is not correct. Check the code and try again.')
     }

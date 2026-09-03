@@ -19,6 +19,8 @@ const emptyForm = {
   registration: 'personal',
   companyName: '',
   industry: '',
+  /** Free text, only when Industry is "Other" — Figma `4001:84329`. */
+  industryOther: '',
   companySize: '1-5',
   address: '',
   state: '',
@@ -39,6 +41,7 @@ export function KycBusinessOverview() {
   const hasAnswers =
     form.companyName.trim() !== '' ||
     form.industry !== '' ||
+    form.industryOther.trim() !== '' ||
     form.address.trim() !== '' ||
     form.state !== '' ||
     form.postal.trim() !== ''
@@ -57,7 +60,15 @@ export function KycBusinessOverview() {
     setPendingRegistration(null)
   }
 
-  const canContinue = form.companyName.trim() !== '' && form.industry !== ''
+  // Which documents verification asks for follows the registration type — that
+  // is what the field's own hint promises, and it used to promise it in vain.
+  const variant = copy.byRegistration[form.registration] ?? copy.byRegistration.personal
+  const needsOtherIndustry = form.industry === 'other'
+
+  const canContinue =
+    form.companyName.trim() !== '' &&
+    form.industry !== '' &&
+    (!needsOtherIndustry || form.industryOther.trim() !== '')
 
   return (
     <KycLayout
@@ -83,20 +94,38 @@ export function KycBusinessOverview() {
         <TextField
           name="companyName"
           placeholder={copy.fields.companyName.placeholder}
-          help={copy.fields.companyName.help}
+          help={variant.nameHelp}
           value={form.companyName}
           onChange={upd('companyName')}
         />
       </KycField>
 
       <KycField label={copy.fields.industry.label} hint={copy.fields.industry.hint}>
-        <SelectField
-          name="industry"
-          placeholder={copy.fields.industry.placeholder}
-          options={industries}
-          value={form.industry}
-          onChange={upd('industry')}
-        />
+        <div className="flex w-full flex-col gap-s200">
+          <SelectField
+            name="industry"
+            placeholder={copy.fields.industry.placeholder}
+            options={industries}
+            value={form.industry}
+            onChange={(e) =>
+              setForm((f) => ({
+                ...f,
+                industry: e.target.value,
+                // Drop the free text when moving off "Other", so a stale value
+                // cannot be submitted against a named industry.
+                industryOther: e.target.value === 'other' ? f.industryOther : '',
+              }))
+            }
+          />
+          {needsOtherIndustry && (
+            <TextField
+              name="industryOther"
+              placeholder={copy.fields.industry.otherPlaceholder}
+              value={form.industryOther}
+              onChange={upd('industryOther')}
+            />
+          )}
+        </div>
       </KycField>
 
       <KycField label={copy.fields.companySize.label} hint={copy.fields.companySize.hint}>
@@ -153,15 +182,18 @@ export function KycBusinessOverview() {
               <span className="font-bold">{copy.uploadAlert.formats}</span>
               {copy.uploadAlert.middle}
               <span className="font-bold">{copy.uploadAlert.size}</span>
-              {copy.uploadAlert.suffix}
+              {variant.matchNote}
             </p>
           </div>
         </div>
       </div>
 
-      {copy.uploads.map((u) => (
-        <KycField key={u.id} label={u.label} hint={u.hint} bold={u.id !== 'npwp'}>
-          <UploadBox label={u.label} />
+      {variant.uploads.map((u) => (
+        <KycField key={u.id} label={u.label} hint={u.hint} bold={u.bold !== false}>
+          {/* Keyed on the registration type as well, so switching resets every
+              box to idle rather than leaving a personal upload showing under a
+              company document's label. */}
+          <UploadBox key={`${form.registration}-${u.id}`} label={u.label} />
         </KycField>
       ))}
       {/* Figma 4001:84707 — title above the icon, two paragraphs, no auto-dismiss. */}

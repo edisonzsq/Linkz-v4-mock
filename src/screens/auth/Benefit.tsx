@@ -13,7 +13,7 @@ import { useFlow } from '../../prototype/flowContext'
  * with the ring artwork rotated into the bottom-left corner.
  */
 export function Benefit() {
-  const { go } = useFlow()
+  const { go, set } = useFlow()
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-white">
@@ -98,7 +98,10 @@ export function Benefit() {
           </div>
 
           <div className="flex flex-col items-center justify-center gap-[10px] py-s300">
-            <Button className="w-[240px]" onClick={() => go('kyc-business')}>
+            <Button className="w-[240px]" onClick={() => {
+                set({ kycMode: 'onboarding' })
+                go('kyc-business')
+              }}>
               {copy.primaryCta}
             </Button>
             <Button variant="outline" className="w-[240px]" onClick={() => go('get-started')}>

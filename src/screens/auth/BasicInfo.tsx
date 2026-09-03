@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button } from '../../components/ui/Button'
 import { SelectField, TextAreaField, TextField } from '../../components/ui/Field'
-import { LanguagePicker, Modal } from '../../components/ui/Misc'
+import { ConfirmDialog, LanguagePicker, Modal } from '../../components/ui/Misc'
 import { AuthLayout } from '../../layouts/AuthLayout'
 import {
   accountCreated,
@@ -9,6 +9,7 @@ import {
   countries,
   createAccount,
   learnOptions,
+  startOverConfirm,
   states,
 } from '../../data/mock'
 import { useFlow } from '../../prototype/flowContext'
@@ -22,8 +23,12 @@ import { useFlow } from '../../prototype/flowContext'
  * "Start Over" (142px outline) left and "Continue" (254px fill) right.
  */
 export function BasicInfo({ showCreated = false }: { showCreated?: boolean }) {
-  const { go, state } = useFlow()
+  const { go, reset } = useFlow()
+  // Greets you on arrival, over the empty form — not after submitting it. The
+  // old code raised it on submit, which left the X with nowhere to go but the
+  // form you had just finished.
   const [modal, setModal] = useState(showCreated)
+  const [confirmRestart, setConfirmRestart] = useState(false)
   const [form, setForm] = useState({
     fullName: '',
     country: '',
@@ -147,7 +152,7 @@ export function BasicInfo({ showCreated = false }: { showCreated?: boolean }) {
             <Button
               variant="outline"
               className="w-[142px]"
-              onClick={() => go('create-account')}
+              onClick={() => setConfirmRestart(true)}
             >
               {copy.startOver}
             </Button>
@@ -156,7 +161,7 @@ export function BasicInfo({ showCreated = false }: { showCreated?: boolean }) {
             className="w-full sm:w-[254px]"
             onClick={() => {
               setTouched(true)
-              if (canSubmit) setModal(true)
+              if (canSubmit) go('benefit')
             }}
           >
             {copy.submit}
@@ -166,30 +171,36 @@ export function BasicInfo({ showCreated = false }: { showCreated?: boolean }) {
 
       <Modal open={modal} onClose={() => setModal(false)}>
         <div className="flex flex-col items-center gap-s300 px-10 py-12 text-center">
-          <span className="grid size-16 place-items-center rounded-full bg-primary-50">
-            <svg viewBox="0 0 24 24" className="size-8 text-primary-400" fill="none" aria-hidden="true">
+          <span className="grid size-16 place-items-center rounded-full bg-primary-400">
+            <svg viewBox="0 0 24 24" className="size-9 text-white" fill="none" aria-hidden="true">
               <path
                 d="m5 12.5 4.5 4.5L19 7"
                 stroke="currentColor"
-                strokeWidth="2.2"
+                strokeWidth="2.4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
             </svg>
           </span>
           <h2 className="text-xl font-bold text-text-primary">{accountCreated.title}</h2>
-          <p className="text-xs2 text-text-secondary">{accountCreated.subtitle}</p>
-          <p className="text-xs3 text-neutral-500">
-            Signed up as{' '}
-            <span className="font-bold text-text-primary">
-              {state.email || 'sanders@linkzasia.com'}
-            </span>
-          </p>
-          <Button className="mt-2 w-[220px]" onClick={() => go('benefit')}>
-            {accountCreated.cta}
-          </Button>
+          <p className="max-w-[320px] text-xs3 text-text-secondary">{accountCreated.subtitle}</p>
         </div>
       </Modal>
+
+      <ConfirmDialog
+        open={confirmRestart}
+        title={startOverConfirm.title}
+        body={startOverConfirm.body}
+        cancelLabel={startOverConfirm.cancel}
+        confirmLabel={startOverConfirm.confirm}
+        onCancel={() => setConfirmRestart(false)}
+        onConfirm={() => {
+          // Clear the sign-up state too, or Create Account reopens with the
+          // email the user is trying to get away from.
+          reset()
+          go('create-account')
+        }}
+      />
     </AuthLayout>
   )
 }

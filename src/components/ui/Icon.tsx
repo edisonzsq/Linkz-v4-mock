@@ -164,6 +164,13 @@ const paths: Record<string, React.ReactNode> = {
       <path d="m4.8 5.7 3.2-3.2 3.2 3.2" />
     </>
   ),
+  headset: (
+    <>
+      <path d="M3 9.5V8a5 5 0 0 1 10 0v1.5" />
+      <path d="M2 9.5h1.6a.9.9 0 0 1 .9.9v2.2a.9.9 0 0 1-.9.9H2.9A.9.9 0 0 1 2 12.6V9.5Z" />
+      <path d="M14 9.5h-1.6a.9.9 0 0 0-.9.9v2.2a.9.9 0 0 0 .9.9h.7a.9.9 0 0 0 .9-.9V9.5Z" />
+    </>
+  ),
   mail: (
     <>
       <rect x="1.8" y="3.2" width="12.4" height="9.6" rx="1.4" />
