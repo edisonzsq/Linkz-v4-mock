@@ -164,6 +164,32 @@ const paths: Record<string, React.ReactNode> = {
       <path d="m4.8 5.7 3.2-3.2 3.2 3.2" />
     </>
   ),
+  image: (
+    <>
+      <rect x="2" y="3" width="12" height="10" rx="1.6" />
+      <circle cx="5.8" cy="6.4" r="1" />
+      <path d="m3 11.5 3.2-3 2.3 2.1 2-1.8L13 11.5" />
+    </>
+  ),
+  bold: (
+    <path d="M4.5 2.8h4a2.4 2.4 0 0 1 0 4.8h-4Zm0 4.8h4.6a2.6 2.6 0 0 1 0 5.2H4.5Z" />
+  ),
+  italic: <path d="M10.5 2.8h-3m1 0L6.5 13.2m-2 0h3" />,
+  underline: <path d="M4.5 2.5v4.8a3.5 3.5 0 0 0 7 0V2.5M3.5 13.5h9" />,
+  list: (
+    <>
+      <path d="M6 4h7.5M6 8h7.5M6 12h7.5" />
+      <circle cx="3" cy="4" r=".8" />
+      <circle cx="3" cy="8" r=".8" />
+      <circle cx="3" cy="12" r=".8" />
+    </>
+  ),
+  link: (
+    <>
+      <path d="M6.6 9.4a2.6 2.6 0 0 0 3.8 0l2-2a2.7 2.7 0 0 0-3.8-3.8l-.9.9" />
+      <path d="M9.4 6.6a2.6 2.6 0 0 0-3.8 0l-2 2a2.7 2.7 0 0 0 3.8 3.8l.9-.9" />
+    </>
+  ),
   headset: (
     <>
       <path d="M3 9.5V8a5 5 0 0 1 10 0v1.5" />

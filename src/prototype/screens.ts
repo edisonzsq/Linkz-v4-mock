@@ -27,6 +27,8 @@ export const screens = [
   { id: 'checkout', label: 'Checkout', group: 'General' },
   { id: 'master-products', label: 'Master Products', group: 'General' },
   { id: 'product-new', label: 'Create Product', group: 'General' },
+  { id: 'product-edit', label: 'Edit Product', group: 'General' },
+  { id: 'order-detail', label: 'Order Detail', group: 'General' },
 
   /* ---- V.4 Compilation: finance ---- */
   { id: 'spl', label: 'Seller Pay Later', group: 'Finance' },
@@ -71,6 +73,10 @@ export type SignupState = {
    * Cancel beside Continue, and no "Skip for now". Figma `4001:206888`.
    */
   kycMode: 'onboarding' | 'post-login'
+  /** SKU of the product being edited — set by clicking a Master Products row. */
+  editingSku: string
+  /** Order number being viewed — set by clicking an order row. */
+  viewingOrder: string
   businessType: string
   twoFactorOn: boolean
   completedTasks: string[]

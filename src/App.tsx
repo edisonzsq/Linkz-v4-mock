@@ -14,8 +14,10 @@ import { GetStarted } from './screens/app/GetStarted'
 import { KycBankAccount, KycSubmitted, KycTwoFactor } from './screens/app/Kyc'
 import { KycBusinessOverview } from './screens/app/KycBusinessOverview'
 import { Dashboard } from './screens/app/Dashboard'
-import { CreateOrder, PurchaseOrders, SalesOrders } from './screens/app/Orders'
-import { CreateProduct, MasterProducts } from './screens/app/Products'
+import { PurchaseOrders, SalesOrders } from './screens/app/Orders'
+import { CreateOrder, OrderDetail } from './screens/app/OrderScreen'
+import { CreateProduct, EditProduct } from './screens/app/ProductForm'
+import { MasterProducts } from './screens/app/Products'
 import { BizLoan, BuyerPayLater, SellerPayLater } from './screens/app/Finance'
 import {
   AddressBook,
@@ -71,12 +73,16 @@ function renderScreen(screen: ScreenId) {
       return <PurchaseOrders />
     case 'order-new':
       return <CreateOrder />
+    case 'order-detail':
+      return <OrderDetail />
     case 'checkout':
       return <Checkout />
     case 'master-products':
       return <MasterProducts />
     case 'product-new':
       return <CreateProduct />
+    case 'product-edit':
+      return <EditProduct />
     case 'spl':
       return <SellerPayLater />
     case 'bpl':

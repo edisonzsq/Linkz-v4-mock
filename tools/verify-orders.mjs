@@ -51,31 +51,39 @@ await goto('purchase-orders')
 ok('Q4 purchase list starts empty', (await page.getByText('No purchase orders yet').count()) === 1)
 
 // ---- create an order and confirm it lands in the list ----
+// The create screen is the V4 rebuild (Figma 4001:11308), so the buyer is a
+// search/select in Buyer Info and the line items are edited in place.
 await goto('order-new')
 const sendBtn = page.getByRole('button', { name: 'Send Order' }).first()
 ok('Send Order is disabled with no buyer', await sendBtn.isDisabled())
 
-await page.getByLabel('Bill to').selectOption('PT Maju Bersama')
-ok('Send Order enables once a buyer is chosen', !(await sendBtn.isDisabled()))
+await page.locator('select[name=buyer]').selectOption('PT Maju Bersama')
+await page.waitForTimeout(200)
+await page.locator('input[name^=item-name-]').first().fill('Hazmat Suit')
+await page.locator('input[name^=item-price-]').first().fill('1.000.000')
+await page.waitForTimeout(250)
+ok('Send Order enables once a buyer and a priced row exist', !(await sendBtn.isDisabled()))
 
-const totalText = await page.getByText('IDR 777.000,00').first().count()
-ok('summary total computes to IDR 777.000,00', totalText > 0)
+const totalText = await page.getByText('IDR 1.000.000,00').first().count()
+ok('the payment panel totals the row', totalText > 0)
 
 await sendBtn.click()
-await page.waitForTimeout(200)
-ok('confirmation shows after send', (await page.getByText('Order sent').count()) === 1)
-
-await page.getByRole('button', { name: 'Back to Sales Order' }).click()
 await page.waitForTimeout(250)
+ok('send asks for confirmation first', (await page.getByText('Send this order?').count()) === 1)
+await page.getByRole('button', { name: 'Send Order' }).last().click()
+await page.waitForTimeout(500)
+ok('sending opens the order detail', page.url().includes('order-detail'), page.url())
+
+await goto('sales-orders')
 const rowsAfter = await page.locator('table tbody tr').count()
 ok('created order appears in the list', rowsAfter === 1, `rows=${rowsAfter}`)
 const statusPill = await page.locator('table tbody tr').first().innerText()
 ok('created order is Invoiced with 1 invoice', /Invoiced/.test(statusPill), statusPill.replace(/\s+/g, ' ').slice(0, 120))
-ok('grand total shown on the row', /777\.000/.test(statusPill))
+ok('grand total shown on the row', /1\.000\.000/.test(statusPill))
 
 // ---- the order survives a reload (shared store) ----
 await page.reload()
-await page.waitForTimeout(250)
+await page.waitForTimeout(300)
 ok('order persists across reload', (await page.locator('table tbody tr').count()) === 1)
 
 // ---- Q6: the report filters for real, and Last 7 days is populated ----

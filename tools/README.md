@@ -99,3 +99,20 @@ node tools/verify-flow.mjs
 
 KYC field labels sit in their own column rather than a `<label for>`, so these select on
 `name=` rather than by label — worth knowing before adding a check that mysteriously times out.
+
+## verify-products-orders.mjs
+
+Flow-check items 10–13: order rows opening a detail screen, the rebuilt Create Order, the
+rebuilt Create/Edit Product with variants, and product rows opening the editor. 24 checks,
+including the rules the spec author settled in round 1 — a sales invoice offers Mark as Paid
+and Void, and Cancel Order disappears once an invoice is paid.
+
+```sh
+npm i --no-save playwright
+npm run build && npx vite preview --port 4174 &
+node tools/verify-products-orders.mjs
+```
+
+Gotcha: the prototype's screen switcher is a fixed button named after the current screen, so
+`getByRole('button', { name: 'Create Product' })` matches twice. Use `.first()` for the page
+header's button — `.last()` silently clicks the switcher and every assertion after it fails.

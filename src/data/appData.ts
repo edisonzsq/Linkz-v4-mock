@@ -488,6 +488,203 @@ export const orderTotals = {
 
 /* ---------- 4. Master Product (from Figma, node 4033:50119) ---------- */
 
+/**
+ * Create / Edit Product — Figma `4033:50554` (create), `4033:50848` (edit),
+ * `4033:53383` (two variations), file `I7UK2KGWw5dRDEhcXaqFGC`.
+ *
+ * Category is deliberately optional and the right-hand column is a live
+ * preview; both were called out in the 3 Sep flow check.
+ */
+export const productForm = {
+  createTitle: 'Create Product',
+  editTitle: 'Edit Product',
+  createBreadcrumb: ['Catalogue', 'Master Products', 'Create Product'],
+  editBreadcrumb: ['Catalogue', 'Master Products', 'Edit Product'],
+  cancel: 'Cancel',
+  createCta: 'Create Product',
+  saveCta: 'Save Changes',
+
+  imageSection: 'Product Image',
+  imageHelp: 'Accepts 5 images and 1 video',
+  addFile: '+ Add File',
+  cover: 'Cover',
+
+  infoSection: 'Product Information',
+  title: 'Product Title',
+  titlePlaceholder: 'Product Title',
+  sku: 'SKU No.',
+  skuPlaceholder: 'SKU No.',
+  category: 'Category (Optional)',
+  categoryPlaceholder: 'Type or select category',
+  description: 'Description',
+  descriptionPlaceholder: 'Input text here',
+  descriptionCounter: (n: number) => `${n}/500 Character`,
+
+  orgSection: 'Product Organization',
+  catalogue: 'Catalogue',
+  cataloguePlaceholder: 'Type or select catalogue',
+
+  pricingSection: 'Product Pricing',
+  variants: 'Variants',
+  enableVariant: '+ Enable Variant',
+  addVariation: (n: number) => `Add Variations ${n}`,
+  variationTitle: (n: number) => (n === 1 ? 'Variation 1' : `Variations ${n}`),
+  variantName: (n: number) => `Variant ${n} Name`,
+  variantNamePlaceholder: 'e.g. Color',
+  option: (n: number) => `Option ${n}`,
+  optionPlaceholder: 'Type or Select',
+  optionCount: (used: number, max: number) => `${used}/${max} options`,
+  photoNote: '· variant photo is taken from variation 1',
+  removeVariation: 'Remove variation',
+
+  currency: 'Currency',
+  currencyValue: 'IDR (Indonesian Rupiah)',
+  costPrice: 'Cost price (Optional)',
+  costPricePlaceholder: 'Type your buying price per unit',
+  costPriceHelp: 'Your customers will not see this.',
+  price: 'Price',
+  pricePlaceholder: 'Price',
+
+  massUpdate: 'Mass Update Table',
+  variantPrice: 'Variant Price',
+  variantSku: 'SKU No.',
+  applyToAll: 'Apply to All',
+  matrixPrice: 'Variant Base Price',
+  matrixSku: 'SKU',
+
+  preview: 'Preview',
+  previewTitle: 'Product Title',
+  previewSku: 'SKU:',
+  previewCategory: 'Category',
+  previewVariant: 'Variant',
+  none: '-',
+
+  /** Catalogues an edited product already belongs to — Figma 4033:50848. */
+  sampleCatalogues: [
+    'Spring Gadget Collection 2026',
+    'Apparel Collection 2026',
+    "Women's Exclusive Apparel and Accesories Collection 2026",
+  ],
+  catalogueOptions: [
+    'Spring Gadget Collection 2026',
+    'Apparel Collection 2026',
+    "Women's Exclusive Apparel and Accesories Collection 2026",
+    'Everyday Basics 2026',
+  ],
+}
+
+/**
+ * Create Order / Order Detail — Figma `4001:11308` (create) and `4001:12967`
+ * (detail, multi-invoice), file `I7UK2KGWw5dRDEhcXaqFGC`.
+ *
+ * They are the same screen: the detail view adds the Invoice section above the
+ * parties and swaps the draft actions for the sent ones (§5 and §6 of
+ * `docs/order-behaviour-handover.md`).
+ */
+export const orderScreen = {
+  createBreadcrumb: ['Sales Order', 'Create Order'],
+  detailBreadcrumb: ['Sales Order', 'Order Details'],
+  salesChip: 'Sales Order',
+  purchaseChip: 'Purchase Order',
+  orderNo: 'Order No:',
+  placeholderNo: '000000-0000000',
+  lastUpdated: 'Last updated:',
+
+  deleteDraft: 'Delete Draft',
+  duplicateDraft: 'Duplicate Draft',
+  duplicateAsDraft: 'Duplicate as Draft',
+  saveDraft: 'Save as Draft',
+  sendOrder: 'Send Order',
+  cancelOrder: 'Cancel Order',
+  allPdf: 'All PDF',
+
+  invoiceSection: 'Invoice',
+  invoiceColumns: [
+    'No.',
+    'Invoice No.',
+    'Issue Date',
+    'Grand Total Amount',
+    'Payable Amount',
+    'Status',
+    'Payment Link',
+    '',
+  ],
+  invoiceNoun: 'invoice',
+  sendReminder: 'Send Reminder',
+  makePayment: 'Make Payment',
+  reminderSent: 'Reminder sent',
+
+  buyerInfo: 'Buyer Info',
+  sellerInfo: 'Seller Info',
+  yourInfo: 'Your Info',
+  searchBuyer: 'Search buyers name',
+  searchSeller: 'Search sellers name',
+  seeLess: 'See less',
+  seeMore: 'See more',
+
+  buyersDue: "Buyer's Due",
+  noBuyerTitle: 'No buyer selected',
+  noBuyerBody: 'Choose a buyer to display this information.',
+  outstandingLimit: 'Outstanding Limit:',
+  outstandingPayment: 'Outstanding Payment:',
+  sendReminders: 'Send Reminders',
+
+  productSection: 'Product & Service',
+  productColumns: [
+    'No.',
+    'Product or Service Details',
+    'Quantity',
+    'Unit of Measure',
+    'Price',
+    'Discount',
+    'Tax',
+    'Total',
+    '',
+  ],
+  productPlaceholder: 'Type or click to select a product or service',
+  uomPlaceholder: 'e.g. box, pcs.',
+  addRow: '+ Add Row',
+  removeRow: 'Remove row',
+
+  remarks: 'Remarks',
+  remarksPlaceholder: 'Input text here',
+  remarksCounter: (n: number) => `${n}/500 Character`,
+
+  payment: 'Payment Details',
+  subtotal: 'Subtotal',
+  deliveryFee: 'Delivery Fee',
+  additionalDiscount: 'Additional Discount',
+  additionalTax: 'Additional Tax',
+  grandTotal: 'Grand Total Amount',
+  paidAmount: 'Paid Amount',
+
+  taxOptions: ['NO TAX', 'PPN 11%', 'PPN 12%'],
+  fields: {
+    name: 'Name:',
+    phone: 'Phone:',
+    email: 'Email:',
+    address: 'Address:',
+    postal: 'Postal Code:',
+    bankName: 'Bank Name:',
+    accountNo: 'Account No:',
+    accountHolder: 'Account Holder Name:',
+  },
+  /** Standing company details for "Your Info" — Figma 4001:11308. */
+  yourCompany: {
+    company: 'KFC Indonesia Co.,Ltd.',
+    name: 'Sanders',
+    phone: '987654321',
+    email: 'Sanders@kfc.com',
+    address: 'Jakarta Utara, Kota Jakarta Utara\nDKI Jakarta 14410, Indonesia',
+  },
+  sendTitles: {
+    normal: 'Send this order?',
+    overpaid: 'Overpaid order',
+    'over-invoiced': 'Void Open Invoice?',
+    'even-out': 'Complete Order?',
+  },
+}
+
 export const masterProducts = {
   breadcrumb: ['Catalogue', 'Master Products'],
   title: 'Master Products',

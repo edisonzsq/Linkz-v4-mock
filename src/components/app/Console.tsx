@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { KeyboardEvent, MouseEvent, ReactNode } from 'react'
 import { Icon } from '../ui/Icon'
 import { pager } from '../../data/appData'
 import { statusTone, type Tone } from './consoleUtils'
@@ -181,6 +181,7 @@ export function DataTable<T>({
   render,
   card,
   empty,
+  onRowClick,
 }: {
   columns: string[]
   rows: T[]
@@ -189,8 +190,37 @@ export function DataTable<T>({
   /** Same row as a stacked card, used below the `md` breakpoint. */
   card: (row: T, index: number) => ReactNode
   empty?: ReactNode
+  /** Makes the whole row open something. Controls inside the row still win. */
+  onRowClick?: (row: T, index: number) => void
 }) {
   if (rows.length === 0 && empty) return <>{empty}</>
+
+  /**
+   * A row carries checkboxes, menus and action buttons. Rather than making every
+   * cell remember to stop propagation, ignore clicks that started on anything
+   * interactive — one guard instead of a rule every future cell must follow.
+   */
+  const fromControl = (e: { target: unknown }) => {
+    const el = e.target as HTMLElement | null
+    return !!el?.closest?.('button, a, input, select, textarea, label, [role="button"]')
+  }
+
+  const rowProps = (r: T, ri: number) =>
+    onRowClick
+      ? {
+          onClick: (e: MouseEvent) => {
+            if (!fromControl(e)) onRowClick(r, ri)
+          },
+          onKeyDown: (e: KeyboardEvent) => {
+            if ((e.key === 'Enter' || e.key === ' ') && !fromControl(e)) {
+              e.preventDefault()
+              onRowClick(r, ri)
+            }
+          },
+          tabIndex: 0,
+          className: 'cursor-pointer',
+        }
+      : {}
 
   return (
     <>
@@ -210,25 +240,39 @@ export function DataTable<T>({
             </tr>
           </thead>
           <tbody>
-            {rows.map((r, ri) => (
-              <tr key={ri} className="border-b border-neutral-200 last:border-0 hover:bg-neutral-50">
+            {rows.map((r, ri) => {
+              const { className: rowClass = '', ...rp } = rowProps(r, ri)
+              return (
+              <tr
+                key={ri}
+                {...rp}
+                className={`border-b border-neutral-200 last:border-0 hover:bg-neutral-50 focus-visible:bg-primary-25 focus-visible:outline-none ${rowClass}`}
+              >
                 {render(r, ri).map((c, ci) => (
                   <td key={ci} className="px-s200 py-3 align-middle text-xs3 text-text-primary">
                     {c}
                   </td>
                 ))}
               </tr>
-            ))}
+              )
+            })}
           </tbody>
         </table>
       </div>
 
       <div className="flex flex-col gap-s200 p-s200 md:hidden">
-        {rows.map((r, ri) => (
-          <div key={ri} className="rounded-s200 border border-neutral-200 bg-white p-s200">
-            {card(r, ri)}
-          </div>
-        ))}
+        {rows.map((r, ri) => {
+          const { className: rowClass = '', ...rp } = rowProps(r, ri)
+          return (
+            <div
+              key={ri}
+              {...rp}
+              className={`rounded-s200 border border-neutral-200 bg-white p-s200 ${rowClass}`}
+            >
+              {card(r, ri)}
+            </div>
+          )
+        })}
       </div>
     </>
   )

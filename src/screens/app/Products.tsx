@@ -8,12 +8,10 @@ import {
   PageHeader,
   Pagination,
   Row,
-  SectionLabel,
   Toolbar,
 } from '../../components/app/Console'
 import { cells } from '../../components/app/consoleUtils'
 import { Button } from '../../components/ui/Button'
-import { SelectField, TextAreaField, TextField } from '../../components/ui/Field'
 import { Icon } from '../../components/ui/Icon'
 import { ConsoleShell } from '../../layouts/ConsoleShell'
 import { filters, masterProducts as mp } from '../../data/appData'
@@ -25,7 +23,7 @@ type ProductRow = (typeof mp.rows)[number] & { addedBy?: UserId }
 
 /** Master Products — Figma node 4033:50119 (page "4. Master Product"). */
 export function MasterProducts() {
-  const { go } = useFlow()
+  const { go, set } = useFlow()
   const { shared, add } = useSession()
   const [selected, setSelected] = useState<string[]>([])
 
@@ -42,6 +40,16 @@ export function MasterProducts() {
     })),
     ...mp.rows,
   ]
+
+  /**
+   * A product row opens the editor — Figma `4033:50139`, and the 3 Sep flow
+   * check. The checkbox cell stops propagation so selecting is not the same
+   * gesture as opening.
+   */
+  function openProduct(sku: string) {
+    set({ editingSku: sku })
+    go('product-edit')
+  }
 
   function toggle(sku: string) {
     setSelected((s) => (s.includes(sku) ? s.filter((x) => x !== sku) : [...s, sku]))
@@ -90,6 +98,7 @@ export function MasterProducts() {
           columns={mp.columns}
           rows={rows}
           empty={<EmptyState title={mp.emptyTitle} body={mp.emptyBody} />}
+          onRowClick={(r) => openProduct(r.sku)}
           render={(r, i) => cells(
             <input
               type="checkbox"
@@ -122,6 +131,7 @@ export function MasterProducts() {
             <button
               type="button"
               aria-label={`Edit ${r.name}`}
+              onClick={() => openProduct(r.sku)}
               className="grid size-8 place-items-center rounded-s200 text-neutral-500 hover:bg-neutral-100"
             >
               <Icon name="edit" className="size-4" />
@@ -169,133 +179,6 @@ export function MasterProducts() {
           </div>
         </div>
       )}
-    </ConsoleShell>
-  )
-}
-
-/** Create Product — the form behind the "Create Product" button on node 4033:50119. */
-export function CreateProduct() {
-  const { go } = useFlow()
-  const { add } = useSession()
-  const f = mp.form
-  const [category, setCategory] = useState('')
-  const [form, setForm] = useState<Record<string, string>>({})
-
-  const field = (k: string) => ({
-    value: form[k] ?? '',
-    onChange: (e: { target: { value: string } }) => setForm((v) => ({ ...v, [k]: e.target.value })),
-  })
-
-  const canSave = Boolean(form.name?.trim() && form.sku?.trim() && category)
-
-  function save() {
-    if (!canSave) return
-    add('products', {
-      name: form.name.trim(),
-      sku: form.sku.trim(),
-      category,
-      currency: 'IDR',
-      price: form.price?.trim() || '0,00',
-    })
-    go('master-products')
-  }
-
-  return (
-    <ConsoleShell breadcrumb={f.breadcrumb} back="master-products" activeNav="master-products">
-      <PageHeader title={f.title}>
-        <Button variant="ghost" onClick={() => go('master-products')}>
-          {f.cancel}
-        </Button>
-        <Button onClick={save} disabled={!canSave}>
-          {f.save}
-        </Button>
-      </PageHeader>
-
-      <div className="grid grid-cols-1 gap-s300 xl:grid-cols-[2fr_1fr]">
-        <div className="flex flex-col gap-s300">
-          <Card>
-            <SectionLabel>{f.detailsSection}</SectionLabel>
-
-            <div className="mb-s300 flex flex-wrap items-start gap-s300">
-              <span className="grid size-24 shrink-0 place-items-center rounded-s200 bg-primary-25 text-primary-400">
-                <Icon name="package" className="size-8" />
-              </span>
-              <div className="min-w-0">
-                <p className="text-xs3 font-semibold text-text-primary">{f.imageLabel}</p>
-                <p className="mt-s100 text-xs4 text-text-secondary">{f.imageHelp}</p>
-                <div className="mt-s200">
-                  <Button variant="outline">
-                    <Icon name="upload" className="size-4" />
-                    {f.upload}
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-s300 sm:grid-cols-2">
-              <TextField name="name" label={f.name} placeholder={f.namePlaceholder} required {...field('name')} />
-              <TextField name="sku" label={f.sku} placeholder={f.skuPlaceholder} required {...field('sku')} />
-              <SelectField
-                name="category"
-                label={f.category}
-                placeholder={f.categoryPlaceholder}
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                options={mp.categories.map((c) => ({ value: c, label: c }))}
-                required
-              />
-            </div>
-
-            <div className="mt-s300">
-              <TextAreaField
-                name="description"
-                label={f.description}
-                placeholder={f.descriptionPlaceholder}
-                rows={3}
-              />
-            </div>
-          </Card>
-
-          <Card>
-            <SectionLabel>{f.pricingSection}</SectionLabel>
-            <div className="grid grid-cols-1 gap-s300 sm:grid-cols-2">
-              <TextField name="currency" label={f.currency} defaultValue="IDR" readOnly />
-              <TextField
-                name="price"
-                label={f.price}
-                placeholder={f.pricePlaceholder}
-                inputMode="decimal"
-                required
-                {...field('price')}
-              />
-            </div>
-          </Card>
-
-          <Card>
-            <SectionLabel>{f.stockSection}</SectionLabel>
-            <div className="grid grid-cols-1 gap-s300 sm:grid-cols-2">
-              <TextField name="stock" label={f.stock} placeholder="0" inputMode="numeric" />
-              <TextField name="minStock" label={f.minStock} placeholder="0" inputMode="numeric" />
-            </div>
-          </Card>
-        </div>
-
-        <Card className="h-fit">
-          <SectionLabel>{f.title}</SectionLabel>
-          <p className="text-xs3 text-text-secondary">
-            Products you create here become available to add to any catalogue you share with
-            buyers.
-          </p>
-          <div className="mt-s300 flex flex-col gap-s200">
-            <Button onClick={save} disabled={!canSave}>
-              {f.save}
-            </Button>
-            <Button variant="ghost" onClick={() => go('master-products')}>
-              {f.cancel}
-            </Button>
-          </div>
-        </Card>
-      </div>
     </ConsoleShell>
   )
 }

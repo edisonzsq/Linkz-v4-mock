@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
-type Variant = 'primary' | 'outline' | 'ghost' | 'text' | 'danger'
+type Variant = 'primary' | 'outline' | 'ghost' | 'text' | 'danger' | 'danger-outline'
 
 const base =
   'inline-flex items-center justify-center gap-s100 rounded-[6px] px-3 py-2 text-xs3 font-semibold transition-colors disabled:cursor-not-allowed'
@@ -16,6 +16,10 @@ const variants: Record<Variant, string> = {
     'border border-neutral-300 text-text-secondary hover:bg-neutral-50 disabled:text-neutral-400',
   text: 'text-primary-400 hover:text-primary-500 hover:underline px-0 py-0',
   danger: 'bg-danger text-white hover:brightness-110',
+  // §8.5 of the Order handover: red outline is reserved for Delete Draft and
+  // Cancel Order. Grey means disabled, never destructive.
+  'danger-outline':
+    'border border-danger text-danger hover:bg-danger-bg disabled:border-neutral-300 disabled:text-neutral-400',
 }
 
 export function Button({

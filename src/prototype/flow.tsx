@@ -9,6 +9,8 @@ const blankSignup: SignupState = {
   method: 'phone',
   googleIntent: 'signup',
   kycMode: 'onboarding',
+  editingSku: '',
+  viewingOrder: '',
   businessType: '',
   twoFactorOn: false,
   completedTasks: [],
